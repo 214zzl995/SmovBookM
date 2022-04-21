@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    ext {
+        compose_version = '1.2.0-alpha08'
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.1.3"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.41"
+    }
+}
+
+plugins {
+    id 'com.android.application' version '7.2.0-beta04' apply false
+    id 'com.android.library' version '7.2.0-beta04' apply false
+    id 'org.jetbrains.kotlin.android' version '1.5.31' apply false
+    id 'com.diffplug.spotless' version '6.3.0'
+}
+
+subprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    apply plugin: 'com.diffplug.spotless'
+    spotless {
+        kotlin {
+            target '**/*.kt'
+            targetExclude("$buildDir/**/*.kt")
+            targetExclude('bin/**/*.kt')
+            ktlint("0.45.1").userData([android: "true"])
+            licenseHeaderFile rootProject.file('spotless/copyright.kt')
+        }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            allWarningsAsErrors = project.hasProperty("warningsAsErrors") ? project.warningsAsErrors : false
+            freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
+            freeCompilerArgs += '-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi'
+            freeCompilerArgs += '-Xopt-in=kotlinx.coroutines.FlowPreview'
+            freeCompilerArgs += '-Xopt-in=kotlin.Experimental'
+            jvmTarget = "1.8"
+        }
+    }
+}
