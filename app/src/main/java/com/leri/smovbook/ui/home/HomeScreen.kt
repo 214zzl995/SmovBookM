@@ -33,6 +33,8 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.gson.Gson
 import com.leri.smovbook.R
+import com.leri.smovbook.data.smov.SmovRepository
+import com.leri.smovbook.data.smov.impl.SmovRepositoryImpl
 import com.leri.smovbook.model.Smov
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.components.AppBar
@@ -54,11 +56,11 @@ import java.io.IOException
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SmovContent(
+fun HomeScreen(
     navigate: (Int) -> Unit,
     modifier: Modifier = Modifier,
     onNavIconPressed: () -> Unit = { },
-    viewModel: SmovContentViewModel
+    uiState: HomeUiState
 ) {
 
     val scrollState = rememberLazyListState()
@@ -111,7 +113,7 @@ fun SmovContent(
                 modifier = Modifier.statusBarsPadding(),
                 onRefreshSmovData = onRefreshSmovData,
                 navigate = navigate,
-                viewModel = viewModel
+                uiState = uiState
             )
 
         }
@@ -127,7 +129,7 @@ fun ChannelNameBar(
     onNavIconPressed: () -> Unit = { },
     onRefreshSmovData: () -> Unit = { },
     navigate: (Int) -> Unit = { },
-    viewModel: SmovContentViewModel
+    uiState: HomeUiState
 ) {
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
     if (functionalityNotAvailablePopupShown) {
@@ -146,7 +148,7 @@ fun ChannelNameBar(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = viewModel.getServer(), //stringResource(R.string.members, channelMembers)
+                    text = uiState.serverUrl, //stringResource(R.string.members, channelMembers)
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -311,7 +313,13 @@ fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
             channelName = "composers",
-            viewModel = SmovContentViewModel()
+            uiState = HomeUiState.HasData(
+                listSmov = listOf(),
+                isLoading = false,
+                errorMessages = listOf(),
+                searchInput = "",
+                serverUrl = "127.0.0.1"
+            )
         )
     }
 }

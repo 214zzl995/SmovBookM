@@ -15,7 +15,7 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @Composable
-fun ColumnScope.Drawer(
+fun ColumnScope.AppDrawer(
     onProfileClicked: (String) -> Unit,
     onChatClicked: (String) -> Unit
 ) {
@@ -69,7 +69,7 @@ fun DrawerPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                Drawer({}, {})
+                AppDrawer({}, {})
             }
         }
     }
@@ -81,7 +81,7 @@ fun DrawerPreviewDark() {
     SmovBookMTheme(isDarkTheme = true) {
         Surface {
             Column {
-                Drawer({}, {})
+                AppDrawer({}, {})
             }
         }
     }
