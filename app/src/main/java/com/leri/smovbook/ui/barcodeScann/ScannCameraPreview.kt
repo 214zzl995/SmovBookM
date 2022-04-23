@@ -15,9 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import com.google.common.util.concurrent.ListenableFuture
-import com.leri.smovbook.ui.home.HomeViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
