@@ -14,25 +14,23 @@ import com.leri.smovbook.ui.home.HomeViewModel
 @Composable
 fun AppNavGraph(
     appContainer: AppContainer,
-    isExpandedScreen: Boolean,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     openDrawer: () -> Unit = {},
     startDestination: String = AppDestinations.HOME_ROUTE
 ) {
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModel.provideFactory(appContainer.smovRepository)
+    )
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
         composable(AppDestinations.HOME_ROUTE) {
-            val homeViewModel: HomeViewModel = viewModel(
-                factory = HomeViewModel.provideFactory(appContainer.smovRepository)
-            )
             HomeRoute(
-                homeViewModel = homeViewModel,
-                isExpandedScreen = isExpandedScreen,
-                openDrawer = openDrawer
+                openDrawer = openDrawer,
+                homeViewModel = homeViewModel
             )
         }
     }

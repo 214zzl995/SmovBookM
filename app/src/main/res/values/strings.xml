@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">SmovBookM</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -8,4 +8,9 @@
     <string name="info">Information</string>
 
     <string name="load_error">请求数据错误</string>
+
+    <string name="retry">Retry</string>
+
+    <string name="home_tap_to_load_content">Tap to load content</string>
+
 </resources>

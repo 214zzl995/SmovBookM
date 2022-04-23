@@ -1,18 +1,46 @@
 package com.leri.smovbook.ui.home
 
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeRoute(
-    homeViewModel: HomeViewModel,
-    isExpandedScreen: Boolean,
     openDrawer: () -> Unit,
-    scaffoldState: ScaffoldState = rememberScaffoldState()
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    homeViewModel: HomeViewModel
 ) {
+    val uiState by homeViewModel.uiState.collectAsState()
+    HomeRoute(
+        openDrawer = openDrawer,
+        scaffoldState = scaffoldState,
+        uiState = uiState,
+        onErrorDismiss = { homeViewModel.errorShown(it) },
+    )
+
+}
+
+
+@Composable
+fun HomeRoute(
+    openDrawer: () -> Unit,
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    onErrorDismiss: (Long) -> Unit,
+    uiState: HomeUiState,
+) {
+
+    val homeListLazyListState = rememberLazyListState()
+    HomeScreen(
+        onErrorDismiss = onErrorDismiss,
+        uiState = uiState,
+        homeListLazyListState = homeListLazyListState,
+        scaffoldState = scaffoldState,
+        openDrawer = openDrawer
+    )
 
 }

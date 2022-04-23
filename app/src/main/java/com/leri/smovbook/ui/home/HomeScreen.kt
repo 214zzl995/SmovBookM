@@ -1,14 +1,14 @@
 package com.leri.smovbook.ui.home
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
@@ -20,73 +20,40 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.gson.Gson
 import com.leri.smovbook.R
-import com.leri.smovbook.data.smov.SmovRepository
-import com.leri.smovbook.data.smov.impl.SmovRepositoryImpl
+import com.leri.smovbook.model.Actor
 import com.leri.smovbook.model.Smov
+import com.leri.smovbook.model.Tag
+import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
-import com.leri.smovbook.ui.components.AppBar
+import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.*
-import java.io.IOException
 
-/**
- * Entry point for a conversation screen.
- *
- * @param navigate User action when navigation to a profile is requested
- * @param modifier [Modifier] to apply to this layout node
- * @param onNavIconPressed Sends an event up when the user clicks on the menu
- *
- */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navigate: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    onNavIconPressed: () -> Unit = { },
-    uiState: HomeUiState
+    openDrawer: () -> Unit = { },
+    onErrorDismiss: (Long) -> Unit,
+    uiState: HomeUiState,
+    onRefreshSmovData: () -> Unit = { },
+    homeListLazyListState: LazyListState,
+    scaffoldState: ScaffoldState,
 ) {
 
     val scrollState = rememberLazyListState()
     val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
-
-    val client = OkHttpClient()
-
-    val builder = Request.Builder()
-    builder.url("http://192.168.88.67:8325/data")
-    builder.addHeader("Content-Type", "application/json").get()
-
-    var smovList by remember { mutableStateOf(listOf<Smov>()) }
-    val gson = Gson()
-
-    val onRefreshSmovData = {
-        client.newCall(builder.build()).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val res = response.body!!.string()
-                smovList = gson.fromJson(res, Array<Smov>::class.java).asList()
-            }
-        })
-    }
-    onRefreshSmovData()
 
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -95,27 +62,112 @@ fun HomeScreen(
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-                SmovList(
-                    smovList,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize(),
-                    scrollState = scrollState,
-                    onRefreshSmovData = onRefreshSmovData
+                HomeScreenWithList(
+                    uiState = uiState,
+                    showTopAppBar = true,
+                    onRefreshSmovData = onRefreshSmovData,
+                    onErrorDismiss = onErrorDismiss,
+                    openDrawer = openDrawer,
+                    homeListLazyListState = homeListLazyListState,
+                    scaffoldState = scaffoldState
+                ) { hasData, _ ->
+                    SmovList(
+                        smov = hasData.smov,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize(),
+                        scrollState = scrollState
+                    )
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun HomeScreenWithList(
+    uiState: HomeUiState,
+    showTopAppBar: Boolean,
+    onErrorDismiss: (Long) -> Unit,
+    onRefreshSmovData: () -> Unit,
+    openDrawer: () -> Unit,
+    homeListLazyListState: LazyListState,
+    scaffoldState: ScaffoldState,
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    hasPostsContent: @Composable (
+        uiState: HomeUiState.HasData,
+        modifier: Modifier
+    ) -> Unit
+) {
+    androidx.compose.material.Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            if (showTopAppBar) {
+                ChannelNameBar(
+                    channelName = "SmovBook",
+                    onNavIconPressed = openDrawer,
+                    scrollBehavior = scrollBehavior,
+                    modifier = Modifier.statusBarsPadding(),
+                    onRefreshSmovData = onRefreshSmovData,
+                    uiState = uiState
                 )
             }
-            // Channel name bar floats above the messages
-            ChannelNameBar(
-                channelName = "SmovBook",
-                onNavIconPressed = onNavIconPressed,
-                scrollBehavior = scrollBehavior,
-                // Use statusBarsPadding() to move the app bar content below the status bar
-                modifier = Modifier.statusBarsPadding(),
-                onRefreshSmovData = onRefreshSmovData,
-                navigate = navigate,
-                uiState = uiState
-            )
+        },
+        modifier = modifier
+    ) { innerPadding ->
+        val contentModifier = Modifier.padding(innerPadding)
 
+        LoadingContent(
+            empty = when (uiState) {
+                is HomeUiState.HasData -> false
+                is HomeUiState.NoData -> uiState.isLoading
+            },
+            emptyContent = { FullScreenLoading() },
+            loading = uiState.isLoading,
+            onRefresh = onRefreshSmovData,
+            content = {
+                when (uiState) {
+                    is HomeUiState.HasData -> hasPostsContent(uiState, contentModifier)
+                    is HomeUiState.NoData -> {
+                        if (uiState.errorMessages.isEmpty()) {
+                            TextButton(
+                                onClick = onRefreshSmovData,
+                                modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.home_tap_to_load_content),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        } else {
+                            Box(contentModifier.fillMaxSize()) { }
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+
+    if (uiState.errorMessages.isNotEmpty()) {
+
+        val errorMessage = remember(uiState) { uiState.errorMessages[0] }
+        val errorMessageText: String = stringResource(errorMessage.messageId)
+        val retryMessageText = stringResource(id = R.string.retry)
+        val onRefreshSmovDataState by rememberUpdatedState(onRefreshSmovData)
+        val onErrorDismissState by rememberUpdatedState(onErrorDismiss)
+
+        LaunchedEffect(errorMessageText, retryMessageText, scaffoldState) {
+            val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                message = errorMessageText,
+                actionLabel = retryMessageText
+            )
+            if (snackbarResult == SnackbarResult.ActionPerformed) {
+                onRefreshSmovDataState()
+            }
+            onErrorDismissState(errorMessage.id)
         }
     }
 }
@@ -128,7 +180,6 @@ fun ChannelNameBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onNavIconPressed: () -> Unit = { },
     onRefreshSmovData: () -> Unit = { },
-    navigate: (Int) -> Unit = { },
     uiState: HomeUiState
 ) {
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
@@ -136,36 +187,33 @@ fun ChannelNameBar(
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
     }
 
-    AppBar(
+    SmovAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         onNavIconPressed = onNavIconPressed,
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // Channel name
                 Text(
                     text = channelName,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = uiState.serverUrl, //stringResource(R.string.members, channelMembers)
+                    text = uiState.serverUrl,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
         actions = {
-            // Search icon
             Icon(
                 imageVector = Icons.Outlined.Search,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClick = { /*navigate(R.id.nav_bar_code) */ }) //functionalityNotAvailablePopupShown = true
+                    .clickable(onClick = { })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
                     .height(24.dp),
                 contentDescription = stringResource(id = R.string.search)
             )
-            // Info icon
             Icon(
                 imageVector = Icons.Outlined.Refresh,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -179,40 +227,21 @@ fun ChannelNameBar(
     )
 }
 
-
-class SwipeRefreshModel : ViewModel() {
-    private val _isRefreshing = MutableStateFlow(false)
-
-    val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
-
-    fun refresh(onRefreshSmovData: () -> Unit = { }) {
-        viewModelScope.launch {
-            _isRefreshing.emit(true)
-            //delay(2000)
-            onRefreshSmovData()
-            _isRefreshing.emit(false)
-        }
-    }
-}
-
 @Composable
-fun SmovList(
-    smovList: List<Smov>,
-    scrollState: LazyListState,
-    modifier: Modifier = Modifier,
-    onRefreshSmovData: () -> Unit = { }
+private fun LoadingContent(
+    empty: Boolean,
+    emptyContent: @Composable () -> Unit,
+    loading: Boolean,
+    onRefresh: () -> Unit,
+    content: @Composable () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-
-    Box(modifier = modifier) {
-
-        val viewModel: SwipeRefreshModel = viewModel()
-        val isRefreshing by viewModel.isRefreshing.collectAsState()
-        //这个东西会占用布局！！
+    if (empty) {
+        emptyContent()
+    } else {
         SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = { viewModel.refresh(onRefreshSmovData) },
+            state = rememberSwipeRefreshState(loading),
+            onRefresh = onRefresh,
+            content = content,
             indicator = { state, trigger ->
                 SwipeRefreshIndicator(
                     state = state,
@@ -221,41 +250,60 @@ fun SmovList(
                     modifier = Modifier.offset(y = 90.dp)
                 )
             }
-        ) {
-            LazyColumn(
-                reverseLayout = false,
-                state = scrollState,
-                contentPadding =
-                WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
-                modifier = Modifier
-                    .testTag("ConversationTestTag")
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-            ) {
-                item {
-                    FlowRow(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth(),
+        )
+    }
+}
 
-                        mainAxisAlignment = FlowMainAxisAlignment.Center,
-                        crossAxisAlignment = FlowCrossAxisAlignment.Center,
-                    ) {
-                        for (smov in smovList) {
-                            SmovItem(smov)
-                        }
+@Composable
+private fun FullScreenLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun SmovList(
+    smov: Smov,
+    scrollState: LazyListState,
+    modifier: Modifier = Modifier,
+) {
+    val scope = rememberCoroutineScope()
+
+    Box(modifier = modifier) {
+
+        LazyColumn(
+            reverseLayout = false,
+            state = scrollState,
+            contentPadding =
+            WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
+            modifier = Modifier
+                .testTag("ConversationTestTag")
+                .fillMaxSize()
+                .align(Alignment.Center)
+        ) {
+            item {
+                FlowRow(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth(),
+
+                    mainAxisAlignment = FlowMainAxisAlignment.Center,
+                    crossAxisAlignment = FlowCrossAxisAlignment.Center,
+                ) {
+                    for (smov in smov.smovList) {
+                        SmovCard(smov)
                     }
                 }
             }
         }
-        // Jump to bottom button shows up when user scrolls past a threshold.
-        // Convert to pixels:
         val jumpThreshold = with(LocalDensity.current) {
             JumpToBottomThreshold.toPx()
         }
 
-        // Show the button if the first visible item is not the first one or if the offset is
-        // greater than the threshold.
         val jumpToBottomButtonEnabled by remember {
             derivedStateOf {
                 scrollState.firstVisibleItemIndex != 0 ||
@@ -264,7 +312,6 @@ fun SmovList(
         }
 
         JumpToTop(
-            // Only show if the scroller is not at the bottom
             enabled = jumpToBottomButtonEnabled,
             onClicked = {
                 scope.launch {
@@ -314,11 +361,69 @@ fun ChannelBarPrev() {
         ChannelNameBar(
             channelName = "composers",
             uiState = HomeUiState.HasData(
-                listSmov = listOf(),
+                smov = Smov(
+                    listOf(), SmovItem(
+                        0,
+                        "test",
+                        "test",
+                        "test",
+                        "test",
+                        10010,
+                        4564541,
+                        4564654,
+                        "mp4",
+                        "test",
+                        "test",
+                        123,
+                        "test",
+                        3,
+                        "test",
+                        1,
+                        "test",
+                        1,
+                        "test",
+                        1,
+                        listOf(Tag(1, "test")),
+                        listOf(Actor(1, "test")),
+                        isch = false,
+                        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+                        "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
+                        listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
+                    )
+                ),
                 isLoading = false,
                 errorMessages = listOf(),
                 searchInput = "",
-                serverUrl = "127.0.0.1"
+                serverUrl = "127.0.0.1",
+                isDetailOpen = false,
+                selectedSmov = SmovItem(
+                    0,
+                    "test",
+                    "test",
+                    "test",
+                    "test",
+                    10010,
+                    4564541,
+                    4564654,
+                    "mp4",
+                    "test",
+                    "test",
+                    123,
+                    "test",
+                    3,
+                    "test",
+                    1,
+                    "test",
+                    1,
+                    "test",
+                    1,
+                    listOf(Tag(1, "test")),
+                    listOf(Actor(1, "test")),
+                    isch = false,
+                    "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+                    "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
+                    listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
+                )
             )
         )
     }

@@ -9,14 +9,15 @@ class Application : Application() {
     lateinit var container: AppContainer
 
     companion object {
-        var _context: Application? = null
+        private var appContext: Application? = null
         fun getContext(): Context {
-            return _context!!
+            return appContext!!
         }
     }
 
     override fun onCreate() {
         super.onCreate()
+        appContext = this
         container = AppContainerImpl(this)
     }
 

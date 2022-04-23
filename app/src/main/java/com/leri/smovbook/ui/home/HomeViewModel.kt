@@ -33,14 +33,14 @@ sealed interface HomeUiState {
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
         override val serverUrl: String,
-        val smovs: Smov,
+        val smov: Smov,
         val selectedSmov: SmovItem,
         val isDetailOpen: Boolean
     ) : HomeUiState
 }
 
 private data class HomeViewModelState(
-    val smovs: Smov? = null,
+    val smov: Smov? = null,
     val isLoading: Boolean = false,
     val errorMessages: List<ErrorMessage> = emptyList(),
     val searchInput: String = "",
@@ -49,7 +49,7 @@ private data class HomeViewModelState(
     val isDetailOpen: Boolean = false
 ) {
     fun toUiState(): HomeUiState =
-        if (smovs == null) {
+        if (smov == null) {
             HomeUiState.NoData(
                 isLoading = isLoading,
                 errorMessages = errorMessages,
@@ -58,15 +58,15 @@ private data class HomeViewModelState(
             )
         } else {
             HomeUiState.HasData(
-                smovs = smovs,
+                smov = smov,
                 isLoading = isLoading,
                 errorMessages = errorMessages,
                 searchInput = searchInput,
                 serverUrl = serverUrl,
                 isDetailOpen = isDetailOpen,
-                selectedSmov = smovs.smovList.find {
+                selectedSmov = smov.smovList.find {
                     it.id == selectedSmovId
-                } ?: smovs.highlightedSmovItem,
+                } ?: smov.highlightedSmovItem,
             )
         }
 }
@@ -97,6 +97,13 @@ class HomeViewModel(
         }
     }
 
+    fun changeCacheServe(url: String) {
+        viewModelState.update {
+            it.copy(serverUrl = url)
+        }
+        DataStoreUtils.putData("server_url", url)
+    }
+
     private fun refreshData() {
         viewModelState.update { it.copy(isLoading = true) }
 
@@ -104,7 +111,7 @@ class HomeViewModel(
             val result = smovRepository.getSmovs(viewModelState.value.serverUrl)
             viewModelState.update {
                 when (result) {
-                    is Result.Success -> it.copy(smovs = result.data, isLoading = false)
+                    is Result.Success -> it.copy(smov = result.data, isLoading = false)
                     is Result.Error -> {
                         val errorMessages = it.errorMessages + ErrorMessage(
                             id = UUID.randomUUID().mostSignificantBits,
@@ -121,7 +128,6 @@ class HomeViewModel(
         return viewModelState.value.serverUrl.ifBlank {
             "127.0.0.1"
         }
-
     }
 
     fun errorShown(errorId: Long) {

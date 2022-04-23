@@ -11,13 +11,14 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @Composable
 fun ColumnScope.AppDrawer(
-    onProfileClicked: (String) -> Unit,
-    onChatClicked: (String) -> Unit
+    currentRoute: String,
+    navigateToHome: () -> Unit,
+    closeDrawer: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
     DrawerHeader()
@@ -69,7 +70,7 @@ fun DrawerPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                AppDrawer({}, {})
+                AppDrawer("SmovBook", {}, {})
             }
         }
     }
@@ -81,8 +82,10 @@ fun DrawerPreviewDark() {
     SmovBookMTheme(isDarkTheme = true) {
         Surface {
             Column {
-                AppDrawer({}, {})
+                AppDrawer("SmovBook", {}, {})
             }
         }
     }
 }
+
+

@@ -12,7 +12,7 @@ import java.io.IOException
 import java.lang.IllegalArgumentException
 
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences1",
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences",
     produceMigrations = { context -> listOf(SharedPreferencesMigration(context, "sp_name")) })
 
 val globalDataStore: DataStore<Preferences> = Application.getContext().dataStore
