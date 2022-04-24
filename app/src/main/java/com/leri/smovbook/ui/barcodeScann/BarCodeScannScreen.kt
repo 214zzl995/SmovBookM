@@ -17,7 +17,8 @@ import com.leri.smovbook.util.DataStoreUtils
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun BarCodeScannScreen(
-    changeServer: () -> Unit,
+    navigateUp: () -> Unit,
+    changeServer: (String) -> Unit,
 ) {
     var code by remember {
         mutableStateOf("Camera Permission")
@@ -40,7 +41,9 @@ fun BarCodeScannScreen(
 
             CameraPreview { result ->
                 code = result
-                DataStoreUtils.putData("server_url", result)
+                changeServer(result)
+                navigateUp()
+                println("返回主界面")
             }
         }
     }

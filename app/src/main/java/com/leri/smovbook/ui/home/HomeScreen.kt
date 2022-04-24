@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +51,7 @@ fun HomeScreen(
     onRefreshSmovData: () -> Unit = { },
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
+    openBarScann: () -> Unit = { },
 ) {
 
     val scrollState = rememberLazyListState()
@@ -69,6 +71,7 @@ fun HomeScreen(
                     onErrorDismiss = onErrorDismiss,
                     openDrawer = openDrawer,
                     homeListLazyListState = homeListLazyListState,
+                    openBarScann = openBarScann,
                     scaffoldState = scaffoldState
                 ) { hasData, _ ->
                     SmovList(
@@ -96,6 +99,7 @@ private fun HomeScreenWithList(
     scaffoldState: ScaffoldState,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    openBarScann: () -> Unit,
     hasPostsContent: @Composable (
         uiState: HomeUiState.HasData,
         modifier: Modifier
@@ -111,6 +115,7 @@ private fun HomeScreenWithList(
                     scrollBehavior = scrollBehavior,
                     modifier = Modifier.statusBarsPadding(),
                     onRefreshSmovData = onRefreshSmovData,
+                    onOpenBarScann = openBarScann,
                     uiState = uiState
                 )
             }
@@ -180,6 +185,7 @@ fun ChannelNameBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onNavIconPressed: () -> Unit = { },
     onRefreshSmovData: () -> Unit = { },
+    onOpenBarScann: () -> Unit = { },
     uiState: HomeUiState
 ) {
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
@@ -205,15 +211,26 @@ fun ChannelNameBar(
             }
         },
         actions = {
-            Icon(
+            /*Icon(
                 imageVector = Icons.Outlined.Search,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .clickable(onClick = { })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
                     .height(24.dp),
+                contentDescription = stringResource(id = R.string.search),
+            )*/
+
+            Icon(
+                painter = painterResource(id = R.drawable.ic_scan_qr_code),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clickable(onClick = { onOpenBarScann() })
+                    .padding(horizontal = 12.dp, vertical = 17.dp)
+                    .height(20.dp),
                 contentDescription = stringResource(id = R.string.search)
             )
+
             Icon(
                 imageVector = Icons.Outlined.Refresh,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,

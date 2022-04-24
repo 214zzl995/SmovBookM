@@ -15,6 +15,7 @@ import androidx.compose.material3.DrawerValue.Closed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
 import com.leri.smovbook.ui.components.AppScaffold
+import com.leri.smovbook.ui.home.BackPressHandler
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +43,13 @@ fun SmovApp(
 
         val drawerState = rememberDrawerState(initialValue = Closed)
 
+        if (drawerState.isOpen) {
+            BackPressHandler {
+                coroutineScope.launch {
+                    drawerState.close()
+                }
+            }
+        }
 
         AppScaffold(
             drawerState = drawerState,

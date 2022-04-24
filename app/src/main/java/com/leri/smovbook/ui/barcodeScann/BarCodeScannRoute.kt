@@ -6,10 +6,11 @@ import androidx.compose.runtime.Composable
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BarCodeScannRoute(
-    changeServer: () -> Unit,
+    navigateUp: () -> Unit,
+    changeServer: (String) -> Unit
 ) {
-    BarCodeScannScreen {
-        changeServer()
-    }
+    BarCodeScannScreen(navigateUp = navigateUp, changeServer = {
+        changeServer(it)
+    })
 
 }

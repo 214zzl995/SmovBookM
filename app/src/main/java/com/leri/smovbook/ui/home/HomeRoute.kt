@@ -13,7 +13,8 @@ import androidx.compose.runtime.key
 fun HomeRoute(
     openDrawer: () -> Unit,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    openBarScann: () -> Unit
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     HomeRoute(
@@ -21,6 +22,7 @@ fun HomeRoute(
         scaffoldState = scaffoldState,
         uiState = uiState,
         onErrorDismiss = { homeViewModel.errorShown(it) },
+        openBarScann = openBarScann
     )
 
 }
@@ -32,6 +34,7 @@ fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     onErrorDismiss: (Long) -> Unit,
     uiState: HomeUiState,
+    openBarScann: () -> Unit
 ) {
 
     val homeListLazyListState = rememberLazyListState()
@@ -40,7 +43,8 @@ fun HomeRoute(
         uiState = uiState,
         homeListLazyListState = homeListLazyListState,
         scaffoldState = scaffoldState,
-        openDrawer = openDrawer
+        openDrawer = openDrawer,
+        openBarScann = openBarScann
     )
 
 }

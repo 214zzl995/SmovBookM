@@ -3,8 +3,10 @@ package com.leri.smovbook.ui
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import com.leri.smovbook.Application
+import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,8 +15,13 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val appContainer = (application as Application).container
+
         setContent {
-            SmovApp(appContainer = appContainer)
+            CompositionLocalProvider(
+                LocalBackPressedDispatcher provides this.onBackPressedDispatcher
+            ) {
+                SmovApp(appContainer = appContainer)
+            }
         }
     }
 }
