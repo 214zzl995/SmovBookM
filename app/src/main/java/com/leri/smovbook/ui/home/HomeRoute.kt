@@ -22,7 +22,8 @@ fun HomeRoute(
         scaffoldState = scaffoldState,
         uiState = uiState,
         onErrorDismiss = { homeViewModel.errorShown(it) },
-        openBarScann = openBarScann
+        openBarScann = openBarScann,
+        onRefreshSmovData = { homeViewModel.refreshData() }
     )
 
 }
@@ -34,7 +35,8 @@ fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     onErrorDismiss: (Long) -> Unit,
     uiState: HomeUiState,
-    openBarScann: () -> Unit
+    openBarScann: () -> Unit,
+    onRefreshSmovData: () -> Unit
 ) {
 
     val homeListLazyListState = rememberLazyListState()
@@ -44,7 +46,8 @@ fun HomeRoute(
         homeListLazyListState = homeListLazyListState,
         scaffoldState = scaffoldState,
         openDrawer = openDrawer,
-        openBarScann = openBarScann
+        openBarScann = openBarScann,
+        onRefreshSmovData = onRefreshSmovData
     )
 
 }

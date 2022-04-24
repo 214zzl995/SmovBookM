@@ -11,7 +11,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -211,23 +211,13 @@ fun ChannelNameBar(
             }
         },
         actions = {
-            /*Icon(
-                imageVector = Icons.Outlined.Search,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .clickable(onClick = { })
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(24.dp),
-                contentDescription = stringResource(id = R.string.search),
-            )*/
-
             Icon(
-                painter = painterResource(id = R.drawable.ic_scan_qr_code),
+                painter = painterResource(id = R.drawable.ic_qr_scan_line),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .clickable(onClick = { onOpenBarScann() })
-                    .padding(horizontal = 12.dp, vertical = 17.dp)
-                    .height(20.dp),
+                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                    .height(21.dp),
                 contentDescription = stringResource(id = R.string.search)
             )
 
@@ -311,8 +301,8 @@ fun SmovList(
                     mainAxisAlignment = FlowMainAxisAlignment.Center,
                     crossAxisAlignment = FlowCrossAxisAlignment.Center,
                 ) {
-                    for (smov in smov.smovList) {
-                        SmovCard(smov)
+                    for (smovItem in smov.smovList) {
+                        SmovCard(smovItem)
                     }
                 }
             }
@@ -368,6 +358,84 @@ private fun RowScope.DayHeaderLine() {
             .align(Alignment.CenterVertically),
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
     )
+}
+
+@Preview
+@Composable
+fun Screen() {
+    SmovBookMTheme() {
+        HomeScreen(
+            onErrorDismiss = {},
+            uiState = HomeUiState.HasData(
+                smov = Smov(
+                    listOf(), SmovItem(
+                        0,
+                        "test",
+                        "test",
+                        "test",
+                        "test",
+                        10010,
+                        4564541,
+                        4564654,
+                        "mp4",
+                        "test",
+                        "test",
+                        123,
+                        "test",
+                        3,
+                        "test",
+                        1,
+                        "test",
+                        1,
+                        "test",
+                        1,
+                        listOf(Tag(1, "test")),
+                        listOf(Actor(1, "test")),
+                        isch = false,
+                        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+                        "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
+                        listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
+                    )
+                ),
+                isLoading = false,
+                errorMessages = listOf(),
+                searchInput = "",
+                serverUrl = "127.0.0.1",
+                isDetailOpen = false,
+                selectedSmov = SmovItem(
+                    0,
+                    "test",
+                    "test",
+                    "test",
+                    "test",
+                    10010,
+                    4564541,
+                    4564654,
+                    "mp4",
+                    "test",
+                    "test",
+                    123,
+                    "test",
+                    3,
+                    "test",
+                    1,
+                    "test",
+                    1,
+                    "test",
+                    1,
+                    listOf(Tag(1, "test")),
+                    listOf(Actor(1, "test")),
+                    isch = false,
+                    "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+                    "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
+                    listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
+                )
+            ),
+            homeListLazyListState = rememberLazyListState(0),
+            scaffoldState = rememberScaffoldState()
+        )
+    }
+
 }
 
 

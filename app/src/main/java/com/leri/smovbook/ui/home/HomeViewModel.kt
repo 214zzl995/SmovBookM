@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.home
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import com.leri.smovbook.util.DataStoreUtils
 import com.leri.smovbook.util.ErrorMessage
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 sealed interface HomeUiState {
@@ -93,7 +95,11 @@ class HomeViewModel(
 
     private fun getCacheServe() {
         viewModelState.update {
-            it.copy(serverUrl = DataStoreUtils.getData("server_url", ""))
+            val serverUrl = DataStoreUtils.getSyncData("server_url", "")
+            runBlocking {
+                it.copy(serverUrl = serverUrl.first())
+            }
+
         }
     }
 
@@ -102,13 +108,15 @@ class HomeViewModel(
             it.copy(serverUrl = url)
         }
         DataStoreUtils.putData("server_url", url)
+        refreshData()
     }
 
-    private fun refreshData() {
+    fun refreshData() {
         viewModelState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val result = smovRepository.getSmovs(viewModelState.value.serverUrl)
+            println(result)
             viewModelState.update {
                 when (result) {
                     is Result.Success -> it.copy(smov = result.data, isLoading = false)

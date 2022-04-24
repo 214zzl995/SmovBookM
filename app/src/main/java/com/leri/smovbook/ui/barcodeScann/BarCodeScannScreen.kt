@@ -43,7 +43,6 @@ fun BarCodeScannScreen(
                 code = result
                 changeServer(result)
                 navigateUp()
-                println("返回主界面")
             }
         }
     }
