@@ -1,4 +1,4 @@
-package com.leri.smovbook.ui.home
+package com.leri.smovbook.ui.components
 
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
@@ -21,9 +21,6 @@ private enum class Visibility {
     GONE
 }
 
-/**
- * Shows a button that lets the user scroll to the bottom.
- */
 @Composable
 fun JumpToTop(
     enabled: Boolean,

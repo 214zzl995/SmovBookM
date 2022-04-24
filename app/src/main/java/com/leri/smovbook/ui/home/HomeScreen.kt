@@ -8,20 +8,17 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
@@ -36,9 +33,11 @@ import com.leri.smovbook.model.Smov
 import com.leri.smovbook.model.Tag
 import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
+import com.leri.smovbook.ui.components.JumpToTop
 import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
+import androidx.compose.ui.Modifier
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,14 +54,12 @@ fun HomeScreen(
 ) {
 
     val scrollState = rememberLazyListState()
-    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
 
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 Modifier
                     .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 HomeScreenWithList(
                     uiState = uiState,
@@ -73,7 +70,7 @@ fun HomeScreen(
                     homeListLazyListState = homeListLazyListState,
                     openBarScann = openBarScann,
                     scaffoldState = scaffoldState
-                ) { hasData, _ ->
+                ) { hasData ->
                     SmovList(
                         smov = hasData.smov,
                         modifier = Modifier
@@ -88,6 +85,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenWithList(
     uiState: HomeUiState,
@@ -101,79 +99,83 @@ private fun HomeScreenWithList(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     openBarScann: () -> Unit,
     hasPostsContent: @Composable (
-        uiState: HomeUiState.HasData,
-        modifier: Modifier
+        uiState: HomeUiState.HasData
     ) -> Unit
 ) {
-    androidx.compose.material.Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = {
-            if (showTopAppBar) {
-                ChannelNameBar(
-                    channelName = "SmovBook",
-                    onNavIconPressed = openDrawer,
-                    scrollBehavior = scrollBehavior,
-                    modifier = Modifier.statusBarsPadding(),
-                    onRefreshSmovData = onRefreshSmovData,
-                    onOpenBarScann = openBarScann,
-                    uiState = uiState
-                )
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            if (uiState.errorMessages.isEmpty() && !uiState.isLoading && uiState.errorMessages.count() > 100) {
+                ExtendedFloatingActionButton(
+                    onClick = onRefreshSmovData
+                ) { Text("重载") }
             }
         },
-        modifier = modifier
-    ) { innerPadding ->
+    )
+    { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
-
         LoadingContent(
             empty = when (uiState) {
                 is HomeUiState.HasData -> false
                 is HomeUiState.NoData -> uiState.isLoading
             },
+            modifier = modifier.fillMaxSize(),
             emptyContent = { FullScreenLoading() },
             loading = uiState.isLoading,
             onRefresh = onRefreshSmovData,
             content = {
                 when (uiState) {
-                    is HomeUiState.HasData -> hasPostsContent(uiState, contentModifier)
+                    is HomeUiState.HasData -> hasPostsContent(uiState)
                     is HomeUiState.NoData -> {
                         if (uiState.errorMessages.isEmpty()) {
-                            TextButton(
-                                onClick = onRefreshSmovData,
-                                modifier.fillMaxSize()
-                            ) {
-                                Text(
-                                    stringResource(id = R.string.home_tap_to_load_content),
-                                    textAlign = TextAlign.Center
+                            Box(Modifier.fillMaxSize()) {
+                                NodataOperate(
+                                    onRefresh = onRefreshSmovData,
+                                    modifier = Modifier.align(Alignment.BottomEnd)
                                 )
                             }
+
                         } else {
-                            Box(contentModifier.fillMaxSize()) { }
+                            Box(contentModifier.fillMaxSize()) { /* empty screen */ }
                         }
                     }
                 }
-            }
+            },
         )
-    }
-
-
-    if (uiState.errorMessages.isNotEmpty()) {
-
-        val errorMessage = remember(uiState) { uiState.errorMessages[0] }
-        val errorMessageText: String = stringResource(errorMessage.messageId)
-        val retryMessageText = stringResource(id = R.string.retry)
-        val onRefreshSmovDataState by rememberUpdatedState(onRefreshSmovData)
-        val onErrorDismissState by rememberUpdatedState(onErrorDismiss)
-
-        LaunchedEffect(errorMessageText, retryMessageText, scaffoldState) {
-            val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                message = errorMessageText,
-                actionLabel = retryMessageText
+        if (showTopAppBar) {
+            ChannelNameBar(
+                channelName = "SmovBook",
+                onNavIconPressed = openDrawer,
+                scrollBehavior = scrollBehavior,
+                modifier = Modifier.statusBarsPadding(),
+                onRefreshSmovData = onRefreshSmovData,
+                onOpenBarScann = openBarScann,
+                uiState = uiState
             )
-            if (snackbarResult == SnackbarResult.ActionPerformed) {
-                onRefreshSmovDataState()
-            }
-            onErrorDismissState(errorMessage.id)
         }
+
+        if (uiState.errorMessages.isNotEmpty()) {
+
+            val errorMessage = remember(uiState) { uiState.errorMessages[0] }
+            val errorMessageText: String = stringResource(errorMessage.messageId)
+            val retryMessageText = stringResource(id = R.string.retry)
+            val onRefreshSmovDataState by rememberUpdatedState(onRefreshSmovData)
+            val onErrorDismissState by rememberUpdatedState(onErrorDismiss)
+
+            LaunchedEffect(errorMessageText, retryMessageText, scaffoldState) {
+                val snackbarResult = snackbarHostState.showSnackbar(
+                    message = errorMessageText,
+                    actionLabel = retryMessageText
+                )
+                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                    onRefreshSmovDataState()
+                }
+                onErrorDismissState(errorMessage.id)
+            }
+        }
+
     }
 }
 
@@ -235,12 +237,31 @@ fun ChannelNameBar(
 }
 
 @Composable
+private fun NodataOperate(
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExtendedFloatingActionButton(
+        onClick = onRefresh,
+        modifier = modifier
+            .padding(16.dp)
+            .navigationBarsPadding()
+            .offset(x = 0.dp, y = (-32).dp)
+            .height(48.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) { Text("重载") }
+
+}
+
+@Composable
 private fun LoadingContent(
     empty: Boolean,
     emptyContent: @Composable () -> Unit,
     loading: Boolean,
     onRefresh: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (empty) {
         emptyContent()

@@ -9,8 +9,8 @@
 
     <string name="load_error">请求数据错误</string>
 
-    <string name="retry">Retry</string>
+    <string name="retry">重载</string>
 
-    <string name="home_tap_to_load_content">Tap to load content</string>
+    <string name="home_tap_to_load_content">重载</string>
 
 </resources>
