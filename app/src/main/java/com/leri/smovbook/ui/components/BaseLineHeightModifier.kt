@@ -10,19 +10,6 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 
-/**
- * Applied to a Text, it sets the distance between the top and the first baseline. It
- * also makes the bottom of the element coincide with the last baseline of the text.
- *
- *     _______________
- *     |             |   ↑
- *     |             |   |  heightFromBaseline
- *     |Hello, World!|   ↓
- *     ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
- *
- * This modifier can be used to distribute multiple text elements using a certain distance between
- * baselines.
- */
 data class BaselineHeightModifier(
     val heightFromBaseline: Dp
 ) : LayoutModifier {

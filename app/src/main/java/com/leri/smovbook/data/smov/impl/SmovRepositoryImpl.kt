@@ -11,7 +11,7 @@ import okhttp3.*
 import java.io.IOException
 import kotlinx.coroutines.withContext
 
-//是否需要在以后将请求改造为 retrofit2
+//是否需要在以后将请求改造为 retrofit2 https://stackoverflow.com/questions/32559333/retrofit-2-dynamic-url
 class SmovRepositoryImpl : SmovRepository {
 
     override suspend fun getSmovsAsync(serverUrl: String): Result<Smov> {
@@ -65,7 +65,12 @@ class SmovRepositoryImpl : SmovRepository {
                     val result = client.newCall(builder.url(url).build()).execute()
                     val res = result.body!!.string()
                     delay(2000)
-                    val smovList = gson.fromJson(res, Array<SmovItem>::class.java).asList()
+                    var smovList = listOf<SmovItem>()
+                    try {
+                        smovList = gson.fromJson(res, Array<SmovItem>::class.java).asList()
+                    } catch (e: Exception) {
+                        Result.Error(IllegalArgumentException("出现错误:" + e.message))
+                    }
                     Result.Success(
                         Smov(
                             smovList,
