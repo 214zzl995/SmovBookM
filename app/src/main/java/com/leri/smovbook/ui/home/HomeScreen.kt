@@ -38,6 +38,10 @@ import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.leri.smovbook.ui.data.testDataHasData
+import com.leri.smovbook.ui.data.testDataSin
+import com.leri.smovbook.ui.data.testDataSmov
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,12 +58,17 @@ fun HomeScreen(
 ) {
 
     val scrollState = rememberLazyListState()
+    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
 
     Surface(modifier = modifier) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
             Column(
                 Modifier
                     .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 HomeScreenWithList(
                     uiState = uiState,
@@ -302,12 +311,11 @@ fun SmovList(
     val scope = rememberCoroutineScope()
 
     Box(modifier = modifier) {
-
         LazyColumn(
             reverseLayout = false,
             state = scrollState,
             contentPadding =
-            WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
+            WindowInsets.statusBars.add(WindowInsets(top = 50.dp)).asPaddingValues(),
             modifier = Modifier
                 .testTag("ConversationTestTag")
                 .fillMaxSize()
@@ -317,7 +325,7 @@ fun SmovList(
                 FlowRow(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxWidth(),
+                        .fillMaxSize(),
 
                     mainAxisAlignment = FlowMainAxisAlignment.Center,
                     crossAxisAlignment = FlowCrossAxisAlignment.Center,
@@ -387,71 +395,7 @@ fun Screen() {
     SmovBookMTheme() {
         HomeScreen(
             onErrorDismiss = {},
-            uiState = HomeUiState.HasData(
-                smov = Smov(
-                    listOf(), SmovItem(
-                        0,
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        10010,
-                        4564541,
-                        4564654,
-                        "mp4",
-                        "test",
-                        "test",
-                        123,
-                        "test",
-                        3,
-                        "test",
-                        1,
-                        "test",
-                        1,
-                        "test",
-                        1,
-                        listOf(Tag(1, "test")),
-                        listOf(Actor(1, "test")),
-                        isch = false,
-                        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
-                        "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
-                        listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
-                    )
-                ),
-                isLoading = false,
-                errorMessages = listOf(),
-                searchInput = "",
-                serverUrl = "127.0.0.1",
-                isDetailOpen = false,
-                selectedSmov = SmovItem(
-                    0,
-                    "test",
-                    "test",
-                    "test",
-                    "test",
-                    10010,
-                    4564541,
-                    4564654,
-                    "mp4",
-                    "test",
-                    "test",
-                    123,
-                    "test",
-                    3,
-                    "test",
-                    1,
-                    "test",
-                    1,
-                    "test",
-                    1,
-                    listOf(Tag(1, "test")),
-                    listOf(Actor(1, "test")),
-                    isch = false,
-                    "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
-                    "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
-                    listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
-                )
-            ),
+            uiState = testDataHasData,
             homeListLazyListState = rememberLazyListState(0),
             scaffoldState = rememberScaffoldState()
         )
@@ -466,71 +410,7 @@ fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
             channelName = "composers",
-            uiState = HomeUiState.HasData(
-                smov = Smov(
-                    listOf(), SmovItem(
-                        0,
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        10010,
-                        4564541,
-                        4564654,
-                        "mp4",
-                        "test",
-                        "test",
-                        123,
-                        "test",
-                        3,
-                        "test",
-                        1,
-                        "test",
-                        1,
-                        "test",
-                        1,
-                        listOf(Tag(1, "test")),
-                        listOf(Actor(1, "test")),
-                        isch = false,
-                        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
-                        "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
-                        listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
-                    )
-                ),
-                isLoading = false,
-                errorMessages = listOf(),
-                searchInput = "",
-                serverUrl = "127.0.0.1",
-                isDetailOpen = false,
-                selectedSmov = SmovItem(
-                    0,
-                    "test",
-                    "test",
-                    "test",
-                    "test",
-                    10010,
-                    4564541,
-                    4564654,
-                    "mp4",
-                    "test",
-                    "test",
-                    123,
-                    "test",
-                    3,
-                    "test",
-                    1,
-                    "test",
-                    1,
-                    "test",
-                    1,
-                    listOf(Tag(1, "test")),
-                    listOf(Actor(1, "test")),
-                    isch = false,
-                    "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
-                    "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
-                    listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
-                )
-            )
+            uiState = testDataHasData
         )
     }
 }

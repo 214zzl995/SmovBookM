@@ -44,9 +44,7 @@ fun SmovCard(
             modifier = Modifier
                 .padding(padding)
         ) {
-            Column(
-                Modifier.background(ExtraLightBorder),
-            ) {
+            Column {
                 //暂时先使用这个控件 当前的使用不知道会不会对应用造成影响 多次嵌套的GlideImage 是否会造成内存溢出的情况也不知道 重写一个图片显示对我的挑战有点巨大
                 GlideImage(
                     imageModel = smov.thumbs_img,

@@ -1,11 +1,13 @@
 package com.leri.smovbook.ui.home
 
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 
 @Composable
 fun HomeRoute(
@@ -39,6 +41,11 @@ fun HomeRoute(
 
     val homeListLazyListState = rememberLazyListState()
     HomeScreen(
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets
+                .navigationBars
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+        ),
         onErrorDismiss = onErrorDismiss,
         uiState = uiState,
         homeListLazyListState = homeListLazyListState,
