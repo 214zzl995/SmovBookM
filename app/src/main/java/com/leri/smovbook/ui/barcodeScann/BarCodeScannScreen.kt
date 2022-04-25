@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.systemuicontroller.SystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.leri.smovbook.barcodeScann.CameraPreview
 import com.leri.smovbook.util.DataStoreUtils
 
@@ -30,9 +32,11 @@ fun BarCodeScannScreen(
             Spacer(modifier = Modifier.height(10.dp))
             val cameraPermissionState =
                 rememberPermissionState(permission = Manifest.permission.CAMERA)
+            val systemUiController: SystemUiController = rememberSystemUiController()
             Button(
                 onClick = {
-                    cameraPermissionState.launchPermissionRequest()
+//                    cameraPermissionState.launchPermissionRequest()
+                    systemUiController.isSystemBarsVisible = false  
                 }
             ) {
                 Text(text = code)
