@@ -36,7 +36,7 @@ fun BarCodeScannScreen(
             Button(
                 onClick = {
 //                    cameraPermissionState.launchPermissionRequest()
-                    systemUiController.isSystemBarsVisible = false  
+                    systemUiController.isSystemBarsVisible = false
                 }
             ) {
                 Text(text = code)
