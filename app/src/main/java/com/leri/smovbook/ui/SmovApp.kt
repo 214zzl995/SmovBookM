@@ -1,5 +1,7 @@
 package com.leri.smovbook.ui
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
@@ -14,6 +16,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.compose.material3.DrawerValue.Closed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.ui.platform.LocalContext
 import com.leri.smovbook.ui.components.AppScaffold
 import com.leri.smovbook.ui.home.BackPressHandler
 
@@ -30,6 +33,10 @@ fun SmovApp(
             systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = darkIcons)
         }
 
+        var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
+
+        val context = LocalContext.current
+
         val navController = rememberNavController()
         val navigationActions = remember(navController) {
             AppNavigationActions(navController)
@@ -43,13 +50,31 @@ fun SmovApp(
 
         val drawerState = rememberDrawerState(initialValue = Closed)
 
-        if (drawerState.isOpen) {
-            BackPressHandler {
+        //当抽屉开启时的监听
+        BackHandler(
+            onBack = {
                 coroutineScope.launch {
                     drawerState.close()
                 }
-            }
-        }
+            },
+            enabled = drawerState.isOpen
+        )
+
+        //当抽屉关闭返回时的监听
+        BackHandler(
+            onBack = {
+                coroutineScope.launch {
+                    val nowTime = System.currentTimeMillis();
+                    if (nowTime - backTime > 2000 ){
+                        Toast.makeText(context, "再次返回退出程序", Toast.LENGTH_SHORT).show()
+                        backTime = nowTime
+                    }else{
+                        System.exit(1)
+                    }
+                }
+            },
+            enabled = drawerState.isClosed
+        )
 
         AppScaffold(
             drawerState = drawerState,
