@@ -34,75 +34,22 @@ fun SmovApp(
             systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = darkIcons)
         }
 
-        var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
-
-        val context = LocalContext.current
-
         val navController = rememberNavController()
-        val navigationActions = remember(navController) {
-            AppNavigationActions(navController)
-        }
 
-        val coroutineScope = rememberCoroutineScope()
-
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute =
-            navBackStackEntry?.destination?.route ?: AppDestinations.HOME_ROUTE
-
-        val drawerState = rememberDrawerState(initialValue = Closed)
-
-        //当抽屉开启时的监听
-        BackHandler(
-            onBack = {
-                coroutineScope.launch {
-                    drawerState.close()
-                }
-            },
-            enabled = drawerState.isOpen
-        )
-
-        //当抽屉关闭返回时的监听
-        BackHandler(
-            onBack = {
-                coroutineScope.launch {
-                    val nowTime = System.currentTimeMillis();
-                    if (nowTime - backTime > 2000 ){
-                        Toast.makeText(context, "再次返回退出程序", Toast.LENGTH_SHORT).show()
-                        backTime = nowTime
-                    }else{
-                        exitProcess(1)
-                    }
-                }
-            },
-            enabled = drawerState.isClosed
-        )
-
-        AppScaffold(
-            drawerState = drawerState,
-            currentRoute = currentRoute,
-            navigateToHome = navigationActions.navigateToHome,
-            closeDrawer = { coroutineScope.launch { drawerState.close() } },
-            modifier = Modifier
-                .statusBarsPadding()
-                .navigationBarsPadding()
-
-        ) {
-            Row(
-                Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .windowInsetsPadding(
-                        WindowInsets
-                            .navigationBars
-                            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                    )
-            ) {
-                AppNavGraph(
-                    appContainer = appContainer,
-                    navController = navController,
-                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+        Row(
+            Modifier
+                .fillMaxSize()
+//                .statusBarsPadding()
+                .windowInsetsPadding(
+                    WindowInsets
+                        .navigationBars
+                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                 )
-            }
+        ) {
+            AppNavGraph(
+                appContainer = appContainer,
+                navController = navController,
+            )
         }
     }
 }

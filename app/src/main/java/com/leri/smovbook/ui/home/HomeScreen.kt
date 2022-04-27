@@ -1,6 +1,11 @@
 package com.leri.smovbook.ui.home
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,6 +44,14 @@ import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.leri.smovbook.ui.data.testDataHasData
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.data.testDataSmov
@@ -188,7 +201,7 @@ private fun HomeScreenWithList(
     }
 }
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ChannelNameBar(
     channelName: String,
@@ -222,11 +235,23 @@ fun ChannelNameBar(
             }
         },
         actions = {
+            val cameraPermissionState =
+                rememberPermissionState(permission = Manifest.permission.CAMERA)
             Icon(
                 painter = painterResource(id = R.drawable.ic_qr_scan_line),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .clickable(onClick = { onOpenBarScann() })
+                    .clickable(onClick = {
+                        when (cameraPermissionState.status) {
+                            PermissionStatus.Granted -> {
+                                onOpenBarScann()
+                            }
+                            is PermissionStatus.Denied -> {
+                                cameraPermissionState.launchPermissionRequest()
+                            }
+                        }
+
+                    })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
                     .height(21.dp),
                 contentDescription = stringResource(id = R.string.search)
@@ -244,6 +269,7 @@ fun ChannelNameBar(
         }
     )
 }
+
 
 @Composable
 private fun NodataOperate(

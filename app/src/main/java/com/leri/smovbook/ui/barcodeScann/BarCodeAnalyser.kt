@@ -1,4 +1,4 @@
-package com.leri.smovbook.barcodeScann
+package com.leri.smovbook.ui.barcodeScann
 
 import android.annotation.SuppressLint
 import android.util.Log
