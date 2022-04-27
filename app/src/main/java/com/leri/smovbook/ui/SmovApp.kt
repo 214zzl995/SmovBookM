@@ -19,6 +19,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.ui.platform.LocalContext
 import com.leri.smovbook.ui.components.AppScaffold
 import com.leri.smovbook.ui.home.BackPressHandler
+import kotlin.system.exitProcess
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +70,7 @@ fun SmovApp(
                         Toast.makeText(context, "再次返回退出程序", Toast.LENGTH_SHORT).show()
                         backTime = nowTime
                     }else{
-                        System.exit(1)
+                        exitProcess(1)
                     }
                 }
             },
