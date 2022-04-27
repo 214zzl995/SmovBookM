@@ -1,11 +1,6 @@
 package com.leri.smovbook.ui.home
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,28 +28,17 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.leri.smovbook.R
-import com.leri.smovbook.model.Actor
 import com.leri.smovbook.model.Smov
-import com.leri.smovbook.model.Tag
-import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.components.JumpToTop
 import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.leri.smovbook.ui.data.testDataHasData
-import com.leri.smovbook.ui.data.testDataSin
-import com.leri.smovbook.ui.data.testDataSmov
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,7 +127,6 @@ private fun HomeScreenWithList(
                 is HomeUiState.HasData -> false
                 is HomeUiState.NoData -> uiState.isLoading
             },
-            modifier = modifier.fillMaxSize(),
             emptyContent = { FullScreenLoading() },
             loading = uiState.isLoading,
             onRefresh = onRefreshSmovData,
@@ -217,6 +200,9 @@ fun ChannelNameBar(
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
     }
 
+    val cameraPermissionState =
+        rememberPermissionState(permission = Manifest.permission.CAMERA)
+
     SmovAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
@@ -235,8 +221,6 @@ fun ChannelNameBar(
             }
         },
         actions = {
-            val cameraPermissionState =
-                rememberPermissionState(permission = Manifest.permission.CAMERA)
             Icon(
                 painter = painterResource(id = R.drawable.ic_qr_scan_line),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -296,7 +280,6 @@ private fun LoadingContent(
     loading: Boolean,
     onRefresh: () -> Unit,
     content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     if (empty) {
         emptyContent()

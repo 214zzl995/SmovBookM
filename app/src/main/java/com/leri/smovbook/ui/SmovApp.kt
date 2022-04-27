@@ -39,7 +39,7 @@ fun SmovApp(
         Row(
             Modifier
                 .fillMaxSize()
-//                .statusBarsPadding()
+                //.statusBarsPadding()设置一个 导航栏的上padding
                 .windowInsetsPadding(
                     WindowInsets
                         .navigationBars
