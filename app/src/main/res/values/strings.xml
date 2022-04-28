@@ -13,4 +13,11 @@
 
     <string name="home_tap_to_load_content">重载</string>
 
+    <string name="cd_navigate_up">Navigate up</string>
+
+    <string name="published_in">Published in: \n%1$s</string>
+    <string name="article_functionality_not_available">Functionality not available \uD83D\uDE48</string>
+    <string name="close">CLOSE</string>
+    <string name="article_share_post">Share post</string>
+
 </resources>

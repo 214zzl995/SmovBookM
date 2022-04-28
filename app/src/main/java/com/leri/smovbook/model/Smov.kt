@@ -27,6 +27,7 @@ data class SmovItem(
     var thumbs_img: String,
     var main_img: String,
     var detail_img: List<String>,
+    var url: String
 )
 
 data class Smov(

@@ -1,9 +1,7 @@
 package com.leri.videoplayer
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import androidx.lifecycle.ViewModel
 
-@Parcelize
 data class VideoPlayerState(
     val isPlaying: Boolean = true,
     val controlsVisible: Boolean = true,
@@ -17,4 +15,4 @@ data class VideoPlayerState(
     val draggingProgress: DraggingProgress? = null,
     val playbackState: PlaybackState = PlaybackState.IDLE,
     val quickSeekAction: QuickSeekAction = QuickSeekAction.none()
-) : Parcelable
+) : ViewModel()
