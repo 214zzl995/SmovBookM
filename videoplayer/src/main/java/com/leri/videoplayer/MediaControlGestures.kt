@@ -70,7 +70,7 @@ fun GestureBox(modifier: Modifier = Modifier) {
         .pointerInput(controller) {
             var wasPlaying = true
             var totalOffset = Offset.Zero
-            var diffTime: Float
+            var diffTime: Float = -1f
 
             var duration: Long = 0
             var currentPosition: Long = 0
@@ -254,12 +254,12 @@ data class DraggingProgress(
 ) : ViewModel() {
     val progressText: String
         get() = "${getDurationString(finalTime.toLong(), false)} " +
-            "[${if (diffTime < 0) "-" else "+"}${
-                getDurationString(
-                    abs(diffTime.toLong()),
-                    false
-                )
-            }]"
+                "[${if (diffTime < 0) "-" else "+"}${
+                    getDurationString(
+                        abs(diffTime.toLong()),
+                        false
+                    )
+                }]"
 }
 
 enum class QuickSeekDirection {

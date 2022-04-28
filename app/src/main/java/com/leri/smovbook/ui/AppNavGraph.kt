@@ -48,82 +48,11 @@ fun AppNavGraph(
         modifier = modifier
     ) {
         composable(AppDestinations.HOME_ROUTE) {
-            val context = LocalContext.current
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val currentRoute =
-                navBackStackEntry?.destination?.route ?: AppDestinations.HOME_ROUTE
 
-            var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
-            val coroutineScope = rememberCoroutineScope()
-
-
-            val cameraPermissionState =
-                rememberPermissionState(
-                    permission = Manifest.permission.CAMERA,
-                    //我为什么不早点读源码 我麻了
-                    onPermissionResult = {
-                        if (it) {
-                            navigationActions.navigateToBarCode()
-                        } else {
-                            return@rememberPermissionState
-                        }
-                    })
-
-            //当抽屉开启时的监听
-            BackHandler(
-                onBack = {
-                    coroutineScope.launch {
-                        drawerState.close()
-                    }
-                },
-                enabled = drawerState.isOpen
+            HomeRoute(
+                homeViewModel = homeViewModel,
+                openBarScann = navigationActions.navigateToBarCode
             )
-
-            //当抽屉关闭返回时的监听
-            BackHandler(
-                onBack = {
-                    coroutineScope.launch {
-                        val nowTime = System.currentTimeMillis();
-                        if (nowTime - backTime > 2000) {
-                            Toast.makeText(context, "再次返回退出程序", Toast.LENGTH_SHORT).show()
-                            backTime = nowTime
-                        } else {
-                            exitProcess(1)
-                        }
-                    }
-                },
-                enabled = drawerState.isClosed
-            )
-
-            AppScaffold(
-                drawerState = drawerState,
-                currentRoute = currentRoute,
-                navigateToHome = navigationActions.navigateToHome,
-                closeDrawer = { coroutineScope.launch { drawerState.close() } },
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-            ) {
-                HomeRoute(
-                    openDrawer = {
-                        coroutineScope.launch {
-                            drawerState.open()
-                        }
-                    },
-                    homeViewModel = homeViewModel,
-                    openBarScann = {
-                        when (cameraPermissionState.status) {
-                            PermissionStatus.Granted -> {
-                                navigationActions.navigateToBarCode()
-                            }
-                            is PermissionStatus.Denied -> {
-                                cameraPermissionState.launchPermissionRequest()
-                            }
-                        }
-                    }
-                )
-            }
         }
         composable(AppDestinations.BARCODE_ROUTE) {
             BarCodeScannRoute(
