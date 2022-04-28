@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui
 
+import android.Manifest
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -16,6 +17,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.leri.smovbook.data.AppContainer
 import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.components.AppScaffold
@@ -24,7 +28,7 @@ import com.leri.smovbook.ui.home.HomeViewModel
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AppNavGraph(
     appContainer: AppContainer,
@@ -52,6 +56,19 @@ fun AppNavGraph(
 
             var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
             val coroutineScope = rememberCoroutineScope()
+
+
+            val cameraPermissionState =
+                rememberPermissionState(
+                    permission = Manifest.permission.CAMERA,
+                    //我为什么不早点读源码 我麻了
+                    onPermissionResult = {
+                        if (it) {
+                            navigationActions.navigateToBarCode()
+                        } else {
+                            return@rememberPermissionState
+                        }
+                    })
 
             //当抽屉开启时的监听
             BackHandler(
@@ -95,7 +112,16 @@ fun AppNavGraph(
                         }
                     },
                     homeViewModel = homeViewModel,
-                    openBarScann = navigationActions.navigateToBarCode
+                    openBarScann = {
+                        when (cameraPermissionState.status) {
+                            PermissionStatus.Granted -> {
+                                navigationActions.navigateToBarCode()
+                            }
+                            is PermissionStatus.Denied -> {
+                                cameraPermissionState.launchPermissionRequest()
+                            }
+                        }
+                    }
                 )
             }
         }

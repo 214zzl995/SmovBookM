@@ -184,7 +184,6 @@ private fun HomeScreenWithList(
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ChannelNameBar(
     channelName: String,
@@ -200,8 +199,6 @@ fun ChannelNameBar(
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
     }
 
-    val cameraPermissionState =
-        rememberPermissionState(permission = Manifest.permission.CAMERA)
 
     SmovAppBar(
         modifier = modifier,
@@ -226,15 +223,7 @@ fun ChannelNameBar(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .clickable(onClick = {
-                        when (cameraPermissionState.status) {
-                            PermissionStatus.Granted -> {
-                                onOpenBarScann()
-                            }
-                            is PermissionStatus.Denied -> {
-                                cameraPermissionState.launchPermissionRequest()
-                            }
-                        }
-
+                        onOpenBarScann()
                     })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
                     .height(21.dp),
@@ -324,7 +313,7 @@ fun SmovList(
             reverseLayout = false,
             state = scrollState,
             contentPadding =
-            WindowInsets.statusBars.add(WindowInsets(top = 50.dp)).asPaddingValues(),
+            WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
             modifier = Modifier
                 .testTag("ConversationTestTag")
                 .fillMaxSize()
