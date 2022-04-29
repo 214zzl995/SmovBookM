@@ -1,6 +1,5 @@
 package com.leri.smovbook.ui.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -12,16 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leri.smovbook.R
-import com.leri.smovbook.model.Actor
 import com.leri.smovbook.model.SmovItem
-import com.leri.smovbook.model.Tag
-import com.leri.smovbook.ui.theme.ExtraLightBorder
+import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -36,7 +32,6 @@ fun SmovCard(
             .clip(RoundedCornerShape(8.dp))
     ) {
         val padding = 6.dp
-        val density = LocalDensity.current
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = Color.White,
@@ -97,35 +92,7 @@ fun SmovItemPreview() {
         Surface {
             Column {
                 SmovCard(
-                    smov = SmovItem(
-                        0,
-                        "test",
-                        "test",
-                        "test",
-                        "test",
-                        10010,
-                        4564541,
-                        4564654,
-                        "mp4",
-                        "test",
-                        "test",
-                        123,
-                        "test",
-                        3,
-                        "test",
-                        1,
-                        "test",
-                        1,
-                        "test",
-                        1,
-                        listOf(Tag(1, "test")),
-                        listOf(Actor(1, "test")),
-                        isch = false,
-                        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
-                        "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
-                        listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg")
-
-                    )
+                    smov = testDataSin
                 )
             }
         }
