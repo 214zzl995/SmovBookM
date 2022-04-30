@@ -53,23 +53,19 @@ android {
 dependencies {
 
     //noinspection GradleDependency
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20'
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20'
 
-    implementation "androidx.compose.runtime:runtime:$compose_version"
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.foundation:foundation-layout:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation "androidx.compose.foundation:foundation:$compose_version"
-    implementation "androidx.compose.animation:animation:$compose_version"
-    implementation 'androidx.appcompat:appcompat:1.6.0-alpha03'
-    implementation 'androidx.activity:activity-ktx:1.4.0'
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
+    compileOnly "androidx.compose.runtime:runtime:$compose_version"
+    compileOnly "androidx.compose.ui:ui:$compose_version"
+    compileOnly "androidx.compose.foundation:foundation-layout:$compose_version"
+    compileOnly "androidx.compose.material:material:$compose_version"
+    compileOnly "androidx.compose.material:material-icons-extended:$compose_version"
+    compileOnly "androidx.compose.foundation:foundation-layout:$compose_version"
+    compileOnly "androidx.appcompat:appcompat:1.4.1"
+    compileOnly "androidx.activity:activity-compose:1.4.0"
+    compileOnly 'androidx.core:core-ktx:1.7.0'
 
     implementation 'com.google.android.exoplayer:exoplayer:2.17.1'
-
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.24.7-alpha"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
