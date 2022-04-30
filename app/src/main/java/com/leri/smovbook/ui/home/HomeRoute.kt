@@ -5,14 +5,18 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
+import com.leri.smovbook.ui.components.AppScaffold
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
@@ -20,7 +24,8 @@ import kotlin.system.exitProcess
 fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     homeViewModel: HomeViewModel,
-    openBarScann: () -> Unit
+    openBarScann: () -> Unit,
+    currentRoute: String
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     HomeRoute(
@@ -28,23 +33,27 @@ fun HomeRoute(
         uiState = uiState,
         onErrorDismiss = { homeViewModel.errorShown(it) },
         openBarScann = openBarScann,
-        onRefreshSmovData = { homeViewModel.refreshData() }
+        onRefreshSmovData = { homeViewModel.refreshData() },
+        currentRoute = currentRoute
     )
 
 }
 
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     onErrorDismiss: (Long) -> Unit,
     uiState: HomeUiState,
     openBarScann: () -> Unit,
-    onRefreshSmovData: () -> Unit
+    onRefreshSmovData: () -> Unit,
+    currentRoute: String
 ) {
 
     val context = LocalContext.current
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
     val coroutineScope = rememberCoroutineScope()
@@ -66,7 +75,16 @@ fun HomeRoute(
     BackHandler(
         onBack = {
             coroutineScope.launch {
-                val nowTime = System.currentTimeMillis();
+                drawerState.close()
+            }
+        },
+        enabled = drawerState.isOpen
+    )
+
+    BackHandler(
+        onBack = {
+            coroutineScope.launch {
+                val nowTime = System.currentTimeMillis()
                 if (nowTime - backTime > 2000) {
                     Toast.makeText(context, "再次返回退出程序", Toast.LENGTH_SHORT).show()
                     backTime = nowTime
@@ -75,32 +93,42 @@ fun HomeRoute(
                 }
             }
         },
-        enabled = homeScreenType == HomeScreenType.Feed
+        enabled = homeScreenType == HomeScreenType.Feed && drawerState.isClosed
     )
 
     val homeListLazyListState = rememberLazyListState()
-    HomeScreen(
-        modifier = Modifier.windowInsetsPadding(
-            WindowInsets
-                .navigationBars
-                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-        ),
-        onErrorDismiss = onErrorDismiss,
-        uiState = uiState,
-        homeListLazyListState = homeListLazyListState,
-        scaffoldState = scaffoldState,
-        openBarScann = {
-            when (cameraPermissionState.status) {
-                PermissionStatus.Granted -> {
-                    openBarScann()
+    AppScaffold(
+        drawerState = drawerState,
+        currentRoute = currentRoute,
+        closeDrawer = { coroutineScope.launch { drawerState.close() } },
+        modifier = Modifier
+            .statusBarsPadding()
+            .navigationBarsPadding()
+    ) {
+        HomeScreen(
+            modifier = Modifier.windowInsetsPadding(
+                WindowInsets
+                    .navigationBars
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            ),
+            onErrorDismiss = onErrorDismiss,
+            uiState = uiState,
+            homeListLazyListState = homeListLazyListState,
+            scaffoldState = scaffoldState,
+            openBarScann = {
+                when (cameraPermissionState.status) {
+                    PermissionStatus.Granted -> {
+                        openBarScann()
+                    }
+                    is PermissionStatus.Denied -> {
+                        cameraPermissionState.launchPermissionRequest()
+                    }
                 }
-                is PermissionStatus.Denied -> {
-                    cameraPermissionState.launchPermissionRequest()
-                }
-            }
-        },
-        onRefreshSmovData = onRefreshSmovData
-    )
+            },
+            onRefreshSmovData = onRefreshSmovData,
+            openDrawer = { coroutineScope.launch { drawerState.open() } }
+        )
+    }
 
 }
 

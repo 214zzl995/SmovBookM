@@ -17,7 +17,6 @@ fun AppScaffold(
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     currentRoute: String,
-    navigateToHome: () -> Unit,
     closeDrawer: () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -26,7 +25,6 @@ fun AppScaffold(
         drawerContent = {
             AppDrawer(
                 currentRoute = currentRoute,
-                navigateToHome = navigateToHome,
                 closeDrawer = closeDrawer,
                 modifier = modifier
             )
