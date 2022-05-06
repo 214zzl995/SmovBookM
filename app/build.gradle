@@ -47,7 +47,7 @@ android {
         jvmTarget = '1.8'
     }
 
-    composeOptions {
+    composeOptions {   
         kotlinCompilerExtensionVersion compose_version
     }
     packagingOptions {
@@ -59,7 +59,7 @@ android {
 
 dependencies {
 
-    implementation project(":videoplayer") //因为类引起了大量的依赖冲突 暂不引入
+    //implementation project(":videoplayer") //因为类引起了大量的依赖冲突 暂不引入
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.compose.ui:ui:$compose_version"
@@ -114,6 +114,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.6'
 
     implementation "com.google.dagger:hilt-android:2.41"
+
+    implementation 'cn.jzvd:jiaozivideoplayer:7.5.0'
+    
     kapt "com.google.dagger:hilt-compiler:2.41"
 
     testImplementation 'junit:junit:4.13.2'

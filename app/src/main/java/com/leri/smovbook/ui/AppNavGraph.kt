@@ -42,6 +42,11 @@ fun AppNavGraph(
     val navigationActions = remember(navController) {
         AppNavigationActions(navController)
     }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute =
+        navBackStackEntry?.destination?.route ?: AppDestinations.HOME_ROUTE
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -51,7 +56,8 @@ fun AppNavGraph(
 
             HomeRoute(
                 homeViewModel = homeViewModel,
-                openBarScann = navigationActions.navigateToBarCode
+                openBarScann = navigationActions.navigateToBarCode,
+                currentRoute = currentRoute
             )
         }
         composable(AppDestinations.BARCODE_ROUTE) {
