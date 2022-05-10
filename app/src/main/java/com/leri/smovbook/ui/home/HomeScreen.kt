@@ -77,6 +77,7 @@ fun HomeScreen(
                 ) { hasData ->
                     SmovList(
                         smov = hasData.smov,
+                        mainUrl = hasData.serverUrl,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
@@ -301,6 +302,7 @@ private fun FullScreenLoading() {
 @Composable
 fun SmovList(
     smov: Smov,
+    mainUrl: String,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
@@ -327,7 +329,7 @@ fun SmovList(
                     crossAxisAlignment = FlowCrossAxisAlignment.Center,
                 ) {
                     for (smovItem in smov.smovList) {
-                        SmovCard(smovItem)
+                        SmovCard(smovItem, mainUrl)
                     }
                 }
             }

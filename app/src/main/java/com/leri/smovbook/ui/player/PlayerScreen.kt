@@ -173,18 +173,6 @@ private fun FunctionalityNotAvailablePopup(onDismiss: () -> Unit) {
     )
 }
 
-fun sharePost(smov: SmovItem, context: Context) {
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TITLE, smov.title)
-        putExtra(Intent.EXTRA_TEXT, smov.url)
-    }
-    context.startActivity(
-        Intent.createChooser(
-            intent,
-            context.getString(R.string.article_share_post)
-        )
-    )
-}
+
 
 

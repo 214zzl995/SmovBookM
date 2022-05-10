@@ -6,9 +6,9 @@ data class SmovItem(
     var title: String,
     var path: String,
     var realname: String,
-    var len: Int,
-    var created: Int,
-    var modified: Int,
+    var len: Long,
+    var created: Long,
+    var modified: Long,
     var extension: String,
     var format: String,
     var release_time: String,
@@ -21,13 +21,12 @@ data class SmovItem(
     var serie_id: Int,
     var director: String,
     var director_id: Int,
-    var tags: List<Tag>,
-    var actors: List<Actor>,
+    var tags: List<Tag> = listOf(),
+    var actors: List<Actor> = listOf(),
     var isch: Boolean,
     var thumbs_img: String,
     var main_img: String,
-    var detail_img: List<String>,
-    var url: String
+    var detail_img: List<String> = listOf()
 )
 
 data class Smov(
@@ -43,4 +42,10 @@ data class Tag(
 data class Actor(
     var id: Int,
     var name: String,
+)
+
+data class ServerResult(
+    var code: Int,
+    var msg: String,
+    var data: List<SmovItem> = listOf()
 )

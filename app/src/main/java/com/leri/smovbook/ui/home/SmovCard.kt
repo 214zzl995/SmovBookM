@@ -28,11 +28,13 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 
 import android.app.ActivityOptions
+import android.content.ActivityNotFoundException
 
 
 @Composable
 fun SmovCard(
-    smov: SmovItem
+    smov: SmovItem,
+    mainUrl: String
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -50,13 +52,21 @@ fun SmovCard(
                 .padding(padding)
                 .clickable {
                     coroutineScope.launch {
+                        println("http://$mainUrl/SmovStatic/${smov.realname}/${smov.realname}.${smov.extension}")
                         val options: ActivityOptions = ActivityOptions.makeBasic()
                         val intent = Intent(Intent.ACTION_VIEW)
-                        val type = "video/* "
+                        val type = "video/*"
                         val uri: Uri =
-                            Uri.parse(smov.url)
+                            Uri.parse("http://$mainUrl/SmovStatic/${smov.realname}/${smov.realname}.${smov.extension}")
                         intent.setDataAndType(uri, type)
-                        startActivity(context, intent, options.toBundle())
+
+                        val title = "打开视频"
+                        val chooser = Intent.createChooser(intent, title)
+                        try {
+                            startActivity(context, chooser, options.toBundle())
+                        } catch (e: ActivityNotFoundException) {
+                            // Define what your app should do if no activity can handle the intent.
+                        }
                     }
 
                 }
@@ -64,7 +74,7 @@ fun SmovCard(
             Column {
                 //暂时先使用这个控件 当前的使用不知道会不会对应用造成影响 多次嵌套的GlideImage 是否会造成内存溢出的情况也不知道 重写一个图片显示对我的挑战有点巨大
                 GlideImage(
-                    imageModel = smov.thumbs_img,
+                    imageModel = "http://$mainUrl/SmovStatic/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .width(170.dp) //.fillMaxWidth() 代表宽度占满布局
@@ -114,7 +124,8 @@ fun SmovItemPreview() {
         Surface {
             Column {
                 SmovCard(
-                    smov = testDataSin
+                    smov = testDataSin,
+                    mainUrl = "127.0.0.1"
                 )
             }
         }

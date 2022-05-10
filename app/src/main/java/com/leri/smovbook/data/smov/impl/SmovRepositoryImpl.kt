@@ -3,13 +3,14 @@ package com.leri.smovbook.data.smov.impl
 import com.example.jetnews.data.Result
 import com.google.gson.Gson
 import com.leri.smovbook.data.smov.SmovRepository
+import com.leri.smovbook.model.ServerResult
 import com.leri.smovbook.model.Smov
 import com.leri.smovbook.model.SmovItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import java.io.IOException
-import kotlinx.coroutines.withContext
 
 //是否需要在以后将请求改造为 retrofit2 https://stackoverflow.com/questions/32559333/retrofit-2-dynamic-url
 class SmovRepositoryImpl : SmovRepository {
@@ -64,19 +65,27 @@ class SmovRepositoryImpl : SmovRepository {
                 try {
                     val result = client.newCall(builder.url(url).build()).execute()
                     val res = result.body!!.string()
-                    delay(2000)
+                    delay(1000)
                     var smovList = listOf<SmovItem>()
-                    try {
-                        smovList = gson.fromJson(res, Array<SmovItem>::class.java).asList()
-                    } catch (e: Exception) {
-                        Result.Error(IllegalArgumentException("出现错误:" + e.message))
-                    }
-                    Result.Success(
-                        Smov(
-                            smovList,
-                            highlightedSmovItem = smovList.first()
+                    val serverResult = gson.fromJson(res, ServerResult::class.java)
+                    println("测试1")
+                    if (serverResult.code == 200) {
+                        try {
+                            smovList = serverResult.data
+//                                gson.fromJson(serverResult.data, Array<SmovItem>::class.java).asList()
+                        } catch (e: Exception) {
+                            Result.Error(IllegalArgumentException("出现错误:" + e.message))
+
+                        }
+                        Result.Success(
+                            Smov(
+                                smovList,
+                                highlightedSmovItem = smovList.first()
+                            )
                         )
-                    )
+                    }else{
+                        Result.Error(IllegalArgumentException("错误:" + serverResult.msg))
+                    }
                 } catch (e: Exception) {
                     Result.Error(IllegalArgumentException("出现错误:" + e.message))
                 }

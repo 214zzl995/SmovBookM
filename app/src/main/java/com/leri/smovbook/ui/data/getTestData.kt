@@ -34,7 +34,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -63,7 +62,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -92,7 +90,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -121,7 +118,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -150,7 +146,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -179,7 +174,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -208,7 +202,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -237,7 +230,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -266,7 +258,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -295,7 +286,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -324,7 +314,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     ),
     SmovItem(
         0,
@@ -353,7 +342,6 @@ val testData = listOf(
         "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-        url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
     )
 )
 
@@ -389,7 +377,6 @@ val testDataSin = SmovItem(
     "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
     "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
     listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
-    url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319222227698228.mp4",
 )
 
 val testDataHasData = HomeUiState.HasData(
