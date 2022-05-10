@@ -115,7 +115,7 @@ dependencies {
 
     implementation "com.google.dagger:hilt-android:2.41"
 
-    implementation 'cn.jzvd:jiaozivideoplayer:7.5.0'
+    implementation 'com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.2.0-release-jitpack'//妈的不搞应用内播放器了 太折磨人了 到时候直接做链接 调用本地播放器播放
     
     kapt "com.google.dagger:hilt-compiler:2.41"
 
