@@ -1,5 +1,8 @@
 package com.leri.smovbook.ui.home
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -11,21 +14,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.leri.smovbook.R
 import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
+
+import android.app.ActivityOptions
 
 
 @Composable
 fun SmovCard(
     smov: SmovItem
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .padding(3.dp)
@@ -38,6 +48,18 @@ fun SmovCard(
             shadowElevation = 4.dp,
             modifier = Modifier
                 .padding(padding)
+                .clickable {
+                    coroutineScope.launch {
+                        val options: ActivityOptions = ActivityOptions.makeBasic()
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val type = "video/* "
+                        val uri: Uri =
+                            Uri.parse(smov.url)
+                        intent.setDataAndType(uri, type)
+                        startActivity(context, intent, options.toBundle())
+                    }
+
+                }
         ) {
             Column {
                 //暂时先使用这个控件 当前的使用不知道会不会对应用造成影响 多次嵌套的GlideImage 是否会造成内存溢出的情况也不知道 重写一个图片显示对我的挑战有点巨大
