@@ -52,12 +52,12 @@ fun SmovCard(
                 .padding(padding)
                 .clickable {
                     coroutineScope.launch {
-                        println("http://$mainUrl/SmovStatic/${smov.realname}/${smov.realname}.${smov.extension}")
+                        println("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
                         val options: ActivityOptions = ActivityOptions.makeBasic()
                         val intent = Intent(Intent.ACTION_VIEW)
                         val type = "video/*"
                         val uri: Uri =
-                            Uri.parse("http://$mainUrl/SmovStatic/${smov.realname}/${smov.realname}.${smov.extension}")
+                            Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
                         intent.setDataAndType(uri, type)
 
                         val title = "打开视频"
@@ -73,8 +73,9 @@ fun SmovCard(
         ) {
             Column {
                 //暂时先使用这个控件 当前的使用不知道会不会对应用造成影响 多次嵌套的GlideImage 是否会造成内存溢出的情况也不知道 重写一个图片显示对我的挑战有点巨大
+                //不会造成 因为使用的 loading状态图片没有设置loading
                 GlideImage(
-                    imageModel = "http://$mainUrl/SmovStatic/${smov.realname}/img/thumbs_${smov.name}.jpg",
+                    imageModel = "http://$mainUrl/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .width(170.dp) //.fillMaxWidth() 代表宽度占满布局

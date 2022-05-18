@@ -67,12 +67,13 @@ class SmovRepositoryImpl : SmovRepository {
                     val res = result.body!!.string()
                     delay(1000)
                     var smovList = listOf<SmovItem>()
+                    //这里直接转化为这个类型 当我请求出错时 会出现问题
                     val serverResult = gson.fromJson(res, ServerResult::class.java)
                     println("测试1")
                     if (serverResult.code == 200) {
                         try {
                             smovList = serverResult.data
-//                                gson.fromJson(serverResult.data, Array<SmovItem>::class.java).asList()
+                            //gson.fromJson(serverResult.data, Array<SmovItem>::class.java).asList()
                         } catch (e: Exception) {
                             Result.Error(IllegalArgumentException("出现错误:" + e.message))
 

@@ -313,24 +313,29 @@ fun SmovList(
             reverseLayout = false,
             state = scrollState,
             contentPadding =
-            WindowInsets.statusBars.add(WindowInsets(top = 90.dp)).asPaddingValues(),
+            WindowInsets.statusBars.add(WindowInsets(top = 70.dp)).asPaddingValues(),
             modifier = Modifier
                 .testTag("ConversationTestTag")
                 .fillMaxSize()
                 .align(Alignment.Center)
         ) {
-            item {
-                FlowRow(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxSize(),
-
-                    mainAxisAlignment = FlowMainAxisAlignment.Center,
-                    crossAxisAlignment = FlowCrossAxisAlignment.Center,
-                ) {
-                    for (smovItem in smov.smovList) {
-                        SmovCard(smovItem, mainUrl)
-                    }
+//            item {
+//                FlowRow(
+//                    modifier = Modifier
+//                        .align(Alignment.Center)
+//                        .fillMaxSize(),
+//
+//                    mainAxisAlignment = FlowMainAxisAlignment.Center,
+//                    crossAxisAlignment = FlowCrossAxisAlignment.Center,
+//                ) {
+//                    for (smovItem in smov.smovList) {
+//                        SmovCard(smovItem, mainUrl)
+//                    }
+//                }
+//            }
+            for (smovItem in smov.smovList) {
+                item{
+                    SmovCard(smovItem, mainUrl)
                 }
             }
         }
