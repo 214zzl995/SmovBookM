@@ -59,18 +59,21 @@ fun SmovCard(
                         val options: ActivityOptions = ActivityOptions.makeBasic()
 
                         val intent = Intent(Intent.ACTION_VIEW)
-                        val type = "video/${smov.extension}"
+                        var type = "video/${smov.extension}"
+
+                        intent.setPackage("com.mxtech.videoplayer.ad")
+                        intent.putExtra("decode_mode","4")
+                        intent.putExtra("title",smov.name)
                         println(type)
                         val uri: Uri =
                             Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
                         intent.setDataAndType(uri, type)
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                         val title = "打开视频"
                         val chooser = Intent.createChooser(intent, title)
 
                         try {
-                            startActivity(context, chooser, options.toBundle())
+                            startActivity(context, intent, options.toBundle())
                         } catch (e: ActivityNotFoundException) {
                             // Define what your app should do if no activity can handle the intent.
                         }
@@ -83,7 +86,7 @@ fun SmovCard(
                     modifier = Modifier
                         .width(170.dp)
                         .height(200.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(8.dp,3.dp,3.dp,8.dp)),
                     previewPlaceholder = R.drawable.smov_ico,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {

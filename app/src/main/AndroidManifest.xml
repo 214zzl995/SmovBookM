@@ -13,7 +13,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SmovBookM"
+        android:theme="@style/Theme.SmovBookM.NoActionBar"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.MainActivity"
@@ -24,12 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:host="*" android:pathPattern=".*\\.mp4" android:scheme="http"/>
-                <action android:name="android.intent.action.VIEW"/>
-            </intent-filter>
         </activity>
     </application>
 
