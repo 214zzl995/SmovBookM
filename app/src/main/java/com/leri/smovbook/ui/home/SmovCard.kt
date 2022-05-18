@@ -50,18 +50,25 @@ fun SmovCard(
             shadowElevation = 4.dp,
             modifier = Modifier
                 .padding(padding)
+        ) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
                 .clickable {
                     coroutineScope.launch {
                         println("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
                         val options: ActivityOptions = ActivityOptions.makeBasic()
+
                         val intent = Intent(Intent.ACTION_VIEW)
-                        val type = "video/*"
+                        val type = "video/${smov.extension}"
+                        println(type)
                         val uri: Uri =
                             Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
                         intent.setDataAndType(uri, type)
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                         val title = "打开视频"
                         val chooser = Intent.createChooser(intent, title)
+
                         try {
                             startActivity(context, chooser, options.toBundle())
                         } catch (e: ActivityNotFoundException) {
@@ -69,17 +76,13 @@ fun SmovCard(
                         }
                     }
 
-                }
-        ) {
-            Column {
-                //暂时先使用这个控件 当前的使用不知道会不会对应用造成影响 多次嵌套的GlideImage 是否会造成内存溢出的情况也不知道 重写一个图片显示对我的挑战有点巨大
-                //不会造成 因为使用的 loading状态图片没有设置loading
+                }) {
                 GlideImage(
                     imageModel = "http://$mainUrl/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .width(170.dp) //.fillMaxWidth() 代表宽度占满布局
-                        .height(230.dp)
+                        .width(170.dp)
+                        .height(200.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     previewPlaceholder = R.drawable.smov_ico,
                     loading = {

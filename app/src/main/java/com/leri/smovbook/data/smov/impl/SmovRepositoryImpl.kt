@@ -69,7 +69,6 @@ class SmovRepositoryImpl : SmovRepository {
                     var smovList = listOf<SmovItem>()
                     //这里直接转化为这个类型 当我请求出错时 会出现问题
                     val serverResult = gson.fromJson(res, ServerResult::class.java)
-                    println("测试1")
                     if (serverResult.code == 200) {
                         try {
                             smovList = serverResult.data
