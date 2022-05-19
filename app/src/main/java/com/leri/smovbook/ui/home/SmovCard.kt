@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 
 import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.accompanist.flowlayout.FlowRow
 
 
 @Composable
@@ -53,17 +55,19 @@ fun SmovCard(
         ) {
             Row(modifier = Modifier
                 .fillMaxWidth()
+                .height(230.dp)
+                .padding(2.dp)
                 .clickable {
                     coroutineScope.launch {
                         println("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
                         val options: ActivityOptions = ActivityOptions.makeBasic()
 
                         val intent = Intent(Intent.ACTION_VIEW)
-                        var type = "video/${smov.extension}"
+                        val type = "video/${smov.extension}"
 
                         intent.setPackage("com.mxtech.videoplayer.ad")
-                        intent.putExtra("decode_mode","4")
-                        intent.putExtra("title",smov.name)
+                        intent.putExtra("decode_mode", "4")
+                        intent.putExtra("title", smov.name)
                         println(type)
                         val uri: Uri =
                             Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
@@ -85,8 +89,7 @@ fun SmovCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .width(170.dp)
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(8.dp,3.dp,3.dp,8.dp)),
+                        .clip(RoundedCornerShape(8.dp, 3.dp, 3.dp, 8.dp)),
                     previewPlaceholder = R.drawable.smov_ico,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
@@ -105,18 +108,46 @@ fun SmovCard(
                 Column(
                     Modifier
                         .padding(horizontal = 20.dp)
-                        .height(60.dp),//.align(CenterHorizontally)  //这里的 align 代表当前元素在父元素的位置
-                    horizontalAlignment = Alignment.CenterHorizontally,  //这里代表当前元素下的子元素所在的位置
-                    verticalArrangement = Arrangement.Center  //同理
+                        .fillMaxSize(),//.align(CenterHorizontally)  //这里的 align 代表当前元素在父元素的位置
+                    horizontalAlignment = Alignment.Start,  //这里代表当前元素下的子元素所在的位置
+                    verticalArrangement = Arrangement.Top  //同理
                 ) {
                     Text(
                         text = smov.name,
-                        modifier = Modifier,
+                        modifier = Modifier.padding(0.dp,8.dp,0.dp,8.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Left
                     )
+
+                    FlowRow() {
+                        for (actor in smov.actors) {
+                            Text(
+                                text = actor.name + " ",
+                                modifier = Modifier,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 13.sp,
+                                textAlign = TextAlign.Center
+                            )
+
+                        }
+                    }
+
+                    FlowRow(modifier = Modifier.padding(0.dp,0.dp,0.dp,4.dp)) {
+                        for (tag in smov.tags) {
+                            Text(
+                                text = tag.name + " ",
+                                modifier = Modifier,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 13.sp,
+                                textAlign = TextAlign.Center
+                            )
+
+                        }
+                    }
                 }
             }
         }
