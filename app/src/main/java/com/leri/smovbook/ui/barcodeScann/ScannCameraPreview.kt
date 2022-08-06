@@ -21,6 +21,7 @@ import java.util.concurrent.Executors
 
 @Composable
 fun CameraPreview(
+    modifier: Modifier = Modifier,
     onSendCode: (code: String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -39,8 +40,7 @@ fun CameraPreview(
                 implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             }
         },
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = modifier,
         update = { previewView ->
             val cameraSelector: CameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
