@@ -42,115 +42,139 @@ fun SmovCard(
     val context = LocalContext.current
     Box(
         modifier = Modifier
-            .padding(3.dp)
+            .padding(15.dp, 0.dp, 15.dp, 0.dp) //21
             .clip(RoundedCornerShape(8.dp))
     ) {
-        val padding = 6.dp
-        Surface(
-            shape = RoundedCornerShape(8.dp),
-            color = Color.White,
-            shadowElevation = 4.dp,
-            modifier = Modifier
-                .padding(padding)
-        ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(230.dp)
-                .padding(2.dp)
-                .clickable {
-                    coroutineScope.launch {
-                        println("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
-                        val options: ActivityOptions = ActivityOptions.makeBasic()
+        Column() {
 
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        val type = "video/${smov.extension}"
+            val padding = 6.dp
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = Color.White,
+                shadowElevation = 6.dp,
+                modifier = Modifier
+                    .padding(padding)
+            ) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp)
+                    .clickable {
+                        coroutineScope.launch {
+                            println("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
+                            val options: ActivityOptions = ActivityOptions.makeBasic()
 
-                        intent.setPackage("com.mxtech.videoplayer.ad")
-                        intent.putExtra("decode_mode", "4")
-                        intent.putExtra("title", smov.name)
-                        println(type)
-                        val uri: Uri =
-                            Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
-                        intent.setDataAndType(uri, type)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            val type = "video/${smov.extension}"
 
-                        val title = "打开视频"
-                        val chooser = Intent.createChooser(intent, title)
+                            intent.setPackage("com.mxtech.videoplayer.ad")
+                            intent.putExtra("decode_mode", "4")
+                            intent.putExtra("title", smov.name)
+                            println(type)
+                            val uri: Uri =
+                                Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
+                            intent.setDataAndType(uri, type)
 
-                        try {
-                            startActivity(context, intent, options.toBundle())
-                        } catch (e: ActivityNotFoundException) {
-                            // Define what your app should do if no activity can handle the intent.
+                            val title = "打开视频"
+                            val chooser = Intent.createChooser(intent, title)
+
+                            try {
+                                startActivity(context, intent, options.toBundle())
+                            } catch (e: ActivityNotFoundException) {
+                                // Define what your app should do if no activity can handle the intent.
+                            }
                         }
-                    }
 
-                }) {
-                GlideImage(
-                    imageModel = "http://$mainUrl/${smov.realname}/img/thumbs_${smov.name}.jpg",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(170.dp)
-                        .clip(RoundedCornerShape(8.dp, 3.dp, 3.dp, 8.dp)),
-                    previewPlaceholder = R.drawable.smov_ico,
-                    loading = {
-                        Box(modifier = Modifier.matchParentSize()) {
-                            GlideImage(
-                                imageModel = R.drawable.mobile_gif
-                            )
+                    }) {
+                    GlideImage(
+                        imageModel = "http://$mainUrl/${smov.realname}/img/main_${smov.name}.jpg",
+                        contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先已什么形式打开
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
+                        previewPlaceholder = R.drawable.smov_ico,
+                        loading = {
+                            Box(modifier = Modifier.matchParentSize()) {
+                                GlideImage(
+                                    imageModel = R.drawable.mobile_gif
+                                )
+                            }
+                        }, failure = {
+                            Box(modifier = Modifier.matchParentSize()) {
+                                GlideImage(
+                                    imageModel = R.drawable.ic_error
+                                )
+                            }
                         }
-                    }, failure = {
-                        Box(modifier = Modifier.matchParentSize()) {
-                            GlideImage(
-                                imageModel = R.drawable.ic_error
-                            )
-                        }
-                    }
-                )
-                Column(
-                    Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxSize(),//.align(CenterHorizontally)  //这里的 align 代表当前元素在父元素的位置
-                    horizontalAlignment = Alignment.Start,  //这里代表当前元素下的子元素所在的位置
-                    verticalArrangement = Arrangement.Top  //同理
-                ) {
-                    Text(
-                        text = smov.name,
-                        modifier = Modifier.padding(0.dp,8.dp,0.dp,8.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Left
                     )
 
-                    FlowRow() {
-                        for (actor in smov.actors) {
-                            Text(
-                                text = actor.name + " ",
-                                modifier = Modifier,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = 13.sp,
-                                textAlign = TextAlign.Center
-                            )
-
-                        }
-                    }
-
-                    FlowRow(modifier = Modifier.padding(0.dp,0.dp,0.dp,4.dp)) {
-                        for (tag in smov.tags) {
-                            Text(
-                                text = tag.name + " ",
-                                modifier = Modifier,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontSize = 13.sp,
-                                textAlign = TextAlign.Center
-                            )
-
-                        }
-                    }
                 }
             }
+            Column(
+                Modifier
+                    .padding(horizontal = 20.dp),
+                    //.fillMaxSize()//.align(CenterHorizontally)  //这里的 align 代表当前元素在父元素的位置
+                horizontalAlignment = Alignment.Start,  //这里代表当前元素下的子元素所在的位置
+                verticalArrangement = Arrangement.Top  //同理
+            ) {
+                Row() {
+                    Text(
+                        text = smov.name,
+                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Left
+                    )
+                    Text(
+                        text = "    ",
+                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Left
+                    )
+                    Text(
+                        text = smov.release_time,
+                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 8.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Left
+                    )
+                }
+
+
+                /*FlowRow() {
+                    for (actor in smov.actors) {
+                        Text(
+                            text = actor.name + " ",
+                            modifier = Modifier,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center
+                        )
+
+                    }
+                }
+
+                FlowRow(modifier = Modifier.padding(0.dp,0.dp,0.dp,4.dp)) {
+                    for (tag in smov.tags) {
+                        Text(
+                            text = tag.name + " ",
+                            modifier = Modifier,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center
+                        )
+
+                    }
+                }*/
+            }
+
         }
+
     }
 }
 
