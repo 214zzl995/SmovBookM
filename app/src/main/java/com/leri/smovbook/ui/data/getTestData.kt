@@ -386,5 +386,6 @@ val testDataHasData = HomeUiState.HasData(
     searchInput = "",
     serverUrl = "127.0.0.1",
     isDetailOpen = false,
-    selectedSmov = testDataSin
+    selectedSmov = testDataSin,
+    historyUrl = setOf()
 )

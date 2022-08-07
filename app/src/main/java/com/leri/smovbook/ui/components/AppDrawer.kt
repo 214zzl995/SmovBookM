@@ -11,11 +11,14 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.leri.smovbook.ui.data.testDataHasData
+import com.leri.smovbook.ui.home.HomeUiState
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @Composable
 fun ColumnScope.AppDrawer(
     currentRoute: String,
+    uiState: HomeUiState,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -23,8 +26,15 @@ fun ColumnScope.AppDrawer(
     DrawerHeader()
     DividerItem()
     DrawerItemHeader("Chats")
+    for (his in uiState.historyUrl) {
+        Text(text = his)
+
+    }
+    Text(text = "fuck")
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
+
+
 }
 
 @Composable
@@ -69,7 +79,7 @@ fun DrawerPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                AppDrawer("SmovBook", {})
+                AppDrawer("SmovBook", uiState = testDataHasData, {})
             }
         }
     }
@@ -81,7 +91,7 @@ fun DrawerPreviewDark() {
     SmovBookMTheme(isDarkTheme = true) {
         Surface {
             Column {
-                AppDrawer("SmovBook", {})
+                AppDrawer("SmovBook", uiState = testDataHasData, {})
             }
         }
     }

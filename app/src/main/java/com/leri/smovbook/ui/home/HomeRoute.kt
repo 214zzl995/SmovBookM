@@ -100,6 +100,7 @@ fun HomeRoute(
     AppScaffold(
         drawerState = drawerState,
         currentRoute = currentRoute,
+        uiState = uiState,
         closeDrawer = { coroutineScope.launch { drawerState.close() } },
         modifier = Modifier
             .statusBarsPadding()
@@ -120,6 +121,7 @@ fun HomeRoute(
                     PermissionStatus.Granted -> {
                         openBarScann()
                     }
+
                     is PermissionStatus.Denied -> {
                         cameraPermissionState.launchPermissionRequest()
                     }
@@ -149,5 +151,6 @@ private fun getHomeScreenType(
                 HomeScreenType.Feed
             }
         }
+
         is HomeUiState.NoData -> HomeScreenType.Feed
     }

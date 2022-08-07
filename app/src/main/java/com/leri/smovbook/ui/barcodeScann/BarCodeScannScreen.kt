@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.barcodeScann
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -8,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.leri.smovbook.ui.theme.scanBorder
+import com.leri.smovbook.ui.theme.scanMask
 
 @Composable
 fun BarCodeScannScreen(
@@ -17,18 +20,31 @@ fun BarCodeScannScreen(
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            CameraPreview(
+            Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(5.dp, 5.dp, 5.dp, 5.dp))
-                    .width(300.dp)
-                    .height(300.dp)
-            ) { result ->
-                changeServer(result)
-                navigateUp()
+                    .align(Alignment.CenterHorizontally)
+                    .width(350.dp)
+                    .height(350.dp)
+            ) {
+                CameraPreview(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp, 5.dp, 5.dp, 5.dp))
+
+                ) { result ->
+                    changeServer(result)
+                    navigateUp()
+                }
+
+                BarCodeScanMock()
+
             }
+            BarCodeScanTitle()
+
+
         }
     }
 }

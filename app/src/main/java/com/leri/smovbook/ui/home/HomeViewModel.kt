@@ -1,10 +1,10 @@
 package com.leri.smovbook.ui.home
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.jetnews.data.Result
+import com.google.gson.Gson
 import com.leri.smovbook.R
 import com.leri.smovbook.data.smov.SmovRepository
 import com.leri.smovbook.model.Smov
@@ -22,12 +22,14 @@ sealed interface HomeUiState {
     val errorMessages: List<ErrorMessage>
     val searchInput: String
     val serverUrl: String
+    val historyUrl: Set<String>
 
     data class NoData(
         override val isLoading: Boolean,
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
-        override val serverUrl: String
+        override val serverUrl: String,
+        override val historyUrl: Set<String>
     ) : HomeUiState
 
     data class HasData(
@@ -35,6 +37,7 @@ sealed interface HomeUiState {
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
         override val serverUrl: String,
+        override val historyUrl: Set<String>,
         val smov: Smov,
         val selectedSmov: SmovItem,
         val isDetailOpen: Boolean
@@ -48,7 +51,8 @@ private data class HomeViewModelState(
     val searchInput: String = "",
     val serverUrl: String = "",
     val selectedSmovId: Int = 0,
-    val isDetailOpen: Boolean = false
+    val isDetailOpen: Boolean = false,
+    val historyUrl: Set<String> = setOf()
 ) {
     fun toUiState(): HomeUiState =
         if (smov == null) {
@@ -56,7 +60,8 @@ private data class HomeViewModelState(
                 isLoading = isLoading,
                 errorMessages = errorMessages,
                 searchInput = searchInput,
-                serverUrl = serverUrl
+                serverUrl = serverUrl,
+                historyUrl = historyUrl
             )
         } else {
             HomeUiState.HasData(
@@ -69,6 +74,7 @@ private data class HomeViewModelState(
                 selectedSmov = smov.smovList.find {
                     it.id == selectedSmovId
                 } ?: smov.highlightedSmovItem,
+                historyUrl = historyUrl
             )
         }
 }
@@ -96,18 +102,43 @@ class HomeViewModel(
     private fun getCacheServe() {
         viewModelState.update {
             val serverUrl = DataStoreUtils.getSyncData("server_url", "")
+            val historyUrl = DataStoreUtils.getSyncData("history_url", "[]")
+            val gson = Gson()
             runBlocking {
+                println("historyUrl.first()")
+                println(historyUrl.first())
+                it.copy(historyUrl = gson.fromJson(historyUrl.first(), Array<String>::class.java).toSet())
+            }
+            runBlocking {
+
                 it.copy(serverUrl = serverUrl.first())
             }
+
 
         }
     }
 
     fun changeCacheServe(url: String) {
+
+        viewModelState.update {
+            it.copy(historyUrl = it.historyUrl.plusElement(url))
+        }
+
         viewModelState.update {
             it.copy(serverUrl = url)
         }
+
+        viewModelState.update {
+            var flag = ""
+            if (it.historyUrl.size == 3) {
+                flag = it.historyUrl.first()
+            }
+            it.copy(historyUrl = it.historyUrl.filterNot { url -> url == flag }.toSet())
+        }
+
+        val gson = Gson()
         DataStoreUtils.putData("server_url", url)
+        DataStoreUtils.putData("history_url", gson.toJson(viewModelState.value.historyUrl))
         refreshData()
     }
 

@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.Gson
 import com.leri.smovbook.Application
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
@@ -69,6 +70,7 @@ object DataStoreUtils {
             is Double -> saveDoubleData(key, value)
             is Boolean -> saveBoolean(key, value)
             is String -> saveString(key, value)
+
             else -> throw IllegalArgumentException("unSupport $value type !!!")
         }
     }
@@ -305,7 +307,7 @@ object DataStoreUtils {
             e.printStackTrace()
             collector.emit(emptyPreferences())
         } else {
-            throw  e
+            throw e
         }
     }
 

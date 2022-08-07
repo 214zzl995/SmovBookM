@@ -9,6 +9,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.leri.smovbook.ui.home.HomeUiState
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -17,8 +18,9 @@ fun AppScaffold(
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     currentRoute: String,
+    uiState: HomeUiState,
     closeDrawer: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -26,6 +28,7 @@ fun AppScaffold(
             AppDrawer(
                 currentRoute = currentRoute,
                 closeDrawer = closeDrawer,
+                uiState = uiState,
                 modifier = modifier
             )
         },
