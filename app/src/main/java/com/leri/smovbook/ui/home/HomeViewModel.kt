@@ -102,15 +102,7 @@ class HomeViewModel(
     private fun getCacheServe() {
         viewModelState.update {
             val serverUrl = DataStoreUtils.getData("server_url", "")
-            val historyUrl = DataStoreUtils.getData("history_url", "[]")
-            val gson = Gson()
             runBlocking {
-                println("historyUrl.first()")
-                println(historyUrl)
-                it.copy(historyUrl = gson.fromJson(historyUrl, Array<String>::class.java).toSet())
-            }
-            runBlocking {
-
                 it.copy(serverUrl = serverUrl)
             }
 
