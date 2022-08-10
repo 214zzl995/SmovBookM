@@ -6,6 +6,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
+import com.leri.smovbook.Application
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -35,4 +38,19 @@ val Context.settingsDataStore: DataStore<Settings> by dataStore(
     fileName = "settings.pb",
     serializer = SettingsSerializer
 )
+
+val settingsDataStore: DataStore<Settings> = Application.getContext().settingsDataStore
+suspend fun incrementCounter() {
+    settingsDataStore.updateData { currentSettings ->
+        currentSettings.toBuilder()
+            .setExampleCounter(currentSettings.exampleCounter + 1)
+            .build()
+    }
+}
+
+val exampleCounterFlow: Flow<Int> = settingsDataStore.data
+    .map { settings ->
+        // The exampleCounter property is generated from the proto schema.
+        settings.exampleCounter
+    }
 

@@ -6,11 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.jetnews.data.Result
 import com.google.gson.Gson
 import com.leri.smovbook.R
+import com.leri.smovbook.config.exampleCounterFlow
+import com.leri.smovbook.config.incrementCounter
 import com.leri.smovbook.data.smov.SmovRepository
 import com.leri.smovbook.model.Smov
 import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.util.DataStoreUtils
 import com.leri.smovbook.util.ErrorMessage
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -100,14 +104,23 @@ class HomeViewModel(
     }
 
     private fun getCacheServe() {
-        viewModelState.update {
-            val serverUrl = DataStoreUtils.getData("server_url", "")
-            runBlocking {
+
+        //这个viewModelScope.launch是协程 是不阻塞当前线程的
+        viewModelScope.launch {
+            println("fuckTest")
+            incrementCounter()
+            println(exampleCounterFlow.first())
+        }
+
+        //而runBlocking是阻塞的 会等到取到url再进行下一步
+        runBlocking {
+            viewModelState.update {
+                val serverUrl = DataStoreUtils.getData("server_url", "")
                 it.copy(serverUrl = serverUrl)
             }
-
-
         }
+
+
     }
 
     fun changeCacheServe(url: String) {
