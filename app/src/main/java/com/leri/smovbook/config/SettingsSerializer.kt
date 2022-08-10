@@ -1,7 +1,5 @@
 package com.leri.smovbook.config
 
-
-
 /**
  * @Description: XXX
  * @author DingWei
