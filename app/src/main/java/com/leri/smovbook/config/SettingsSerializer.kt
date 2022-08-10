@@ -6,7 +6,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
-import com.leri.smovbook.Settings
 import java.io.InputStream
 import java.io.OutputStream
 

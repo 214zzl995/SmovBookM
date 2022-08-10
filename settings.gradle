@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "SmovBookM"
 include ':app'
-include ':videoplayer'
