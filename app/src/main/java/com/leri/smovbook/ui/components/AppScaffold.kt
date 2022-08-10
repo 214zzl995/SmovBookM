@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.ui.home.HomeUiState
-import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
