@@ -101,17 +101,9 @@ class HomeViewModel(
 
     private fun getCacheServe() {
         viewModelState.update {
-            val serverUrl = DataStoreUtils.getSyncData("server_url", "")
-            val historyUrl = DataStoreUtils.getSyncData("history_url", "[]")
-            val gson = Gson()
+            val serverUrl = DataStoreUtils.getData("server_url", "")
             runBlocking {
-                println("historyUrl.first()")
-                println(historyUrl.first())
-                it.copy(historyUrl = gson.fromJson(historyUrl.first(), Array<String>::class.java).toSet())
-            }
-            runBlocking {
-
-                it.copy(serverUrl = serverUrl.first())
+                it.copy(serverUrl = serverUrl)
             }
 
 
@@ -119,26 +111,10 @@ class HomeViewModel(
     }
 
     fun changeCacheServe(url: String) {
-
-        viewModelState.update {
-            it.copy(historyUrl = it.historyUrl.plusElement(url))
-        }
-
         viewModelState.update {
             it.copy(serverUrl = url)
         }
-
-        viewModelState.update {
-            var flag = ""
-            if (it.historyUrl.size == 3) {
-                flag = it.historyUrl.first()
-            }
-            it.copy(historyUrl = it.historyUrl.filterNot { url -> url == flag }.toSet())
-        }
-
-        val gson = Gson()
         DataStoreUtils.putData("server_url", url)
-        DataStoreUtils.putData("history_url", gson.toJson(viewModelState.value.historyUrl))
         refreshData()
     }
 
