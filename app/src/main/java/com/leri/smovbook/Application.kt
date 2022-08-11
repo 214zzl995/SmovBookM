@@ -4,7 +4,9 @@ import android.app.Application
 import android.content.Context
 import com.leri.smovbook.data.AppContainer
 import com.leri.smovbook.data.AppContainerImpl
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class Application : Application() {
     lateinit var container: AppContainer
 

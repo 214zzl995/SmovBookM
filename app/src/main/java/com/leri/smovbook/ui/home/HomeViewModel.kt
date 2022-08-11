@@ -4,17 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.jetnews.data.Result
-import com.google.gson.Gson
 import com.leri.smovbook.R
-import com.leri.smovbook.config.exampleCounterFlow
-import com.leri.smovbook.config.incrementCounter
+import com.leri.smovbook.config.SettingsRepository
 import com.leri.smovbook.data.smov.SmovRepository
 import com.leri.smovbook.model.Smov
 import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.util.DataStoreUtils
 import com.leri.smovbook.util.ErrorMessage
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -85,7 +81,8 @@ private data class HomeViewModelState(
 
 
 class HomeViewModel(
-    private val smovRepository: SmovRepository
+    private val smovRepository: SmovRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val viewModelState = MutableStateFlow(HomeViewModelState(isLoading = true))
@@ -108,8 +105,7 @@ class HomeViewModel(
         //这个viewModelScope.launch是协程 是不阻塞当前线程的
         viewModelScope.launch {
             println("fuckTest")
-            incrementCounter()
-            println(exampleCounterFlow.first())
+
         }
 
         //而runBlocking是阻塞的 会等到取到url再进行下一步
@@ -174,10 +170,11 @@ class HomeViewModel(
     companion object {
         fun provideFactory(
             smovRepository: SmovRepository,
+            settingsRepository: SettingsRepository
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(smovRepository) as T
+                return HomeViewModel(smovRepository, settingsRepository) as T
             }
         }
     }

@@ -39,18 +39,14 @@ val Context.settingsDataStore: DataStore<Settings> by dataStore(
     serializer = SettingsSerializer
 )
 
-val settingsDataStore: DataStore<Settings> = Application.getContext().settingsDataStore
-suspend fun incrementCounter() {
-    settingsDataStore.updateData { currentSettings ->
-        currentSettings.toBuilder()
-            .setExampleCounter(currentSettings.exampleCounter + 1)
-            .build()
-    }
-}
 
-val exampleCounterFlow: Flow<Int> = settingsDataStore.data
-    .map { settings ->
-        // The exampleCounter property is generated from the proto schema.
-        settings.exampleCounter
-    }
+//suspend fun incrementCounter() {
+//    settingsDataStore.updateData { currentSettings ->
+//        currentSettings.toBuilder()
+//            .setExampleCounter(currentSettings.exampleCounter + 1)
+//            .build()
+//    }
+//}
+
+
 

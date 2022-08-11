@@ -21,7 +21,7 @@ fun AppNavGraph(
     startDestination: String = AppDestinations.HOME_ROUTE
 ) {
     val homeViewModel: HomeViewModel = viewModel(
-        factory = HomeViewModel.provideFactory(appContainer.smovRepository)
+        factory = HomeViewModel.provideFactory(appContainer.smovRepository,appContainer.settingsRepository)
     )
     val navigationActions = remember(navController) {
         AppNavigationActions(navController)
