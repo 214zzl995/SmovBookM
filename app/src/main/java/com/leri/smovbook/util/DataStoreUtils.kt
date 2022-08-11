@@ -6,7 +6,7 @@ import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
-import com.leri.smovbook.Application
+import com.leri.smovbook.SmovBookApp
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import java.io.IOException
@@ -16,7 +16,7 @@ import java.lang.IllegalArgumentException
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences",
     produceMigrations = { context -> listOf(SharedPreferencesMigration(context, "sp_name")) })
 
-val globalDataStore: DataStore<Preferences> = Application.getContext().dataStore
+val globalDataStore: DataStore<Preferences> = SmovBookApp.getContext().dataStore
 
 object DataStoreUtils {
 

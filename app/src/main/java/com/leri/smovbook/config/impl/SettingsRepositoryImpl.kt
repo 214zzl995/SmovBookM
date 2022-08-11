@@ -1,7 +1,7 @@
 package com.leri.smovbook.config.impl
 
 import androidx.datastore.core.DataStore
-import com.leri.smovbook.Application
+import com.leri.smovbook.SmovBookApp
 import com.leri.smovbook.config.Settings
 import com.leri.smovbook.config.SettingsRepository
 import com.leri.smovbook.config.settingsDataStore
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
  * @version 11/8/2022 上午9:43
  */
 class SettingsRepositoryImpl : SettingsRepository {
-    private val settingsDataStore: DataStore<Settings> = Application.getContext().settingsDataStore
+    private val settingsDataStore: DataStore<Settings> = SmovBookApp.getContext().settingsDataStore
 
     override suspend fun getServerUrl(): String {
         return settingsDataStore.data

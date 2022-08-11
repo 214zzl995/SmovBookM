@@ -10,7 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
-import com.leri.smovbook.Application
+import com.leri.smovbook.SmovBookApp
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val appContainer = (application as Application).container
+        val appContainer = (application as SmovBookApp).container
 
         setContent {
             CompositionLocalProvider(

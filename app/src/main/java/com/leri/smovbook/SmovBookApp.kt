@@ -7,7 +7,7 @@ import com.leri.smovbook.data.AppContainerImpl
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class Application : Application() {
+class SmovBookApp : Application() {
     lateinit var container: AppContainer
 
     companion object {
