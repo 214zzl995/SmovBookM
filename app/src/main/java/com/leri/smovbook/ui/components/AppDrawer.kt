@@ -13,7 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.ui.data.testDataHasData
 import com.leri.smovbook.ui.home.HomeUiState
+import com.leri.smovbook.ui.refactor.Refactor
 import com.leri.smovbook.ui.theme.SmovBookMTheme
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ColumnScope.AppDrawer(
@@ -31,8 +33,10 @@ fun ColumnScope.AppDrawer(
 
     }
     Text(text = "fuck")
+    Refactor(hiltViewModel())
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
+
 
 
 }

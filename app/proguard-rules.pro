@@ -102,7 +102,7 @@
 -keep class com.easemob.** {*;}
 -keep class org.jivesoftware.** {*;}
 -keep class org.apache.** {*;}
--keep class com.leri.smovbook.model.** {*;}
+-keep class com.leri.smovbook.models.** {*;}
 -dontwarn  com.easemob.**
 #另外，demo中发送表情的时候使用到反射，需要keep SmileUtils
 #-keep class com.easemob.chatuidemo.utils.SmileUtils {*;}
@@ -130,13 +130,8 @@
 #eventbus
 -keepattributes *Annotation*
 -keepclassmembers class ** {
-#    @org.greenrobot.eventbus.Subscribe <methods>;
 }
-#-keep enum org.greenrobot.eventbus.ThreadMode { *; }
-# Only required if you use AsyncExecutor
-#-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
-#    <init>(java.lang.Throwable);
-#}
+
 #友盟分享
  -dontwarn com.google.android.maps.**
  -dontwarn android.webkit.WebView
@@ -187,15 +182,4 @@
     public void onResume();
     public void onPause();
 }
-#-keep class android.support.v4.app.Fragment {
-#    public void setUserVisibleHint(boolean);
-#    public void onHiddenChanged(boolean);
-#    public void onResume();
-#    public void onPause();
-#}
-#-keep class * extends android.support.v4.app.Fragment {
-#    public void setUserVisibleHint(boolean);
-#    public void onHiddenChanged(boolean);
-#    public void onResume();
-#    public void onPause();
-#}
+

@@ -1,8 +1,5 @@
 package com.leri.smovbook.config
 
-import com.example.jetnews.data.Result
-import com.leri.smovbook.model.Smov
-
 /**
  * @Description: Settings接口
  * @author DingWei

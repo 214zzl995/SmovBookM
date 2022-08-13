@@ -25,6 +25,20 @@
             </intent-filter>
 
         </activity>
+
+        <activity android:name="androidx.activity.ComponentActivity" />
+
+        <provider
+                android:name="androidx.startup.InitializationProvider"
+                android:authorities="com.leri.smovbook.androidx-startup"
+                android:exported="false"
+                tools:node="merge">
+
+            <meta-data
+                    android:name="com.leri.smovbook.initializer.TimberInitializer"
+                    android:value="androidx.startup" />
+        </provider>
+
     </application>
 
 </manifest>

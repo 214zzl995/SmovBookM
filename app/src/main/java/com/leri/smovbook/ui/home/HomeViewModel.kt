@@ -3,7 +3,7 @@ package com.leri.smovbook.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.jetnews.data.Result
+import com.leri.smovbook.data.Result
 import com.leri.smovbook.R
 import com.leri.smovbook.config.SettingsRepository
 import com.leri.smovbook.data.smov.SmovRepository
@@ -105,7 +105,6 @@ class HomeViewModel(
         //这个viewModelScope.launch是协程 是不阻塞当前线程的
         viewModelScope.launch {
             println("fuckTest")
-
         }
 
         //而runBlocking是阻塞的 会等到取到url再进行下一步

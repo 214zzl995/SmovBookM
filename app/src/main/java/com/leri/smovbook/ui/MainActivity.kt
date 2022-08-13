@@ -12,7 +12,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import com.leri.smovbook.SmovBookApp
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,6 +1,5 @@
 package com.leri.smovbook.data.smov.impl
 
-import com.example.jetnews.data.Result
 import com.google.gson.Gson
 import com.leri.smovbook.data.smov.SmovRepository
 import com.leri.smovbook.model.ServerResult
@@ -11,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.*
 import java.io.IOException
+import com.leri.smovbook.data.Result
 
 //是否需要在以后将请求改造为 retrofit2 https://stackoverflow.com/questions/32559333/retrofit-2-dynamic-url
 class SmovRepositoryImpl : SmovRepository {
@@ -83,7 +83,7 @@ class SmovRepositoryImpl : SmovRepository {
                                 highlightedSmovItem = smovList.first()
                             )
                         )
-                    }else{
+                    } else {
                         Result.Error(IllegalArgumentException("错误:" + serverResult.msg))
                     }
                 } catch (e: Exception) {
