@@ -1,5 +1,8 @@
 package com.leri.smovbook.di
 
+import android.content.Context
+import com.leri.smovbook.datastore.SmovDataStore
+import com.leri.smovbook.datastore.impl.SmovDataStoreImpl
 import com.leri.smovbook.network.Api
 import com.leri.smovbook.network.RequestInterceptor
 import com.leri.smovbook.network.service.SmovService
@@ -7,6 +10,7 @@ import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -40,6 +44,12 @@ object NetworkModule {
     @Singleton
     fun provideTheSmovService(retrofit: Retrofit): SmovService {
         return retrofit.create(SmovService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTheSmovDataStore(@ApplicationContext context: Context): SmovDataStore {
+        return SmovDataStoreImpl(context)
     }
 
 }

@@ -1,20 +1,21 @@
-package com.leri.smovbook.config.impl
+package com.leri.smovbook.datastore.impl
 
+import android.content.Context
 import androidx.datastore.core.DataStore
-import com.leri.smovbook.SmovBookApp
 import com.leri.smovbook.config.Settings
-import com.leri.smovbook.config.SettingsRepository
+import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.datastore.serializer.settingsDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+
 
 /**
  * @Description: Settings接口实现
  * @author DingWei
  * @version 11/8/2022 上午9:43
  */
-class SettingsRepositoryImpl : SettingsRepository {
-    private val settingsDataStore: DataStore<Settings> = SmovBookApp.getContext().settingsDataStore
+class SmovDataStoreImpl(context: Context) : SmovDataStore {
+    private val settingsDataStore: DataStore<Settings> = context.settingsDataStore
 
     override suspend fun getServerUrl(): String {
         return settingsDataStore.data
@@ -27,10 +28,8 @@ class SettingsRepositoryImpl : SettingsRepository {
         settingsDataStore.updateData { currentSettings ->
             currentSettings.toBuilder()
                 .setServerUrl(url)
-                .addHistoryUrl(url)
                 .build()
         }
     }
-
 
 }

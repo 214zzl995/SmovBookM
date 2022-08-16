@@ -15,7 +15,7 @@ interface SmovService {
     @GET("/data")
     suspend fun getAllSmov(): ApiResponse<ServerResult<SmovResponse>>
 
-    @GET("/data")
-    suspend fun getAllSmovTest(): ApiResponse<String>
+    @GET("/214zzl995/e5d0c48057c3f9474972d3515c6ccc6c/raw/2bb3088dbaaf6a09fb294e34bcb3b01575339fb1")
+    suspend fun getAllSmovTest(): ApiResponse<Array<String>>
 
 }

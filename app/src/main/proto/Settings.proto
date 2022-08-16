@@ -5,4 +5,5 @@ option java_multiple_files = true;
 
 message Settings {
   string server_url = 1;
+  repeated string history_url = 2;
 }

@@ -1,14 +1,9 @@
-package com.leri.smovbook.config
+package com.leri.smovbook.datastore.serializer
 
-import android.content.Context
 import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
-import com.leri.smovbook.SmovBookApp
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import com.leri.smovbook.config.Settings
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -34,19 +29,7 @@ object SettingsSerializer : Serializer<Settings> {
     ) = t.writeTo(output)
 }
 
-val Context.settingsDataStore: DataStore<Settings> by dataStore(
-    fileName = "settings.pb",
-    serializer = SettingsSerializer
-)
 
-
-//suspend fun incrementCounter() {
-//    settingsDataStore.updateData { currentSettings ->
-//        currentSettings.toBuilder()
-//            .setExampleCounter(currentSettings.exampleCounter + 1)
-//            .build()
-//    }
-//}
 
 
 

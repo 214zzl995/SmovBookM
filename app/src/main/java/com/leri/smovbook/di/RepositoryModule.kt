@@ -1,11 +1,14 @@
 package com.leri.smovbook.di
 
+import android.content.Context
+import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.service.SmovService
 import com.leri.smovbook.repository.SmovRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -22,8 +25,9 @@ object RepositoryModule {
     @Provides
     @ViewModelScoped
     fun provideTvRepository(
-        smovService: SmovService
+        smovService: SmovService,
+        smovDataStore:SmovDataStore
     ): SmovRepository {
-        return SmovRepository(smovService)
+        return SmovRepository(smovService,smovDataStore)
     }
 }
