@@ -25,11 +25,31 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
     }
 
     override suspend fun changeServerUrl(url: String) {
-        settingsDataStore.updateData { currentSettings ->
+/*        settingsDataStore.updateData { currentSettings ->
+            //设置可变修改
+            //currentSettings.ensureHistoryUrlIsMutable()
+            //获取当前的historyUrl
+            val historyUrl = currentSettings.historyUrlList
+            //当插入的url在historyUrl中已存在 更新位置
+            historyUrl.removeIf {
+                it.contains(url)
+            }
+            //当前count
+            val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
+
+            //当档案数量等于count数量时情理一位
+            if (historyUrl.size == historyCount) {
+                historyUrl.removeFirst()
+            }
+
+            historyUrl.add(url)
+
             currentSettings.toBuilder()
                 .setServerUrl(url)
+                .clearHistoryUrl()
+                .addAllHistoryUrl(historyUrl)
                 .build()
-        }
+        }*/
     }
 
 }

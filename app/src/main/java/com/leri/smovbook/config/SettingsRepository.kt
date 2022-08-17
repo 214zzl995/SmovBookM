@@ -11,4 +11,6 @@ interface SettingsRepository {
 
     suspend fun changeServerUrl(url: String)
 
+    suspend fun getHisUrl(): String
+
 }

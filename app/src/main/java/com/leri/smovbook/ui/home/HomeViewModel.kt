@@ -104,7 +104,7 @@ class HomeViewModel(
 
         //这个viewModelScope.launch是协程 是不阻塞当前线程的
         viewModelScope.launch {
-
+            //println(settingsRepository.getHisUrl())
         }
 
         //而runBlocking是阻塞的 会等到取到url再进行下一步
@@ -124,6 +124,7 @@ class HomeViewModel(
         viewModelScope.launch {
             println("测试data" + settingsRepository.getServerUrl())
             settingsRepository.changeServerUrl(url)
+
         }
 
         viewModelState.update {
