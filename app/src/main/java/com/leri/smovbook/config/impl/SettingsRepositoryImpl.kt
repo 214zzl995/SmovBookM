@@ -7,6 +7,7 @@ import com.leri.smovbook.config.SettingsRepository
 import com.leri.smovbook.datastore.serializer.settingsDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import okhttp3.internal.toImmutableList
 
 /**
  * @Description: Settings接口实现
@@ -36,29 +37,44 @@ class SettingsRepositoryImpl : SettingsRepository {
         settingsDataStore.updateData { currentSettings ->
             //currentSettings.ensureIsMutable()
             //获取当前的historyUrl
-            val historyUrl = currentSettings.historyUrlList
-            //当插入的url在historyUrl中已存在 更新位置
+            /*            val historyUrl = currentSettings.historyUrlList
+                        //当插入的url在historyUrl中已存在 更新位置
 
-            historyUrl
+                        println("测试hisUrl${historyUrl.javaClass}")
 
-            println("测试hisUrl${historyUrl.javaClass}")
+                        println("测试hisUrl$historyUrl")
 
-            println("测试hisUrl$historyUrl")
+                        historyUrl.removeIf {
+                            it.equals(url)
+                        }
+                        //当前count
+                        //当前count
+                        val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
-            historyUrl.removeIf {
-                it.equals(url)
-            }
-            //当前count
-            //当前count
+                        //当档案数量等于count数量时情理一位
+                        if (historyUrl.size == historyCount) {
+                            historyUrl.removeFirst()
+                        }
+
+                        historyUrl.add(url)*/
+
+            var historyUrl = currentSettings.historyUrlList.toImmutableList()
+
+            println("测试hisUrl1$historyUrl")
+
+            historyUrl =historyUrl.filterNot { it.equals(url) }
+
+            println("测试hisUrl2$historyUrl")
+
             val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
-            //当档案数量等于count数量时情理一位
             if (historyUrl.size == historyCount) {
-                historyUrl.removeFirst()
+                historyUrl = historyUrl.drop(0)
             }
 
-            historyUrl.add(url)
-            //historyUrl.
+            historyUrl = historyUrl.plus(url)
+
+            println("测试hisUrl3$historyUrl")
 
             currentSettings.toBuilder()
                 .setServerUrl(url)

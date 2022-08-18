@@ -9,6 +9,8 @@
 5. [ ] 优化资源 当前的资源太多 导致打包体积已经到了 13mb
 6. [ ] 经测试 那张图片打包后的体积为2.5mb
 7. [ ] 其他的文件 可能需要修改proguard-rules.pro文件实现
+8. [ ] 当前的二维码扫描有问题 会出现多个同时存入的问题 需要弹出框确定需要选择的链接 同时需要停止二维码的扫描
+9. [ ] 二维码的界面看着有点不爽 还是需要修改的 现在的框感觉太硬了 考虑无框模式 无框模式很清爽 可以的
 
 # 重要！
 
@@ -18,7 +20,7 @@
 
 重构中出现的问题
 
-Protobuf v3中的重复 无法针对单项去删除或去重
+1. [x]  Protobuf v3中的重复 无法针对单项去删除或去重 
 暂定的解决办法为 在代码中处理，将所有的全部删除后写入
 但是好像还是有解决办法的
 [https://stackoverflow.com/questions/13603878/how-to-delete-arbitrary-objects-in-repeated-field-protobuf](https://stackoverflow.com/questions/13603878/how-to-delete-arbitrary-objects-in-repeated-field-protobuf)

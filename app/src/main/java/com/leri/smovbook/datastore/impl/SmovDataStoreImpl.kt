@@ -5,8 +5,10 @@ import androidx.datastore.core.DataStore
 import com.leri.smovbook.config.Settings
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.datastore.serializer.settingsDataStore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import okhttp3.internal.toImmutableList
 
 
 /**
@@ -24,32 +26,52 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
             }.first().toString()
     }
 
+    override suspend fun getHistoryUrl(): Flow<MutableList<String>> {
+        return settingsDataStore.data
+            .map { settings ->
+                settings.historyUrlList
+            }
+    }
+
     override suspend fun changeServerUrl(url: String) {
-/*        settingsDataStore.updateData { currentSettings ->
+        settingsDataStore.updateData { currentSettings ->
             //设置可变修改
             //currentSettings.ensureHistoryUrlIsMutable()
             //获取当前的historyUrl
-            val historyUrl = currentSettings.historyUrlList
-            //当插入的url在historyUrl中已存在 更新位置
-            historyUrl.removeIf {
-                it.contains(url)
-            }
+            //val historyUrl = currentSettings.historyUrlList
+            var historyUrl = currentSettings.historyUrlList.toImmutableList()
+
+            //当插入的url在historyUrl中已存在 删除当前存在的项目
+            //historyUrl.removeIf {
+            //it.contains(url)
+            //}
+            historyUrl = historyUrl.filterNot { it.equals(url) }
+
+
             //当前count
             val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
             //当档案数量等于count数量时情理一位
+            //if (historyUrl.size == historyCount) {
+            //historyUrl.removeFirst()
+            //}
+
             if (historyUrl.size == historyCount) {
-                historyUrl.removeFirst()
+                historyUrl = historyUrl.drop(0)
             }
 
-            historyUrl.add(url)
+            //插入新的url
+            //historyUrl.add(url)
+            historyUrl = historyUrl.plus(url)
 
+
+            //更新物理数据
             currentSettings.toBuilder()
                 .setServerUrl(url)
                 .clearHistoryUrl()
                 .addAllHistoryUrl(historyUrl)
                 .build()
-        }*/
+        }
     }
 
 }

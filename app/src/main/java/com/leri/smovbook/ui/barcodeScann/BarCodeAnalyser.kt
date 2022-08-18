@@ -8,6 +8,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 @SuppressLint("UnsafeOptInUsageError")
@@ -16,6 +17,7 @@ class BarCodeAnalyser(
 ): ImageAnalysis.Analyzer {
     private var lastAnalyzedTimeStamp = 0L
 
+    @SuppressLint("TimberArgCount")
     override fun analyze(image: ImageProxy) {
         val currentTimestamp = System.currentTimeMillis()
         if (currentTimestamp - lastAnalyzedTimeStamp >= TimeUnit.SECONDS.toMillis(1)) {
@@ -31,11 +33,11 @@ class BarCodeAnalyser(
                         if (barcodes.isNotEmpty()) {
                             onBarcodeDetected(barcodes)
                         } else {
-                            Log.d("TAG", "analyze: No barcode Scanned")
+                            Timber.tag("TAG").d("analyze: No barcode Scanned")
                         }
                     }
                     .addOnFailureListener { exception ->
-                        Log.d("TAG", "BarcodeAnalyser: Something went wrong $exception")
+                        Timber.tag("TAG").d(exception, "BarcodeAnalyser: Something went wrong %s")
                     }
                     .addOnCompleteListener {
                         image.close()
