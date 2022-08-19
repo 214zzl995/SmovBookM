@@ -28,3 +28,6 @@
 MutableStateFlow MutableSharedFlow的区别
 [https://blog.csdn.net/rikkatheworld/article/details/125665002](https://blog.csdn.net/rikkatheworld/article/details/125665002)
 [https://blog.csdn.net/fly_with_24/article/details/120300290](https://blog.csdn.net/fly_with_24/article/details/120300290)
+
+
+明天有时间要对这个分页的获取数据进行测试，还有错误情况的返回测试，错误应该要传输到请求的地方 然后存进errormessage中 
