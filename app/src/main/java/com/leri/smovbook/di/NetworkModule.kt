@@ -23,9 +23,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(smovDataStore: SmovDataStore): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(RequestInterceptor())
+            .addInterceptor(RequestInterceptor(smovDataStore))
             .build()
     }
 

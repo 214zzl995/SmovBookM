@@ -7,6 +7,8 @@ import com.leri.smovbook.config.SettingsRepository
 import com.leri.smovbook.datastore.serializer.settingsDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.internal.toImmutableList
 
 /**
@@ -20,7 +22,7 @@ class SettingsRepositoryImpl : SettingsRepository {
     override suspend fun getServerUrl(): String {
         return settingsDataStore.data
             .map { settings ->
-                settings.serverUrl
+                settings.serverUrl + ':' + settings.serverPort
             }.first().toString()
     }
 
@@ -33,6 +35,10 @@ class SettingsRepositoryImpl : SettingsRepository {
     }
 
     override suspend fun changeServerUrl(url: String) {
+
+        val httpUrl = "http://$url".toHttpUrl()
+
+        println("注入url$httpUrl")
 
         settingsDataStore.updateData { currentSettings ->
             //currentSettings.ensureIsMutable()
@@ -62,7 +68,7 @@ class SettingsRepositoryImpl : SettingsRepository {
 
             println("测试hisUrl1$historyUrl")
 
-            historyUrl =historyUrl.filterNot { it.equals(url) }
+            historyUrl = historyUrl.filterNot { it.equals(url) }
 
             println("测试hisUrl2$historyUrl")
 
@@ -77,7 +83,8 @@ class SettingsRepositoryImpl : SettingsRepository {
             println("测试hisUrl3$historyUrl")
 
             currentSettings.toBuilder()
-                .setServerUrl(url)
+                .setServerUrl(httpUrl.host)
+                .setServerPort(httpUrl.port)
                 .clearHistoryUrl()
                 .addAllHistoryUrl(historyUrl)
                 .build()

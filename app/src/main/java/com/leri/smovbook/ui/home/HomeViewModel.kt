@@ -14,6 +14,8 @@ import com.leri.smovbook.util.ErrorMessage
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.*
 
 sealed interface HomeUiState {
@@ -124,7 +126,6 @@ class HomeViewModel(
         viewModelScope.launch {
             println("测试data" + settingsRepository.getServerUrl())
             settingsRepository.changeServerUrl(url)
-
         }
 
         viewModelState.update {

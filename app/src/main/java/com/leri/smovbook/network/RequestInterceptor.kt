@@ -1,24 +1,46 @@
 package com.leri.smovbook.network
 
-import com.leri.smovbook.BuildConfig
+import com.leri.smovbook.datastore.SmovDataStore
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.Response
 
-internal class RequestInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val originalRequest = chain.request()
-        val originalUrl = originalRequest.url
+internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : Interceptor {
 
-        runBlocking {
-            println(originalUrl)
+    override fun intercept(chain: Interceptor.Chain): Response {
+
+        val url: HttpUrl?
+
+        val originalRequest = chain.request()
+
+        //获取根url
+        val baseUrl = runBlocking {
+            smovDataStore.getServerUrl().first()
         }
 
-        //这里的key是否能动态设置
-        val url = originalUrl.newBuilder()
-            //.addQueryParameter("key", BuildConfig.TMDB_API_KEY)
-            .build()
+        //获取根端口
+        val port = runBlocking {
+            smovDataStore.getServerPort().first()
+        }
 
+        val originalUrl = originalRequest.url
+
+        url = if (baseUrl.isNotBlank()) {
+            originalUrl
+                .newBuilder()
+                .scheme("http")
+                .host(baseUrl)
+                .port(port).build()
+        } else {
+            originalUrl.newBuilder().build()
+        }
+
+        println("拦截器url$url")
+
+        //动态设置url
         val requestBuilder = originalRequest.newBuilder().url(url)
         val request = requestBuilder.build()
         return chain.proceed(request)

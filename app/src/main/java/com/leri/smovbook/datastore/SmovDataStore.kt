@@ -3,7 +3,9 @@ package com.leri.smovbook.datastore
 import kotlinx.coroutines.flow.Flow
 
 interface SmovDataStore {
-    suspend fun getServerUrl(): String
+    suspend fun getServerUrl(): Flow<String>
+
+    suspend fun getServerPort(): Flow<Int>
 
     suspend fun changeServerUrl(url: String)
 

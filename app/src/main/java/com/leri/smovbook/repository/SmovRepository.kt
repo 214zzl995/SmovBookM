@@ -1,17 +1,13 @@
 package com.leri.smovbook.repository
 
-import android.app.Application
-import android.content.Context
 import androidx.annotation.WorkerThread
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.service.SmovService
-import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * @Description: XXX
@@ -35,9 +31,21 @@ class SmovRepository constructor(
             Timber.d(data.first())
             emit(data.first())
         }
-
-
     }.flowOn(Dispatchers.IO)
 
+    @WorkerThread
+    fun getSmovServiceUrl() = flow<String> {
+        smovDataStore.getServerUrl()
+    }
+
+    @WorkerThread
+    fun getSmovHistoryUrl() = flow<MutableList<String>> {
+        smovDataStore.getHistoryUrl()
+    }
+
+    @WorkerThread
+    fun changeSmovServiceUrl(url: String) = flow<String> {
+        smovDataStore.changeServerUrl(url)
+    }
 
 }
