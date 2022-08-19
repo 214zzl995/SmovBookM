@@ -27,9 +27,8 @@ fun Refactor(
     val person by viewModel.personFlow.collectAsState(initial = null)
 
     IconButton(onClick = {
-        coroutineScope.launch {
-            viewModel.fetchPersonDetailsById(10086L)
-        }
+        viewModel.fetchPersonDetailsById(10086L)
+        viewModel.changeUrlTest("192.168.88.28:8000")
     }, modifier = modifier) {
         Icon(Icons.Filled.Check, contentDescription = "Localized description")
     }

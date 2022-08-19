@@ -24,9 +24,7 @@ class RefactorViewModel @Inject constructor(
     private val smovSharedFlow: MutableSharedFlow<Long> = MutableSharedFlow(replay = 1)
 
     val personFlow = smovSharedFlow.flatMapLatest {
-        val s = smovRepository.getSmovTest()
-        println(s)
-        s
+        smovRepository.getSmovTest()
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     init {
@@ -34,6 +32,8 @@ class RefactorViewModel @Inject constructor(
     }
 
     fun fetchPersonDetailsById(id: Long) = smovSharedFlow.tryEmit(id)
+
+    fun changeUrlTest(url:String) = smovRepository.changeSmovServiceUrl(url)
 
 
 }

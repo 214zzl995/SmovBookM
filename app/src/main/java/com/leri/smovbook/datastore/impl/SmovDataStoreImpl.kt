@@ -8,6 +8,7 @@ import com.leri.smovbook.datastore.serializer.settingsDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.internal.toImmutableList
 
@@ -44,10 +45,9 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
     override suspend fun changeServerUrl(url: String) {
 
         //分隔url 为 base 和 port
-        val httpUrl = "http://$url".toHttpUrlOrNull()
+        val httpUrl = "http://$url".toHttpUrl()
 
-        if (httpUrl != null) {
-            settingsDataStore.updateData { currentSettings ->
+        settingsDataStore.updateData { currentSettings ->
                 //设置可变修改
                 //currentSettings.ensureHistoryUrlIsMutable()
                 //获取当前的historyUrl
@@ -85,7 +85,6 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
                     .addAllHistoryUrl(historyUrl)
                     .build()
             }
-        }
     }
 
 }

@@ -24,3 +24,7 @@
 暂定的解决办法为 在代码中处理，将所有的全部删除后写入
 但是好像还是有解决办法的
 [https://stackoverflow.com/questions/13603878/how-to-delete-arbitrary-objects-in-repeated-field-protobuf](https://stackoverflow.com/questions/13603878/how-to-delete-arbitrary-objects-in-repeated-field-protobuf)
+
+MutableStateFlow MutableSharedFlow的区别
+[https://blog.csdn.net/rikkatheworld/article/details/125665002](https://blog.csdn.net/rikkatheworld/article/details/125665002)
+[https://blog.csdn.net/fly_with_24/article/details/120300290](https://blog.csdn.net/fly_with_24/article/details/120300290)

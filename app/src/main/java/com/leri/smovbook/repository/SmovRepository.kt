@@ -7,6 +7,7 @@ import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 /**
@@ -43,8 +44,7 @@ class SmovRepository constructor(
         smovDataStore.getHistoryUrl()
     }
 
-    @WorkerThread
-    fun changeSmovServiceUrl(url: String) = flow<String> {
+    fun changeSmovServiceUrl(url: String) = runBlocking {
         smovDataStore.changeServerUrl(url)
     }
 
