@@ -14,7 +14,7 @@ import com.leri.smovbook.models.entities.Smov
  * @param list 结果集
  */
 @Immutable
-data class SmovResponse(
+data class SmovPaginationResponse(
     val page_num: Int,
     val total: Int,
     val total_pages: Int,

@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.refactor
 
+import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
@@ -19,19 +20,25 @@ fun Refactor(
     viewModel: RefactorViewModel,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
+
+    //得出结论 想要让他获取数据必须要 在这个Composable 有定义  val person by viewModel.personFlow.collectAsState(initial = null) 且让数据变化 SharedFlow 无需默认值
     LaunchedEffect(key1 = 10086L) {
         viewModel.fetchPersonDetailsById(10086L)
     }
 
     val person by viewModel.personFlow.collectAsState(initial = null)
+    //val smovFlow by viewModel.smovFlow.collectAsState(initial = null)
 
     IconButton(onClick = {
-        viewModel.fetchPersonDetailsById(10086L)
-        viewModel.changeUrlTest("192.168.88.28:8000")
+        viewModel.fetchNextMoviePage()
+
     }, modifier = modifier) {
         Icon(Icons.Filled.Check, contentDescription = "Localized description")
     }
+
+    val ss = viewModel.smovStateFlow.value
+
+    Text(text = ss.toString())
 
     Text(text = person ?: "")
 

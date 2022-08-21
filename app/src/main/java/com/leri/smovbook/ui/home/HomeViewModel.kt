@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.*
+import javax.inject.Inject
 
 sealed interface HomeUiState {
 
@@ -24,14 +25,14 @@ sealed interface HomeUiState {
     val errorMessages: List<ErrorMessage>
     val searchInput: String
     val serverUrl: String
-    val historyUrl: Set<String>
+    val historyUrl: List<String>
 
     data class NoData(
         override val isLoading: Boolean,
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
         override val serverUrl: String,
-        override val historyUrl: Set<String>
+        override val historyUrl: List<String>
     ) : HomeUiState
 
     data class HasData(
@@ -39,7 +40,7 @@ sealed interface HomeUiState {
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
         override val serverUrl: String,
-        override val historyUrl: Set<String>,
+        override val historyUrl: List<String>,
         val smov: Smov,
         val selectedSmov: SmovItem,
         val isDetailOpen: Boolean
@@ -54,7 +55,7 @@ private data class HomeViewModelState(
     val serverUrl: String = "",
     val selectedSmovId: Int = 0,
     val isDetailOpen: Boolean = false,
-    val historyUrl: Set<String> = setOf()
+    val historyUrl: List<String> = listOf()
 ) {
     fun toUiState(): HomeUiState =
         if (smov == null) {
@@ -86,6 +87,8 @@ class HomeViewModel(
     private val smovRepository: SmovRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
+
+    private val smovPageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
 
     private val viewModelState = MutableStateFlow(HomeViewModelState(isLoading = true))
 
@@ -187,3 +190,4 @@ class HomeViewModel(
         }
     }
 }
+

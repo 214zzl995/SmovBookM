@@ -3,11 +3,15 @@ package com.leri.smovbook.repository
 import androidx.annotation.WorkerThread
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.service.SmovService
+import com.skydoves.sandwich.StatusCode
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -31,6 +35,17 @@ class SmovRepository constructor(
         response.suspendOnSuccess {
             Timber.d(data.first())
             emit(data.first())
+        }
+    }.flowOn(Dispatchers.IO)
+
+    @WorkerThread
+    fun getSmovAll() = flow {
+        val response = smovService.getAllSmov()
+        response.suspendOnSuccess {
+            Timber.d(data.toString())
+            emit(data.data)
+        }.suspendOnError {
+            message()
         }
     }.flowOn(Dispatchers.IO)
 

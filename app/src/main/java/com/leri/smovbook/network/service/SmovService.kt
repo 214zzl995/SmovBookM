@@ -1,7 +1,7 @@
 package com.leri.smovbook.network.service
 
 import com.leri.smovbook.models.ServerResult
-import com.leri.smovbook.models.network.SmovResponse
+import com.leri.smovbook.models.network.SmovPaginationResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Url
@@ -13,8 +13,8 @@ import retrofit2.http.Url
  */
 interface SmovService {
 
-    @GET("/data")
-    suspend fun getAllSmov(): ApiResponse<ServerResult<SmovResponse>>
+    @GET("/smovbook/data/pagination")
+    suspend fun getAllSmov(): ApiResponse<ServerResult<SmovPaginationResponse>>
 
     @GET("/data")
     suspend fun getAllSmovTest(): ApiResponse<Array<String>>

@@ -1,13 +1,16 @@
 package com.leri.smovbook.ui.refactor
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leri.smovbook.repository.SmovRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,17 +26,42 @@ class RefactorViewModel @Inject constructor(
 
     private val smovSharedFlow: MutableSharedFlow<Long> = MutableSharedFlow(replay = 1)
 
+    private val moviePageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
+
+    private val _smovStateFlow: MutableState<Int> = mutableStateOf(-1)
+
+    val smovStateFlow: State<Int> get() = _smovStateFlow
+
     val personFlow = smovSharedFlow.flatMapLatest {
         smovRepository.getSmovTest()
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
+    val smovFlow = smovSharedFlow.flatMapLatest {
+        smovRepository.getSmovAll()
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+
+
+    private val stateTestFlow = moviePageStateFlow.flatMapLatest {
+        smovRepository.getSmovAll()
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+
+
     init {
         Timber.d("Injection RefactorViewModel")
+        viewModelScope.launch(Dispatchers.IO) {
+            stateTestFlow.collectLatest {
+                _smovStateFlow.value = _smovStateFlow.value + 1
+            }
+        }
     }
 
     fun fetchPersonDetailsById(id: Long) = smovSharedFlow.tryEmit(id)
 
-    fun changeUrlTest(url:String) = smovRepository.changeSmovServiceUrl(url)
+    fun changeUrlTest(url: String) = smovRepository.changeSmovServiceUrl(url)
+
+    fun fetchNextMoviePage() {
+        moviePageStateFlow.value++
+    }
 
 
 }

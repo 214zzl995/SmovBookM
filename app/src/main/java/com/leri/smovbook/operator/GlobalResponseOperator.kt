@@ -35,7 +35,7 @@ class GlobalResponseOperator<T> constructor(
                     }
                 }
 
-                /** maps the [ApiResponse.Failure.Error] to the [MovieErrorResponse] using the mapper. */
+                /** maps the [ApiResponse.Failure.Error] to the [ErrorResponseMapper] using the mapper. */
                 map(ErrorResponseMapper) {
                     Timber.d(message())
                 }
@@ -46,7 +46,8 @@ class GlobalResponseOperator<T> constructor(
     // e.g., network connection error.
     override suspend fun onException(apiResponse: ApiResponse.Failure.Exception<T>) =
         apiResponse.run {
-            Timber.d("是这里么" + message())
+            Timber.d(message())
+            toast("请求失败: ${message()}")
         }
 
     private fun toast(message: String) {
