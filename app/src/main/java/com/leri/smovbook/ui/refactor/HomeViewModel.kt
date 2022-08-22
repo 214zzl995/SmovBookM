@@ -99,6 +99,14 @@ class HomeViewModel @Inject constructor(
 
             val s = smovRepository.getSmovServiceUrlAndPort()
 
+            Timber.d("测试测试测试" + s.count())
+
+            s.collectLatest {
+                _smovServerUrl.value = it
+            }
+
+            Timber.d("测试测试测试" + _smovServerUrl.value)
+
             //_smovServerUrl.value = smovRepository.getSmovServiceUrlAndPort().first()
 
         }

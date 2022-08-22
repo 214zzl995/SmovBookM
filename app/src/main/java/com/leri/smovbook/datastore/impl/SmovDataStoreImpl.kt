@@ -2,6 +2,7 @@ package com.leri.smovbook.datastore.impl
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.emptyPreferences
 import com.leri.smovbook.config.Settings
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.datastore.serializer.settingsDataStore
@@ -12,6 +13,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.internal.toImmutableList
 import timber.log.Timber
+import java.io.IOException
 import java.util.*
 
 
@@ -23,25 +25,20 @@ import java.util.*
 class SmovDataStoreImpl(context: Context) : SmovDataStore {
     private val settingsDataStore: DataStore<Settings> = context.settingsDataStore
 
-    override suspend fun getServerUrl(): Flow<String> {
-        return settingsDataStore.data.map { settings ->
-            settings.serverUrl
-        }.flowOn(Dispatchers.IO)
-            .onEmpty {
+    override val serverUrl: Flow<String>
+        get() =
+            settingsDataStore.data.map { settings ->
+                settings.serverUrl
+            }.flowOn(Dispatchers.IO).onEmpty {
                 emit("127.0.0.1")
             }
-    }
 
-    override suspend fun getServerUrlAndPort(): Flow<String> {
-        //因为是异步的 所以读不到代码
-        return settingsDataStore.data.map { settings ->
-            settings.serverUrl
-        }.onStart {
-            Timber.d("测试测试测试flow创建")
-        }.onCompletion {
-            Timber.d("测试测试测试flow销毁")
-        }
-    }
+
+    override val serverUrlAndPort: Flow<String>
+        get() =
+            settingsDataStore.data.map { settings ->
+                settings.serverUrl + ":" + settings.serverPort
+            }.flowOn(Dispatchers.IO)
 
     override suspend fun getServerPort(): Flow<Int> {
         return settingsDataStore.data.map { settings ->

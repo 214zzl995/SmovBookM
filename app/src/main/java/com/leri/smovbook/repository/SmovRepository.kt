@@ -51,14 +51,10 @@ class SmovRepository constructor(
     }.onCompletion { success() }.flowOn(Dispatchers.IO)
 
     @WorkerThread
-    fun getSmovServiceUrl() = flow<String> {
-        smovDataStore.getServerUrl()
-    }.flowOn(Dispatchers.IO)
+    fun getSmovServiceUrl() = smovDataStore.serverUrl
 
     @WorkerThread
-    fun getSmovServiceUrlAndPort() = flow<String> {
-        smovDataStore.getServerUrlAndPort().first()
-    }.flowOn(Dispatchers.IO)
+    fun getSmovServiceUrlAndPort() = smovDataStore.serverUrlAndPort
 
     @WorkerThread
     fun getSmovHistoryUrl() = flow<MutableList<String>> {

@@ -5,9 +5,10 @@ import javax.inject.Singleton
 
 @Singleton
 interface SmovDataStore {
-    suspend fun getServerUrl(): Flow<String>
 
-    suspend fun getServerUrlAndPort():Flow<String>
+    val serverUrl: Flow<String>
+
+    val serverUrlAndPort: Flow<String>
 
     suspend fun getServerPort(): Flow<Int>
 
