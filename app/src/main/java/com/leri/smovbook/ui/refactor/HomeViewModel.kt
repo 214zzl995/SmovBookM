@@ -56,16 +56,7 @@ class HomeViewModel @Inject constructor(
     private val smovRepository: SmovRepository
 ) : ViewModel() {
 
-    private val _smovsStateFlow: MutableStateFlow<HomeViewModelState> = MutableStateFlow(HomeViewModelState())
-
-    //这个地方会让前台刷新三次 会造成很大的性能问题
-    val smovs get() = _smovsStateFlow
-        .map { it.toUiState() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            _smovsStateFlow.value.toUiState()
-        )
+    val smovsState: State<HomeViewModelState> = mutableStateOf(HomeViewModelState())
 
     private val smovPageState: MutableStateFlow<Int> = MutableStateFlow(0)
 
@@ -96,17 +87,14 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             //这个回触发 newSmovFlow 的获取 当修改smovPageState时也会触发
             newSmovFlow.collectLatest {
-                _smovsStateFlow.value.smovs.addAll(it)
+                smovsState.value.smovs.addAll(it)
             }
         }
 
 
 
         viewModelScope.launch(Dispatchers.IO) {
-            Timber.d("测试 疯狂测试")
-            val serverUrl = smovRepository.getSmovServiceUrlAndPort()
-            Timber.d("测试 疯狂测试" + serverUrl.count())
-            smovRepository.getSmovServiceUrl().collectLatest {
+            smovRepository.getSmovServiceUrlAndPort().collectLatest {
                 _smovServerUrl.value = it
             }
         }

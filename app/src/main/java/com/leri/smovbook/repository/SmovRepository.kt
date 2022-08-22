@@ -41,7 +41,6 @@ class SmovRepository constructor(
     @WorkerThread
     fun getSmovPagination(pageNum: Int, pageSize: Int, success: () -> Unit, error: () -> Unit) = flow {
         val response = smovService.getPaginationSmov(pageNum, pageSize)
-        println("测试请求了几次")
         response.suspendOnSuccess {
             Timber.d(data.toString())
             emit(data.data.list)
@@ -53,17 +52,17 @@ class SmovRepository constructor(
     @WorkerThread
     fun getSmovServiceUrl() = flow<String> {
         smovDataStore.getServerUrl()
-    }
+    }.flowOn(Dispatchers.IO)
 
     @WorkerThread
     fun getSmovServiceUrlAndPort() = flow<String> {
         smovDataStore.getServerUrlAndPort()
-    }
+    }.flowOn(Dispatchers.IO)
 
     @WorkerThread
     fun getSmovHistoryUrl() = flow<MutableList<String>> {
         smovDataStore.getHistoryUrl()
-    }
+    }.flowOn(Dispatchers.IO)
 
     fun changeSmovServiceUrl(url: String) = runBlocking {
         smovDataStore.changeServerUrl(url)

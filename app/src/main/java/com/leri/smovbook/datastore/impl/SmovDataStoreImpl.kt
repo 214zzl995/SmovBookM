@@ -5,10 +5,9 @@ import androidx.datastore.core.DataStore
 import com.leri.smovbook.config.Settings
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.datastore.serializer.settingsDataStore
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEmpty
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.internal.toImmutableList
@@ -25,36 +24,60 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
     private val settingsDataStore: DataStore<Settings> = context.settingsDataStore
 
     override suspend fun getServerUrl(): Flow<String> {
-        Timber.d("测试测试哦哦哦哦哦")
-        return settingsDataStore.data
-            .map { settings ->
-                settings.serverUrl
-            }.onEmpty {
+        return settingsDataStore.data.map { settings ->
+            settings.serverUrl
+        }.flowOn(Dispatchers.IO)
+            .onEmpty {
                 emit("127.0.0.1")
             }
     }
 
     override suspend fun getServerUrlAndPort(): Flow<String> {
-        return settingsDataStore.data
-            .map { settings ->
-                settings.serverUrl + ":" + settings.serverPort
-            }.onEmpty {
-                this.emit("127.0.0.1:8080")
+
+        Timber.d("测试测试哦哦哦哦哦1" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦2" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦3" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦4" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦5" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦6" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦7" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦8" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦9" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦10" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦11" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦12" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦13" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦14" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦15" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦16" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦17" + settingsDataStore.data.first().serverUrl)
+        Timber.d("测试测试哦哦哦哦哦18" + settingsDataStore.data.first().serverUrl)
+
+
+        // 这个时异步的 所以 这个还没结束 应该就下一步了
+        val ser =  runBlocking {
+            settingsDataStore.data.map { settings ->
+                settings.serverUrl
             }
+        }
+
+
+        Timber.d("测试测试哦哦哦哦哦")
+        Timber.d("测试测试哦哦哦哦哦" + ser.count())
+
+        return ser
     }
 
     override suspend fun getServerPort(): Flow<Int> {
-        return settingsDataStore.data
-            .map { settings ->
-                settings.serverPort
-            }
+        return settingsDataStore.data.map { settings ->
+            settings.serverPort
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun getHistoryUrl(): Flow<MutableList<String>> {
-        return settingsDataStore.data
-            .map { settings ->
-                settings.historyUrlList
-            }
+        return settingsDataStore.data.map { settings ->
+            settings.historyUrlList
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun changeServerUrl(url: String) {
@@ -93,12 +116,8 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
             historyUrl = historyUrl.plus(url)
 
             //更新物理数据
-            currentSettings.toBuilder()
-                .setServerUrl(httpUrl.host)
-                .setServerPort(httpUrl.port)
-                .clearHistoryUrl()
-                .addAllHistoryUrl(historyUrl)
-                .build()
+            currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port).clearHistoryUrl()
+                .addAllHistoryUrl(historyUrl).build()
         }
     }
 

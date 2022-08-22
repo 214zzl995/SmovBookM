@@ -37,15 +37,15 @@ fun Refactor(
 
     Text(text = ss.toString())
 
-    val smovs by homeViewModel.smovs.collectAsState()
+    val smovs by homeViewModel.smovsState
 
-    when (smovs) {
+    when (smovs.toUiState()) {
         is HomeUiState.HasData -> {
-            for (s in (smovs as HomeUiState.HasData).smovs) {
-                println("去你妈的怎么没数据")
+            for (s in smovs.smovs) {
                 Text(s.name)
             }
         }
+
         is HomeUiState.NoData -> {
 
         }
