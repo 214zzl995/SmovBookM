@@ -48,7 +48,14 @@ shared一般用于一次性读取的 第二次需要重新读取的数据 那个
 #### 分离mainViewModel中的 多个相互影响的参数
 
 1. 服务器url 和 历史url 当服务器url变更 应当刷新历史url
-2. 页码与所有影片 当下拉页码时 应当将新的插入到list里 
+2. 页码与所有影片 当下拉页码时 应当将新的插入到list里
 3. 等待状态 应当分为多个状态 请求 错误等
 4. 注意！！！只分离几个参数 并不分离list等数据
 5. 对errormessage 可以设置单独的按钮字符
+
+主页中的状态
+
+1. 页码 flow, newSmovs flow , smovs 就是homeUiState State 是最终给前台看的数据 但是需要单独写出get 给前台使用
+2. ServerUrl flow ，配合 collectAsState()在前台显示 ， hisUrl State ， newHisUrl flow 将hisUrl清理后写入
+   那么需要重新获取的new数据 应该为 hisUrl 和 newSmovs 获取到值后 将 值插入到 state中 所以 new hisUrl 和 newHisUrl
+   一个应该为flow 一个为state 给前台使用
