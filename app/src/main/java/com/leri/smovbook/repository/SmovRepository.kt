@@ -5,6 +5,7 @@ import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.service.SmovService
 import com.skydoves.sandwich.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
@@ -56,7 +57,7 @@ class SmovRepository constructor(
 
     @WorkerThread
     fun getSmovServiceUrlAndPort() = flow<String> {
-        smovDataStore.getServerUrlAndPort()
+        smovDataStore.getServerUrlAndPort().first()
     }.flowOn(Dispatchers.IO)
 
     @WorkerThread

@@ -12,8 +12,6 @@ internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : In
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        val url: HttpUrl?
-
         val originalRequest = chain.request()
 
         //获取根url
@@ -28,7 +26,7 @@ internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : In
 
         val originalUrl = originalRequest.url
 
-        url = if (baseUrl.isNotBlank()) {
+        val url = if (baseUrl.isNotBlank()) {
             originalUrl
                 .newBuilder()
                 .scheme("http")

@@ -33,39 +33,14 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
     }
 
     override suspend fun getServerUrlAndPort(): Flow<String> {
-
-        Timber.d("测试测试哦哦哦哦哦1" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦2" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦3" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦4" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦5" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦6" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦7" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦8" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦9" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦10" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦11" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦12" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦13" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦14" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦15" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦16" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦17" + settingsDataStore.data.first().serverUrl)
-        Timber.d("测试测试哦哦哦哦哦18" + settingsDataStore.data.first().serverUrl)
-
-
-        // 这个时异步的 所以 这个还没结束 应该就下一步了
-        val ser =  runBlocking {
-            settingsDataStore.data.map { settings ->
-                settings.serverUrl
-            }
+        //因为是异步的 所以读不到代码
+        return settingsDataStore.data.map { settings ->
+            settings.serverUrl
+        }.onStart {
+            Timber.d("测试测试测试flow创建")
+        }.onCompletion {
+            Timber.d("测试测试测试flow销毁")
         }
-
-
-        Timber.d("测试测试哦哦哦哦哦")
-        Timber.d("测试测试哦哦哦哦哦" + ser.count())
-
-        return ser
     }
 
     override suspend fun getServerPort(): Flow<Int> {

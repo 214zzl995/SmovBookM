@@ -94,9 +94,13 @@ class HomeViewModel @Inject constructor(
 
 
         viewModelScope.launch(Dispatchers.IO) {
-            smovRepository.getSmovServiceUrlAndPort().collectLatest {
-                _smovServerUrl.value = it
-            }
+
+            Timber.d("测试测试测试")
+
+            val s = smovRepository.getSmovServiceUrlAndPort()
+
+            //_smovServerUrl.value = smovRepository.getSmovServiceUrlAndPort().first()
+
         }
     }
 

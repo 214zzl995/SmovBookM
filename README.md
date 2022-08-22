@@ -59,3 +59,6 @@ shared一般用于一次性读取的 第二次需要重新读取的数据 那个
 2. ServerUrl flow ，配合 collectAsState()在前台显示 ， hisUrl State ， newHisUrl flow 将hisUrl清理后写入
    那么需要重新获取的new数据 应该为 hisUrl 和 newSmovs 获取到值后 将 值插入到 state中 所以 new hisUrl 和 newHisUrl
    一个应该为flow 一个为state 给前台使用
+
+
+要看 [https://github.com/topics/datastore-android](https://github.com/topics/datastore-android) 案例
