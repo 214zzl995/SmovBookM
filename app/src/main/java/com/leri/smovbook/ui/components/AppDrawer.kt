@@ -33,7 +33,7 @@ fun ColumnScope.AppDrawer(
 
     }
     Text(text = "fuck")
-    Refactor(hiltViewModel())
+    Refactor(hiltViewModel(),hiltViewModel())
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
 

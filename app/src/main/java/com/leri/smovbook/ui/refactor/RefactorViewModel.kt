@@ -32,10 +32,6 @@ class RefactorViewModel @Inject constructor(
 
     val smovStateFlow: State<Int> get() = _smovStateFlow
 
-    val personFlow = smovSharedFlow.flatMapLatest {
-        smovRepository.getSmovTest()
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
-
     val smovFlow = smovSharedFlow.flatMapLatest {
         smovRepository.getSmovAll()
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)

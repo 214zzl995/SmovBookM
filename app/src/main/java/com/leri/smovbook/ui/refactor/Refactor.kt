@@ -1,6 +1,5 @@
 package com.leri.smovbook.ui.refactor
 
-import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
@@ -8,7 +7,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.launch
+
 
 /**
  * @Description: XXX
@@ -18,6 +17,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Refactor(
     viewModel: RefactorViewModel,
+    homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
 
@@ -25,9 +25,6 @@ fun Refactor(
     LaunchedEffect(key1 = 10086L) {
         viewModel.fetchPersonDetailsById(10086L)
     }
-
-    val person by viewModel.personFlow.collectAsState(initial = null)
-    //val smovFlow by viewModel.smovFlow.collectAsState(initial = null)
 
     IconButton(onClick = {
         viewModel.fetchNextMoviePage()
@@ -40,7 +37,21 @@ fun Refactor(
 
     Text(text = ss.toString())
 
-    Text(text = person ?: "")
+    val smovs by homeViewModel.smovs.collectAsState()
 
+    when (smovs) {
+        is HomeUiState.HasData -> {
+            for (s in (smovs as HomeUiState.HasData).smovs) {
+                println("去你妈的怎么没数据")
+                Text(s.name)
+            }
+        }
+        is HomeUiState.NoData -> {
+
+        }
+    }
+
+
+    //Text(text = homeViewModel.smovServerUrl)
 
 }

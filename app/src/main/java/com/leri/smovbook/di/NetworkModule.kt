@@ -46,10 +46,5 @@ object NetworkModule {
         return retrofit.create(SmovService::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideTheSmovDataStore(@ApplicationContext context: Context): SmovDataStore {
-        return SmovDataStoreImpl(context)
-    }
 
 }

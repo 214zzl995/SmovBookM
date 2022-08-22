@@ -1,7 +1,7 @@
 package com.leri.smovbook.network
 
 object Api {
-    const val BASE_URL = "https://gist.githubusercontent.com/"
+    const val BASE_URL = "https://127.0.0.1/"
     const val PAGING_SIZE = 20
 
     @JvmStatic

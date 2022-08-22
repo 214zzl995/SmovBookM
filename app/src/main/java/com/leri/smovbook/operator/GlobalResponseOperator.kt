@@ -1,6 +1,7 @@
 package com.leri.smovbook.operator
 
 import android.content.Context
+import android.os.Looper
 import android.widget.Toast
 import com.leri.smovbook.mapper.ErrorResponseMapper
 import com.skydoves.sandwich.ApiResponse
@@ -47,7 +48,9 @@ class GlobalResponseOperator<T> constructor(
     override suspend fun onException(apiResponse: ApiResponse.Failure.Exception<T>) =
         apiResponse.run {
             Timber.d(message())
+            Looper.prepare()
             toast("请求失败: ${message()}")
+            Looper.loop()
         }
 
     private fun toast(message: String) {

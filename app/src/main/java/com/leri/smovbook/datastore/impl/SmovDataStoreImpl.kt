@@ -8,9 +8,12 @@ import com.leri.smovbook.datastore.serializer.settingsDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEmpty
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.internal.toImmutableList
+import timber.log.Timber
+import java.util.*
 
 
 /**
@@ -22,9 +25,21 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
     private val settingsDataStore: DataStore<Settings> = context.settingsDataStore
 
     override suspend fun getServerUrl(): Flow<String> {
+        Timber.d("测试测试哦哦哦哦哦")
         return settingsDataStore.data
             .map { settings ->
                 settings.serverUrl
+            }.onEmpty {
+                emit("127.0.0.1")
+            }
+    }
+
+    override suspend fun getServerUrlAndPort(): Flow<String> {
+        return settingsDataStore.data
+            .map { settings ->
+                settings.serverUrl + ":" + settings.serverPort
+            }.onEmpty {
+                this.emit("127.0.0.1:8080")
             }
     }
 
@@ -48,43 +63,43 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
         val httpUrl = "http://$url".toHttpUrl()
 
         settingsDataStore.updateData { currentSettings ->
-                //设置可变修改
-                //currentSettings.ensureHistoryUrlIsMutable()
-                //获取当前的historyUrl
-                //val historyUrl = currentSettings.historyUrlList
-                var historyUrl = currentSettings.historyUrlList.toImmutableList()
+            //设置可变修改
+            //currentSettings.ensureHistoryUrlIsMutable()
+            //获取当前的historyUrl
+            //val historyUrl = currentSettings.historyUrlList
+            var historyUrl = currentSettings.historyUrlList.toImmutableList()
 
-                //当插入的url在historyUrl中已存在 删除当前存在的项目
-                //historyUrl.removeIf {
-                //it.contains(url)
-                //}
-                historyUrl = historyUrl.filterNot { it.equals(url) }
+            //当插入的url在historyUrl中已存在 删除当前存在的项目
+            //historyUrl.removeIf {
+            //it.contains(url)
+            //}
+            historyUrl = historyUrl.filterNot { it.equals(url) }
 
 
-                //当前count
-                val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
+            //当前count
+            val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
-                //当档案数量等于count数量时情理一位
-                //if (historyUrl.size == historyCount) {
-                //historyUrl.removeFirst()
-                //}
+            //当档案数量等于count数量时情理一位
+            //if (historyUrl.size == historyCount) {
+            //historyUrl.removeFirst()
+            //}
 
-                if (historyUrl.size == historyCount) {
-                    historyUrl = historyUrl.drop(0)
-                }
-
-                //插入新的url
-                //historyUrl.add(url)
-                historyUrl = historyUrl.plus(url)
-
-                //更新物理数据
-                currentSettings.toBuilder()
-                    .setServerUrl(httpUrl.host)
-                    .setServerPort(httpUrl.port)
-                    .clearHistoryUrl()
-                    .addAllHistoryUrl(historyUrl)
-                    .build()
+            if (historyUrl.size == historyCount) {
+                historyUrl = historyUrl.drop(0)
             }
+
+            //插入新的url
+            //historyUrl.add(url)
+            historyUrl = historyUrl.plus(url)
+
+            //更新物理数据
+            currentSettings.toBuilder()
+                .setServerUrl(httpUrl.host)
+                .setServerPort(httpUrl.port)
+                .clearHistoryUrl()
+                .addAllHistoryUrl(historyUrl)
+                .build()
+        }
     }
 
 }

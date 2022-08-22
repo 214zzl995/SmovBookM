@@ -26,8 +26,8 @@ object RepositoryModule {
     @ViewModelScoped
     fun provideTvRepository(
         smovService: SmovService,
-        smovDataStore:SmovDataStore
+        smovDataStore: SmovDataStore
     ): SmovRepository {
-        return SmovRepository(smovService,smovDataStore)
+        return SmovRepository(smovService, smovDataStore)
     }
 }

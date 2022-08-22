@@ -25,14 +25,14 @@ sealed interface HomeUiState {
     val errorMessages: List<ErrorMessage>
     val searchInput: String
     val serverUrl: String
-    val historyUrl: List<String>
+    val historyUrl: Set<String>
 
     data class NoData(
         override val isLoading: Boolean,
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
         override val serverUrl: String,
-        override val historyUrl: List<String>
+        override val historyUrl: Set<String>
     ) : HomeUiState
 
     data class HasData(
@@ -40,7 +40,7 @@ sealed interface HomeUiState {
         override val errorMessages: List<ErrorMessage>,
         override val searchInput: String,
         override val serverUrl: String,
-        override val historyUrl: List<String>,
+        override val historyUrl: Set<String>,
         val smov: Smov,
         val selectedSmov: SmovItem,
         val isDetailOpen: Boolean
@@ -55,7 +55,7 @@ private data class HomeViewModelState(
     val serverUrl: String = "",
     val selectedSmovId: Int = 0,
     val isDetailOpen: Boolean = false,
-    val historyUrl: List<String> = listOf()
+    val historyUrl: Set<String> = setOf()
 ) {
     fun toUiState(): HomeUiState =
         if (smov == null) {

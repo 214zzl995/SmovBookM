@@ -3,15 +3,14 @@ package com.leri.smovbook.repository
 import androidx.annotation.WorkerThread
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.service.SmovService
-import com.skydoves.sandwich.StatusCode
-import com.skydoves.sandwich.message
-import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnSuccess
+import com.skydoves.sandwich.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import retrofit2.http.Query
 import timber.log.Timber
 
 /**
@@ -29,16 +28,6 @@ class SmovRepository constructor(
     }
 
     @WorkerThread
-    fun getSmovTest() = flow<String> {
-
-        val response = smovService.getAllSmovTest()
-        response.suspendOnSuccess {
-            Timber.d(data.first())
-            emit(data.first())
-        }
-    }.flowOn(Dispatchers.IO)
-
-    @WorkerThread
     fun getSmovAll() = flow {
         val response = smovService.getAllSmov()
         response.suspendOnSuccess {
@@ -50,8 +39,25 @@ class SmovRepository constructor(
     }.flowOn(Dispatchers.IO)
 
     @WorkerThread
+    fun getSmovPagination(pageNum: Int, pageSize: Int, success: () -> Unit, error: () -> Unit) = flow {
+        val response = smovService.getPaginationSmov(pageNum, pageSize)
+        println("测试请求了几次")
+        response.suspendOnSuccess {
+            Timber.d(data.toString())
+            emit(data.data.list)
+        }.onError {
+            error()
+        }.onException { error() }
+    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+
+    @WorkerThread
     fun getSmovServiceUrl() = flow<String> {
         smovDataStore.getServerUrl()
+    }
+
+    @WorkerThread
+    fun getSmovServiceUrlAndPort() = flow<String> {
+        smovDataStore.getServerUrlAndPort()
     }
 
     @WorkerThread
