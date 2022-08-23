@@ -40,54 +40,33 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
                 settings.serverUrl + ":" + settings.serverPort
             }.flowOn(Dispatchers.IO)
 
-    override suspend fun getServerPort(): Flow<Int> {
-        return settingsDataStore.data.map { settings ->
-            settings.serverPort
-        }.flowOn(Dispatchers.IO)
-    }
+    override val serverPort: Flow<Int>
+        get() =
+            settingsDataStore.data.map { settings ->
+                settings.serverPort
+            }.flowOn(Dispatchers.IO)
 
-    override suspend fun getHistoryUrl(): Flow<MutableList<String>> {
-        return settingsDataStore.data.map { settings ->
-            settings.historyUrlList
-        }.flowOn(Dispatchers.IO)
-    }
+
+    override val historyUrl: Flow<MutableList<String>>
+        get() =
+            settingsDataStore.data.map { settings ->
+                settings.historyUrlList
+            }.flowOn(Dispatchers.IO)
+
 
     override suspend fun changeServerUrl(url: String) {
-
         //分隔url 为 base 和 port
         val httpUrl = "http://$url".toHttpUrl()
-
         settingsDataStore.updateData { currentSettings ->
-            //设置可变修改
-            //currentSettings.ensureHistoryUrlIsMutable()
-            //获取当前的historyUrl
-            //val historyUrl = currentSettings.historyUrlList
-            var historyUrl = currentSettings.historyUrlList.toImmutableList()
-
-            //当插入的url在historyUrl中已存在 删除当前存在的项目
-            //historyUrl.removeIf {
-            //it.contains(url)
-            //}
-            historyUrl = historyUrl.filterNot { it.equals(url) }
-
-
-            //当前count
-            val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
-
-            //当档案数量等于count数量时情理一位
-            //if (historyUrl.size == historyCount) {
-            //historyUrl.removeFirst()
-            //}
+            val historyUrl = currentSettings.historyUrlList.toMutableList()
+            historyUrl.removeIf { it.equals(url) }
+            val historyCount = if (currentSettings.historyCount == 0) 2 else currentSettings.historyCount
 
             if (historyUrl.size == historyCount) {
-                historyUrl = historyUrl.drop(0)
+                historyUrl.removeAt(0)
             }
+            historyUrl.add(url)
 
-            //插入新的url
-            //historyUrl.add(url)
-            historyUrl = historyUrl.plus(url)
-
-            //更新物理数据
             currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port).clearHistoryUrl()
                 .addAllHistoryUrl(historyUrl).build()
         }

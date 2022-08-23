@@ -12,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.LocalDateTime
+import java.util.*
 import javax.inject.Inject
 
 sealed interface HomeUiState {
@@ -74,41 +76,25 @@ class HomeViewModel @Inject constructor(
         )
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
-    private val _smovServerUrl: MutableStateFlow<String> = MutableStateFlow("")
+    val smovServerUrl: MutableStateFlow<String> = MutableStateFlow("")
 
-    val smovServerUrl: StateFlow<String> = _smovServerUrl
-
-    val smovHistoryUrl = _smovServerUrl.flatMapLatest {
+    val smovHistoryUrl = smovServerUrl.flatMapLatest {
         smovRepository.getSmovHistoryUrl()
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     init {
         Timber.d("Injection HomeViewModel")
         viewModelScope.launch(Dispatchers.IO) {
-            //这个回触发 newSmovFlow 的获取 当修改smovPageState时也会触发
+            //这个会触发 newSmovFlow 的获取 当修改smovPageState时也会触发
             newSmovFlow.collectLatest {
                 smovsState.value.smovs.addAll(it)
             }
         }
 
-
-
         viewModelScope.launch(Dispatchers.IO) {
-
-            Timber.d("测试测试测试")
-
-            val s = smovRepository.getSmovServiceUrlAndPort()
-
-            Timber.d("测试测试测试" + s.count())
-
-            s.collectLatest {
-                _smovServerUrl.value = it
+            smovRepository.getSmovServiceUrlAndPort().collectLatest {
+                smovServerUrl.value = it
             }
-
-            Timber.d("测试测试测试" + _smovServerUrl.value)
-
-            //_smovServerUrl.value = smovRepository.getSmovServiceUrlAndPort().first()
-
         }
     }
 
@@ -116,10 +102,19 @@ class HomeViewModel @Inject constructor(
         smovPageState.value++
     }
 
+    private fun fetchSmovPageForNum(page_num: Int) {
+        smovPageState.value = page_num
+    }
+
     fun changeServerUrl(url: String) {
+        //这个change 可能是有性能问题 测试后发现 只需要几毫秒 不影响
         smovRepository.changeSmovServiceUrl(url)
-        _smovServerUrl.value = url
+        smovServerUrl.value = url
+        //这个更新页码得改一下 会导致页码到负一 newSmovFlow.replayCache
+        fetchSmovPageForNum(-1)
     }
 
 
 }
+
+

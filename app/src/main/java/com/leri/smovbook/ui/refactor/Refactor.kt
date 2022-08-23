@@ -22,13 +22,9 @@ fun Refactor(
 ) {
 
     //得出结论 想要让他获取数据必须要 在这个Composable 有定义  val person by viewModel.personFlow.collectAsState(initial = null) 且让数据变化 SharedFlow 无需默认值
-    LaunchedEffect(key1 = 10086L) {
-        viewModel.fetchPersonDetailsById(10086L)
-    }
 
     IconButton(onClick = {
-        viewModel.fetchNextMoviePage()
-
+        homeViewModel.changeServerUrl("126.22.22.1:1111")
     }, modifier = modifier) {
         Icon(Icons.Filled.Check, contentDescription = "Localized description")
     }
@@ -36,6 +32,16 @@ fun Refactor(
     val ss = viewModel.smovStateFlow.value
 
     Text(text = ss.toString())
+
+    val serverUrl by homeViewModel.smovServerUrl.collectAsState()
+
+    val historyUrl by homeViewModel.smovHistoryUrl.collectAsState(initial = mutableListOf())
+
+    Text("ServerUrl$serverUrl")
+
+    for (his in historyUrl) {
+        Text(his)
+    }
 
     val smovs by homeViewModel.smovsState
 
@@ -50,8 +56,4 @@ fun Refactor(
 
         }
     }
-
-
-    //Text(text = homeViewModel.smovServerUrl)
-
 }

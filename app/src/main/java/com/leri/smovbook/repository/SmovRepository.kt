@@ -57,9 +57,7 @@ class SmovRepository constructor(
     fun getSmovServiceUrlAndPort() = smovDataStore.serverUrlAndPort
 
     @WorkerThread
-    fun getSmovHistoryUrl() = flow<MutableList<String>> {
-        smovDataStore.getHistoryUrl()
-    }.flowOn(Dispatchers.IO)
+    fun getSmovHistoryUrl() = smovDataStore.historyUrl
 
     fun changeSmovServiceUrl(url: String) = runBlocking {
         smovDataStore.changeServerUrl(url)

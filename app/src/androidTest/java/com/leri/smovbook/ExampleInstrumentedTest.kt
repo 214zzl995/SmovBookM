@@ -21,4 +21,11 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.leri.smovbook", appContext.packageName)
     }
+
+    @Test
+    fun test(){
+
+
+    }
+
 }

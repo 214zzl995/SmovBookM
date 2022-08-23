@@ -21,7 +21,7 @@ internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : In
 
         //获取根端口
         val port = runBlocking {
-            smovDataStore.getServerPort().first()
+            smovDataStore.serverPort.first()
         }
 
         val originalUrl = originalRequest.url

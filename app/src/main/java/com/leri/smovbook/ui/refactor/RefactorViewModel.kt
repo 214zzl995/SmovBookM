@@ -44,16 +44,9 @@ class RefactorViewModel @Inject constructor(
 
     init {
         Timber.d("Injection RefactorViewModel")
-        viewModelScope.launch(Dispatchers.IO) {
-            stateTestFlow.collectLatest {
-                _smovStateFlow.value = _smovStateFlow.value + 1
-            }
-        }
     }
 
     fun fetchPersonDetailsById(id: Long) = smovSharedFlow.tryEmit(id)
-
-    fun changeUrlTest(url: String) = smovRepository.changeSmovServiceUrl(url)
 
     fun fetchNextMoviePage() {
         moviePageStateFlow.value++

@@ -10,9 +10,11 @@ interface SmovDataStore {
 
     val serverUrlAndPort: Flow<String>
 
-    suspend fun getServerPort(): Flow<Int>
+    val serverPort: Flow<Int>
+
+    val historyUrl: Flow<MutableList<String>>
 
     suspend fun changeServerUrl(url: String)
 
-    suspend fun getHistoryUrl(): Flow<MutableList<String>>
+
 }
