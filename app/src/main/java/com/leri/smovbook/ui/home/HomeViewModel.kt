@@ -11,6 +11,7 @@ import com.leri.smovbook.repository.SmovRepository
 import com.leri.smovbook.util.ErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -76,6 +77,7 @@ class HomeViewModel @Inject constructor(
                 listOf<Smov>()
             }
         } else {
+            delay(1500)
             smovRepository.getSmovPagination(
                 pageNum = it,
                 pageSize = 10,
