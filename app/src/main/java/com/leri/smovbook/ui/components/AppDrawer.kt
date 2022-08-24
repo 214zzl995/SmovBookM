@@ -28,12 +28,7 @@ fun ColumnScope.AppDrawer(
     DrawerHeader()
     DividerItem()
     DrawerItemHeader("Chats")
-    for (his in uiState.historyUrl) {
-        Text(text = his)
-
-    }
     Text(text = "fuck")
-    Refactor(hiltViewModel(),hiltViewModel())
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
 

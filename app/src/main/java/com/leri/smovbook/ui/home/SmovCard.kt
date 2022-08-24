@@ -56,7 +56,7 @@ fun SmovCard(
                 .padding(0.dp)
                 .clickable {
                     coroutineScope.launch {
-                        println("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
+                        println("http://$mainUrl/smovbook/file${smov.realname}/${smov.realname}.${smov.extension}")
                         val options: ActivityOptions = ActivityOptions.makeBasic()
 
                         val intent = Intent(Intent.ACTION_VIEW)
@@ -67,7 +67,7 @@ fun SmovCard(
                         intent.putExtra("title", smov.name)
                         println(type)
                         val uri: Uri =
-                            Uri.parse("http://$mainUrl/${smov.realname}/${smov.realname}.${smov.extension}")
+                            Uri.parse("http://$mainUrl/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}")
                         intent.setDataAndType(uri, type)
 
                         val title = "打开视频"
@@ -82,7 +82,7 @@ fun SmovCard(
 
                 }) {
                 GlideImage(
-                    imageModel = "http://$mainUrl/${smov.realname}/img/thumbs_${smov.name}.jpg",
+                    imageModel = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先已什么形式打开
                     modifier = Modifier
                         .fillMaxWidth(0.7F)

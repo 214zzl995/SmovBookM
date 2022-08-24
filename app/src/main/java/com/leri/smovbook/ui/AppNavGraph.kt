@@ -21,7 +21,7 @@ fun AppNavGraph(
     startDestination: String = AppDestinations.HOME_ROUTE
 ) {
 
-    val homeViewModel: HomeViewModel by hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val navigationActions = remember(navController) {
         AppNavigationActions(navController)
     }
