@@ -12,8 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.time.LocalDateTime
-import java.util.*
 import javax.inject.Inject
 
 sealed interface HomeUiState {
@@ -68,12 +66,19 @@ class HomeViewModel @Inject constructor(
 
     private val newSmovFlow = smovPageState.flatMapLatest {
         _smovLoadingState.value = NetworkState.LOADING
-        smovRepository.getSmovPagination(
-            pageNum = it,
-            pageSize = 10,
-            success = { _smovLoadingState.value = NetworkState.SUCCESS },
-            error = { _smovLoadingState.value = NetworkState.ERROR }
-        )
+        if (it == -1) {
+            flow {
+                listOf<Smov>()
+            }
+        } else {
+            smovRepository.getSmovPagination(
+                pageNum = it,
+                pageSize = 10,
+                success = { _smovLoadingState.value = NetworkState.SUCCESS },
+                error = { _smovLoadingState.value = NetworkState.ERROR }
+            )
+        }
+
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     val smovServerUrl: MutableStateFlow<String> = MutableStateFlow("")
@@ -110,8 +115,15 @@ class HomeViewModel @Inject constructor(
         //这个change 可能是有性能问题 测试后发现 只需要几毫秒 不影响
         smovRepository.changeSmovServiceUrl(url)
         smovServerUrl.value = url
-        //这个更新页码得改一下 会导致页码到负一 newSmovFlow.replayCache
-        fetchSmovPageForNum(-1)
+
+        //删除当前所有smov数据
+        smovsState.value.smovs.removeAll { true }
+
+        if (smovPageState.value == 0) {
+            //先更新为-1 因为防抖无法传0
+            fetchSmovPageForNum(-1)
+        }
+        fetchSmovPageForNum(0)
     }
 
 

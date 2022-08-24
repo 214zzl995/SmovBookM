@@ -1,13 +1,12 @@
 package com.leri.smovbook.ui.data
 
-import com.leri.smovbook.model.Actor
-import com.leri.smovbook.model.Smov
-import com.leri.smovbook.model.SmovItem
-import com.leri.smovbook.model.Tag
+import com.leri.smovbook.models.entities.Actor
+import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.models.entities.Tag
 import com.leri.smovbook.ui.home.HomeUiState
 
-val testData = listOf(
-    SmovItem(
+val testData = mutableListOf(
+    Smov(
         0,
         "test",
         "test",
@@ -35,7 +34,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -63,7 +62,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -91,7 +90,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -119,7 +118,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -147,7 +146,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -175,7 +174,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -203,7 +202,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -231,7 +230,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -259,7 +258,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -287,7 +286,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -315,7 +314,7 @@ val testData = listOf(
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
-    SmovItem(
+    Smov(
         0,
         "test",
         "test",
@@ -345,12 +344,7 @@ val testData = listOf(
     )
 )
 
-val testDataSmov = Smov(
-    testData,
-    testData.first()
-)
-
-val testDataSin = SmovItem(
+val testDataSin = Smov(
     0,
     "test",
     "test",
@@ -380,12 +374,7 @@ val testDataSin = SmovItem(
 )
 
 val testDataHasData = HomeUiState.HasData(
-    smov = testDataSmov,
-    isLoading = false,
     errorMessages = listOf(),
-    searchInput = "",
-    serverUrl = "127.0.0.1",
-    isDetailOpen = false,
-    selectedSmov = testDataSin,
-    historyUrl = setOf()
+    smovs = testData,
+    selectedSmov = testDataSin
 )

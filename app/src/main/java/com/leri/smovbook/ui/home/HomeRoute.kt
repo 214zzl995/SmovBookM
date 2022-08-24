@@ -16,10 +16,12 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
+import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.ui.components.AppScaffold
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
@@ -27,14 +29,22 @@ fun HomeRoute(
     openBarScann: () -> Unit,
     currentRoute: String
 ) {
-    val uiState by homeViewModel.uiState.collectAsState()
+    val uiState by homeViewModel.smovsState
+    val detailOpen by homeViewModel.detailOpen
+    val serverUrl by homeViewModel.smovServerUrl.collectAsState()
+    val historyUrl by homeViewModel.smovHistoryUrl.collectAsState(initial = mutableListOf())
+    val loadingState by homeViewModel.smovLoadingState
     HomeRoute(
         scaffoldState = scaffoldState,
-        uiState = uiState,
+        uiState = uiState.toUiState(),
         onErrorDismiss = { homeViewModel.errorShown(it) },
         openBarScann = openBarScann,
         onRefreshSmovData = { homeViewModel.refreshData() },
-        currentRoute = currentRoute
+        currentRoute = currentRoute,
+        detailOpen = detailOpen,
+        serverUrl = serverUrl,
+        historyUrl = historyUrl,
+        loadingState = loadingState
     )
 
 }
@@ -48,12 +58,16 @@ fun HomeRoute(
     uiState: HomeUiState,
     openBarScann: () -> Unit,
     onRefreshSmovData: () -> Unit,
-    currentRoute: String
+    currentRoute: String,
+    detailOpen: DrawerValue,
+    serverUrl: String,
+    historyUrl: MutableList<String>,
+    loadingState: NetworkState
 ) {
 
     val context = LocalContext.current
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = detailOpen)
 
     var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
     val coroutineScope = rememberCoroutineScope()
@@ -70,7 +84,7 @@ fun HomeRoute(
                 }
             })
 
-    val homeScreenType = getHomeScreenType(uiState)
+    val homeScreenType = getHomeScreenType(uiState, detailOpen)
 
     BackHandler(
         onBack = {
@@ -128,7 +142,9 @@ fun HomeRoute(
                 }
             },
             onRefreshSmovData = onRefreshSmovData,
-            openDrawer = { coroutineScope.launch { drawerState.open() } }
+            openDrawer = { coroutineScope.launch { drawerState.open() } },
+            serverUrl = serverUrl,
+            loadingState =loadingState
         )
     }
 
@@ -139,13 +155,15 @@ private enum class HomeScreenType {
     Details
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun getHomeScreenType(
-    uiState: HomeUiState
+    uiState: HomeUiState,
+    detailOpen: DrawerValue
 ): HomeScreenType =
     when (uiState) {
         is HomeUiState.HasData -> {
-            if (uiState.isDetailOpen) {
+            if (detailOpen.equals(DrawerValue.Open)) {
                 HomeScreenType.Details
             } else {
                 HomeScreenType.Feed

@@ -11,8 +11,6 @@ import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.compose.material3.ExperimentalMaterial3Api
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovApp(
     appContainer: AppContainer

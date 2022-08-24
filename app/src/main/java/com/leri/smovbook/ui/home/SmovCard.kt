@@ -21,20 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import com.leri.smovbook.R
-import com.leri.smovbook.model.SmovItem
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
-
 import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import com.google.accompanist.flowlayout.FlowRow
+import com.leri.smovbook.models.entities.Smov
 
 
 @Composable
 fun SmovCard(
-    smov: SmovItem,
+    smov: Smov,
     mainUrl: String
 ) {
     val coroutineScope = rememberCoroutineScope()

@@ -24,13 +24,15 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.leri.smovbook.R
-import com.leri.smovbook.model.Smov
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.components.JumpToTop
 import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.models.network.isLoading
 import com.leri.smovbook.ui.data.testDataHasData
 
 
@@ -45,6 +47,8 @@ fun HomeScreen(
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     openBarScann: () -> Unit = { },
+    serverUrl: String,
+    loadingState: NetworkState
 ) {
 
     val scrollState = rememberLazyListState()
@@ -69,11 +73,13 @@ fun HomeScreen(
                     openDrawer = openDrawer,
                     homeListLazyListState = homeListLazyListState,
                     openBarScann = openBarScann,
-                    scaffoldState = scaffoldState
+                    scaffoldState = scaffoldState,
+                    loadingState = loadingState,
+                    serverUrl = serverUrl
                 ) { hasData ->
                     SmovList(
-                        smov = hasData.smov,
-                        mainUrl = hasData.serverUrl,
+                        smov = hasData.smovs,
+                        mainUrl = serverUrl,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
@@ -99,6 +105,8 @@ private fun HomeScreenWithList(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     openBarScann: () -> Unit,
+    loadingState: NetworkState,
+    serverUrl: String,
     hasPostsContent: @Composable (
         uiState: HomeUiState.HasData
     ) -> Unit
@@ -108,7 +116,7 @@ private fun HomeScreenWithList(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            if (uiState.errorMessages.isEmpty() && !uiState.isLoading && uiState.errorMessages.count() > 100) {
+            if (uiState.errorMessages.isEmpty() && !loadingState.isLoading() && uiState.errorMessages.count() > 100) {
                 ExtendedFloatingActionButton(
                     onClick = onRefreshSmovData
                 ) { Text("重载") }
@@ -120,10 +128,10 @@ private fun HomeScreenWithList(
         LoadingContent(
             empty = when (uiState) {
                 is HomeUiState.HasData -> false
-                is HomeUiState.NoData -> uiState.isLoading
+                is HomeUiState.NoData -> loadingState.isLoading()
             },
             emptyContent = { FullScreenLoading() },
-            loading = uiState.isLoading,
+            loading = loadingState.isLoading(),
             onRefresh = onRefreshSmovData,
             content = {
                 when (uiState) {
@@ -152,7 +160,7 @@ private fun HomeScreenWithList(
                 modifier = Modifier.statusBarsPadding(),
                 onRefreshSmovData = onRefreshSmovData,
                 onOpenBarScann = openBarScann,
-                uiState = uiState
+                serverUrl = serverUrl
             )
         }
 
@@ -187,7 +195,7 @@ fun ChannelNameBar(
     onNavIconPressed: () -> Unit = { },
     onRefreshSmovData: () -> Unit = { },
     onOpenBarScann: () -> Unit = { },
-    uiState: HomeUiState
+    serverUrl: String
 ) {
     var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
     if (functionalityNotAvailablePopupShown) {
@@ -206,7 +214,7 @@ fun ChannelNameBar(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = uiState.serverUrl,
+                    text = serverUrl,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -297,7 +305,7 @@ private fun FullScreenLoading() {
 
 @Composable
 fun SmovList(
-    smov: Smov,
+    smov: List<Smov>,
     mainUrl: String,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
@@ -329,8 +337,8 @@ fun SmovList(
 //                    }
 //                }
 //            }
-            for (smovItem in smov.smovList) {
-                item{
+            for (smovItem in smov) {
+                item {
                     SmovCard(smovItem, mainUrl)
                 }
             }
@@ -396,7 +404,9 @@ fun Screen() {
             onErrorDismiss = {},
             uiState = testDataHasData,
             homeListLazyListState = rememberLazyListState(0),
-            scaffoldState = rememberScaffoldState()
+            scaffoldState = rememberScaffoldState(),
+            serverUrl = "127.0.0.1:8080",
+            loadingState = NetworkState.SUCCESS
         )
     }
 
@@ -409,7 +419,7 @@ fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
             channelName = "composers",
-            uiState = testDataHasData
+            serverUrl = "127.0.0.1:8080"
         )
     }
 }

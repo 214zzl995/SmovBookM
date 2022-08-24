@@ -2,7 +2,7 @@ package com.leri.smovbook.ui
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,9 +20,8 @@ fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
     startDestination: String = AppDestinations.HOME_ROUTE
 ) {
-    val homeViewModel: HomeViewModel = viewModel(
-        factory = HomeViewModel.provideFactory(appContainer.smovRepository,appContainer.settingsRepository)
-    )
+
+    val homeViewModel: HomeViewModel by hiltViewModel()
     val navigationActions = remember(navController) {
         AppNavigationActions(navController)
     }
@@ -48,7 +47,7 @@ fun AppNavGraph(
             BarCodeScannRoute(
                 navigateUp = { navController.navigateUp() },
                 changeServer = {
-                    homeViewModel.changeCacheServe(it)
+                    homeViewModel.changeServerUrl(it)
                 }
             )
         }

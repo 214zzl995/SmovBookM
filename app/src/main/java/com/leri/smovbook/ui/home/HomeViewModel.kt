@@ -1,193 +1,147 @@
 package com.leri.smovbook.ui.home
 
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leri.smovbook.data.Result
-import com.leri.smovbook.R
-import com.leri.smovbook.config.SettingsRepository
-import com.leri.smovbook.data.smov.SmovRepository
-import com.leri.smovbook.model.Smov
-import com.leri.smovbook.model.SmovItem
-import com.leri.smovbook.util.DataStoreUtils
+import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.repository.SmovRepository
 import com.leri.smovbook.util.ErrorMessage
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.util.*
+import timber.log.Timber
 import javax.inject.Inject
 
 sealed interface HomeUiState {
 
-    val isLoading: Boolean
     val errorMessages: List<ErrorMessage>
-    val searchInput: String
-    val serverUrl: String
-    val historyUrl: Set<String>
 
     data class NoData(
-        override val isLoading: Boolean,
         override val errorMessages: List<ErrorMessage>,
-        override val searchInput: String,
-        override val serverUrl: String,
-        override val historyUrl: Set<String>
     ) : HomeUiState
 
     data class HasData(
-        override val isLoading: Boolean,
         override val errorMessages: List<ErrorMessage>,
-        override val searchInput: String,
-        override val serverUrl: String,
-        override val historyUrl: Set<String>,
-        val smov: Smov,
-        val selectedSmov: SmovItem,
-        val isDetailOpen: Boolean
+        val smovs: MutableList<Smov>,
+        val selectedSmov: Smov?
     ) : HomeUiState
 }
 
-private data class HomeViewModelState(
-    val smov: Smov? = null,
-    val isLoading: Boolean = false,
-    val errorMessages: List<ErrorMessage> = emptyList(),
-    val searchInput: String = "",
-    val serverUrl: String = "",
+data class HomeViewModelState(
+    val smovs: MutableList<Smov> = mutableListOf(),
+    val errorMessages: MutableList<ErrorMessage> = mutableListOf(),
     val selectedSmovId: Int = 0,
     val isDetailOpen: Boolean = false,
-    val historyUrl: Set<String> = setOf()
 ) {
     fun toUiState(): HomeUiState =
-        if (smov == null) {
+        if (smovs.isEmpty()) {
             HomeUiState.NoData(
-                isLoading = isLoading,
                 errorMessages = errorMessages,
-                searchInput = searchInput,
-                serverUrl = serverUrl,
-                historyUrl = historyUrl
             )
         } else {
             HomeUiState.HasData(
-                smov = smov,
-                isLoading = isLoading,
+                smovs = smovs,
                 errorMessages = errorMessages,
-                searchInput = searchInput,
-                serverUrl = serverUrl,
-                isDetailOpen = isDetailOpen,
-                selectedSmov = smov.smovList.find {
+                selectedSmov = smovs.find {
                     it.id == selectedSmovId
-                } ?: smov.highlightedSmovItem,
-                historyUrl = historyUrl
+                },
             )
         }
 }
 
-
-class HomeViewModel(
-    private val smovRepository: SmovRepository,
-    private val settingsRepository: SettingsRepository
+@OptIn(ExperimentalMaterial3Api::class)
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val smovRepository: SmovRepository
 ) : ViewModel() {
 
-    private val smovPageStateFlow: MutableStateFlow<Int> = MutableStateFlow(1)
+    private val _detailOpen: MutableState<DrawerValue> = mutableStateOf(DrawerValue.Closed)
+    val detailOpen: State<DrawerValue> get() = _detailOpen
 
-    private val viewModelState = MutableStateFlow(HomeViewModelState(isLoading = true))
+    val smovsState: State<HomeViewModelState> = mutableStateOf(HomeViewModelState())
 
-    val uiState = viewModelState
-        .map { it.toUiState() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            viewModelState.value.toUiState()
-        )
+    private val smovPageState: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    init {
-        getCacheServe()
-        refreshData()
-    }
+    private val _smovLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
+    val smovLoadingState: State<NetworkState> get() = _smovLoadingState
 
-    private fun getCacheServe() {
-
-        //这个viewModelScope.launch是协程 是不阻塞当前线程的
-        viewModelScope.launch {
-            //println(settingsRepository.getHisUrl())
+    private val newSmovFlow = smovPageState.flatMapLatest {
+        _smovLoadingState.value = NetworkState.LOADING
+        if (it == -1) {
+            flow {
+                listOf<Smov>()
+            }
+        } else {
+            smovRepository.getSmovPagination(
+                pageNum = it,
+                pageSize = 10,
+                success = { _smovLoadingState.value = NetworkState.SUCCESS },
+                error = { _smovLoadingState.value = NetworkState.ERROR }
+            )
         }
 
-        //而runBlocking是阻塞的 会等到取到url再进行下一步
-        runBlocking {
-            viewModelState.update {
-                val serverUrl = DataStoreUtils.getData("server_url", "")
-                it.copy(serverUrl = serverUrl)
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+
+    val smovServerUrl: MutableStateFlow<String> = MutableStateFlow("")
+
+    val smovHistoryUrl = smovServerUrl.flatMapLatest {
+        smovRepository.getSmovHistoryUrl()
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+
+    init {
+        Timber.d("Injection HomeViewModel")
+        viewModelScope.launch(Dispatchers.IO) {
+            //这个会触发 newSmovFlow 的获取 当修改smovPageState时也会触发
+            newSmovFlow.collectLatest {
+                smovsState.value.smovs.addAll(it)
             }
         }
 
-
+        viewModelScope.launch(Dispatchers.IO) {
+            smovRepository.getSmovServiceUrlAndPort().collectLatest {
+                smovServerUrl.value = it
+            }
+        }
     }
 
-    fun changeCacheServe(url: String) {
+    fun fetchNextSmovPage() {
+        smovPageState.value++
+    }
 
-        //这个viewModelScope.launch是协程 是不阻塞当前线程的
-        viewModelScope.launch {
-            println("测试data" + settingsRepository.getServerUrl())
-            settingsRepository.changeServerUrl(url)
-        }
+    private fun fetchSmovPageForNum(page_num: Int) {
+        smovPageState.value = page_num
+    }
 
-        viewModelState.update {
-            it.copy(serverUrl = url)
-        }
-        DataStoreUtils.putData("server_url", url)
+    fun changeServerUrl(url: String) {
+        //这个change 可能是有性能问题 测试后发现 只需要几毫秒 不影响
+        smovRepository.changeSmovServiceUrl(url)
+        smovServerUrl.value = url
+
+        //刷新数据
         refreshData()
     }
 
     fun refreshData() {
-        viewModelState.update { it.copy(isLoading = true) }
+        smovsState.value.smovs.removeAll { true }
 
-        viewModelScope.launch {
-            val result = smovRepository.getSmovs(viewModelState.value.serverUrl)
-            println(result)
-            viewModelState.update {
-                when (result) {
-                    is Result.Success -> it.copy(smov = result.data, isLoading = false)
-                    is Result.Error -> {
-                        val errorMessages = it.errorMessages + ErrorMessage(
-                            id = UUID.randomUUID().mostSignificantBits,
-                            messageId = R.string.load_error
-                        )
-                        it.copy(errorMessages = errorMessages, isLoading = false)
-                    }
-                }
-            }
+        if (smovPageState.value == 0) {
+            //先更新为-1 因为防抖无法传0
+            fetchSmovPageForNum(-1)
         }
-    }
-
-    fun getServer(): String {
-        return viewModelState.value.serverUrl.ifBlank {
-            "127.0.0.1"
-        }
+        fetchSmovPageForNum(0)
     }
 
     fun errorShown(errorId: Long) {
-        viewModelState.update { currentUiState ->
-            val errorMessages = currentUiState.errorMessages.filterNot { it.id == errorId }
-            currentUiState.copy(errorMessages = errorMessages)
+        smovsState.value.errorMessages.removeIf {
+            it.id == errorId
         }
     }
 
-    fun onSearchInputChanged(searchInput: String) {
-        viewModelState.update {
-            it.copy(searchInput = searchInput)
-        }
-    }
 
-    companion object {
-        fun provideFactory(
-            smovRepository: SmovRepository,
-            settingsRepository: SettingsRepository
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(smovRepository, settingsRepository) as T
-            }
-        }
-    }
 }
+
 

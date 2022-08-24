@@ -7,6 +7,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.leri.smovbook.ui.home.HomeUiState
+import com.leri.smovbook.ui.home.HomeViewModel
 
 
 /**
@@ -20,11 +22,8 @@ fun Refactor(
     homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
-
-    //得出结论 想要让他获取数据必须要 在这个Composable 有定义  val person by viewModel.personFlow.collectAsState(initial = null) 且让数据变化 SharedFlow 无需默认值
-
     IconButton(onClick = {
-        homeViewModel.changeServerUrl("126.22.22.1:1111")
+        homeViewModel.changeServerUrl("178.22.22.1:1234")
     }, modifier = modifier) {
         Icon(Icons.Filled.Check, contentDescription = "Localized description")
     }

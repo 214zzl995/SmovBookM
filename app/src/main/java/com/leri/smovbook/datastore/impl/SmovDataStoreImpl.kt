@@ -60,7 +60,7 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
         settingsDataStore.updateData { currentSettings ->
             val historyUrl = currentSettings.historyUrlList.toMutableList()
             historyUrl.removeIf { it.equals(url) }
-            val historyCount = if (currentSettings.historyCount == 0) 2 else currentSettings.historyCount
+            val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
             if (historyUrl.size == historyCount) {
                 historyUrl.removeAt(0)
