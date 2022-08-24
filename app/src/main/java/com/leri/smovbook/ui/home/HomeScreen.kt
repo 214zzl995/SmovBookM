@@ -48,7 +48,8 @@ fun HomeScreen(
     scaffoldState: ScaffoldState,
     openBarScann: () -> Unit = { },
     serverUrl: String,
-    loadingState: NetworkState
+    loadingState: NetworkState,
+    fetchNextSmovPage: () -> Unit,
 ) {
 
     val scrollState = rememberLazyListState()
@@ -75,8 +76,10 @@ fun HomeScreen(
                     openBarScann = openBarScann,
                     scaffoldState = scaffoldState,
                     loadingState = loadingState,
-                    serverUrl = serverUrl
+                    serverUrl = serverUrl,
+                    fetchNextSmovPage = fetchNextSmovPage
                 ) { hasData ->
+
                     SmovList(
                         smov = hasData.smovs,
                         mainUrl = serverUrl,
@@ -85,6 +88,14 @@ fun HomeScreen(
                             .fillMaxSize(),
                         scrollState = scrollState
                     )
+
+                    /*Box(Modifier.fillMaxSize()) {
+                        MainFloatingActionButton(
+                            unit = fetchNextSmovPage,
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            text = "下一页"
+                        )
+                    }*/
                 }
             }
 
@@ -107,6 +118,7 @@ private fun HomeScreenWithList(
     openBarScann: () -> Unit,
     loadingState: NetworkState,
     serverUrl: String,
+    fetchNextSmovPage: () -> Unit,
     hasPostsContent: @Composable (
         uiState: HomeUiState.HasData
     ) -> Unit
@@ -146,7 +158,9 @@ private fun HomeScreenWithList(
                             }
 
                         } else {
-                            Box(contentModifier.fillMaxSize()) { /* empty screen */ }
+                            Box(contentModifier.fillMaxSize()) {
+
+                            }
                         }
                     }
                 }
@@ -262,7 +276,24 @@ private fun NodataOperate(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.primary,
     ) { Text("重载") }
+}
 
+@Composable
+private fun MainFloatingActionButton(
+    unit: () -> Unit,
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    ExtendedFloatingActionButton(
+        onClick = unit,
+        modifier = modifier
+            .padding(16.dp)
+            .navigationBarsPadding()
+            .offset(x = 0.dp, y = (-32).dp)
+            .height(48.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) { Text(text) }
 }
 
 @Composable
@@ -406,7 +437,8 @@ fun Screen() {
             homeListLazyListState = rememberLazyListState(0),
             scaffoldState = rememberScaffoldState(),
             serverUrl = "127.0.0.1:8080",
-            loadingState = NetworkState.SUCCESS
+            loadingState = NetworkState.SUCCESS,
+            fetchNextSmovPage = { },
         )
     }
 

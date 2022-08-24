@@ -51,6 +51,7 @@ fun SmovCard(
             modifier = Modifier
                 .padding(padding)
         ) {
+            //不定高会出现 页面图片消失 块突然从大到小 而且高度变低 回到顶部变快
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(0.dp)
@@ -81,9 +82,10 @@ fun SmovCard(
                     }
 
                 }) {
+
                 GlideImage(
                     imageModel = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
-                    contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先已什么形式打开
+                    contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先满足哪条边
                     modifier = Modifier
                         .fillMaxWidth(0.7F)
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
@@ -91,7 +93,7 @@ fun SmovCard(
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
                             GlideImage(
-                                imageModel = R.drawable.mobile_gif
+                                imageModel = R.drawable.smov_ico
                             )
                         }
                     }, failure = {

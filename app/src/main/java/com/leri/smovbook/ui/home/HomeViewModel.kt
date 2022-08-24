@@ -77,10 +77,10 @@ class HomeViewModel @Inject constructor(
                 listOf<Smov>()
             }
         } else {
-            delay(1500)
+            delay(500)
             smovRepository.getSmovPagination(
                 pageNum = it,
-                pageSize = 10,
+                pageSize = 500,
                 success = { _smovLoadingState.value = NetworkState.SUCCESS },
                 error = { _smovLoadingState.value = NetworkState.ERROR }
             )
@@ -104,7 +104,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            smovRepository.getSmovServiceUrlAndPort().collectLatest {
+            smovRepository.getSmovServiceUrlAndPort().map { if (it == ":0") "127.0.0.1:443" else it }.collectLatest {
                 smovServerUrl.value = it
             }
         }
@@ -128,10 +128,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun refreshData() {
+        //直接清除数据会造成 白屏 说实话 不舒服
         smovsState.value.smovs.removeAll { true }
 
         if (smovPageState.value == 0) {
-            //先更新为-1 因为防抖无法传0
+            //先更新为-1 因为防抖无法传0 这个防抖会造成 -1 比0更早实现 就会造成空数据
             fetchSmovPageForNum(-1)
         }
         fetchSmovPageForNum(0)

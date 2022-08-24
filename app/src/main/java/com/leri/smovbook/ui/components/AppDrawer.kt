@@ -28,7 +28,6 @@ fun ColumnScope.AppDrawer(
     DrawerHeader()
     DividerItem()
     DrawerItemHeader("Chats")
-    Text(text = "fuck")
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
 

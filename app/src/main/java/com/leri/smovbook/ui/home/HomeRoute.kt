@@ -44,7 +44,8 @@ fun HomeRoute(
         detailOpen = detailOpen,
         serverUrl = serverUrl,
         historyUrl = historyUrl,
-        loadingState = loadingState
+        loadingState = loadingState,
+        fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() }
     )
 
 }
@@ -62,7 +63,8 @@ fun HomeRoute(
     detailOpen: DrawerValue,
     serverUrl: String,
     historyUrl: MutableList<String>,
-    loadingState: NetworkState
+    loadingState: NetworkState,
+    fetchNextSmovPage: () -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -144,7 +146,8 @@ fun HomeRoute(
             onRefreshSmovData = onRefreshSmovData,
             openDrawer = { coroutineScope.launch { drawerState.open() } },
             serverUrl = serverUrl,
-            loadingState =loadingState
+            loadingState = loadingState,
+            fetchNextSmovPage = fetchNextSmovPage
         )
     }
 

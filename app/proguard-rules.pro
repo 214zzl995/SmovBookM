@@ -75,6 +75,11 @@
 -keep class * implements android.os.Parcelable{
     public static final android.os.Parcelable$Creator *;
 }
+# datastore 不混淆
+-keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
+    <fields>;
+}
+-keep class com.leri.smovbook.config.** {*;}
 # 保留Serializable 序列化的类不被混淆
 -keepclassmembers class * implements java.io.Serializable {
    static final long serialVersionUID;

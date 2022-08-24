@@ -16,3 +16,5 @@ local.properties
 release
 app/build
 app/release
+app/seeds.txt
+app/unused.txt

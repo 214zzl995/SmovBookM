@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/ic_baseline_qr_code_scanner_24.xml" value="0.2995" />
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/ic_error.xml" value="0.2995" />
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2995" />
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/ic_qr_scan_line.xml" value="0.2995" />
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/ic_scan_qr_code.xml" value="0.2995" />
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/icon_article_background.xml" value="0.2995" />
+        <entry key="..\:/Dev/android/SmovBookM/app/src/main/res/drawable/smov_ico.xml" value="0.2995" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$" />
