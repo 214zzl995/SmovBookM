@@ -31,7 +31,10 @@ fun ColumnScope.AppDrawer(
     Text(serverUrl)
     DrawerItemHeader("Chats")
     for (historyUrlItem in historyUrl) {
-        Text(historyUrlItem, modifier = Modifier.clickable { changeServerUrl(historyUrlItem) })
+        Text(historyUrlItem, modifier = Modifier.clickable {
+            changeServerUrl(historyUrlItem)
+            closeDrawer()
+        })
     }
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
@@ -47,6 +50,11 @@ private fun DrawerHeader() {
             modifier = Modifier.size(24.dp)
         )
     }
+}
+
+@Composable
+private fun HistoryUrlItem(modifier: Modifier = Modifier) {
+
 }
 
 @Composable
@@ -81,7 +89,13 @@ fun DrawerPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {}, serverUrl = "127.0.0.1:8000")
+                AppDrawer(
+                    "SmovBook",
+                    {},
+                    historyUrl = mutableListOf(),
+                    changeServerUrl = {},
+                    serverUrl = "127.0.0.1:8000"
+                )
             }
         }
     }
@@ -93,7 +107,13 @@ fun DrawerPreviewDark() {
     SmovBookMTheme(isDarkTheme = true) {
         Surface {
             Column {
-                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {}, serverUrl = "127.0.0.1:8000")
+                AppDrawer(
+                    "SmovBook",
+                    {},
+                    historyUrl = mutableListOf(),
+                    changeServerUrl = {},
+                    serverUrl = "127.0.0.1:8000"
+                )
             }
         }
     }
