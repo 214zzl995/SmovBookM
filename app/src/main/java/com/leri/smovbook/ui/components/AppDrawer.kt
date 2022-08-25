@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
@@ -20,17 +21,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ColumnScope.AppDrawer(
     currentRoute: String,
-    uiState: HomeUiState,
     closeDrawer: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    historyUrl: MutableList<String>,
+    changeServerUrl: (String) -> Unit,
 ) {
     Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
     DrawerHeader()
     DividerItem()
     DrawerItemHeader("Chats")
+    for (historyUrlItem in historyUrl) {
+        Text(historyUrlItem, modifier = Modifier.clickable { changeServerUrl(historyUrlItem) })
+    }
     DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
     DrawerItemHeader("Recent Profiles")
-
 
 
 }
@@ -77,7 +81,7 @@ fun DrawerPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                AppDrawer("SmovBook", uiState = testDataHasData, {})
+                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {})
             }
         }
     }
@@ -89,7 +93,7 @@ fun DrawerPreviewDark() {
     SmovBookMTheme(isDarkTheme = true) {
         Surface {
             Column {
-                AppDrawer("SmovBook", uiState = testDataHasData, {})
+                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {})
             }
         }
     }

@@ -120,9 +120,10 @@ class HomeViewModel @Inject constructor(
 
     fun changeServerUrl(url: String) {
         //这个change 可能是有性能问题 测试后发现 只需要几毫秒 不影响
+        Timber.d("修改url为$url")
         smovRepository.changeSmovServiceUrl(url)
         smovServerUrl.value = url
-
+        Timber.d("查看当前url为为${smovServerUrl.value}")
         //刷新数据
         refreshData()
     }

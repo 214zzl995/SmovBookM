@@ -45,7 +45,8 @@ fun HomeRoute(
         serverUrl = serverUrl,
         historyUrl = historyUrl,
         loadingState = loadingState,
-        fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() }
+        fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() },
+        changeServerUrl = { homeViewModel.changeServerUrl(it) }
     )
 
 }
@@ -65,6 +66,7 @@ fun HomeRoute(
     historyUrl: MutableList<String>,
     loadingState: NetworkState,
     fetchNextSmovPage: () -> Unit,
+    changeServerUrl: (String) -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -116,11 +118,12 @@ fun HomeRoute(
     AppScaffold(
         drawerState = drawerState,
         currentRoute = currentRoute,
-        uiState = uiState,
         closeDrawer = { coroutineScope.launch { drawerState.close() } },
+        historyUrl = historyUrl,
         modifier = Modifier
             .statusBarsPadding()
-            .navigationBarsPadding()
+            .navigationBarsPadding(),
+        changeServerUrl = changeServerUrl
     ) {
         HomeScreen(
             modifier = Modifier.windowInsetsPadding(
