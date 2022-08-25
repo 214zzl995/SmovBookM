@@ -12,11 +12,8 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leri.smovbook.ui.data.testDataHasData
-import com.leri.smovbook.ui.home.HomeUiState
-import com.leri.smovbook.ui.refactor.Refactor
 import com.leri.smovbook.ui.theme.SmovBookMTheme
-import androidx.hilt.navigation.compose.hiltViewModel
+
 
 @Composable
 fun ColumnScope.AppDrawer(
@@ -24,11 +21,14 @@ fun ColumnScope.AppDrawer(
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     historyUrl: MutableList<String>,
+    serverUrl: String,
     changeServerUrl: (String) -> Unit,
 ) {
     Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
     DrawerHeader()
     DividerItem()
+    DrawerItemHeader("Chats")
+    Text(serverUrl)
     DrawerItemHeader("Chats")
     for (historyUrlItem in historyUrl) {
         Text(historyUrlItem, modifier = Modifier.clickable { changeServerUrl(historyUrlItem) })
@@ -81,7 +81,7 @@ fun DrawerPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {})
+                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {}, serverUrl = "127.0.0.1:8000")
             }
         }
     }
@@ -93,7 +93,7 @@ fun DrawerPreviewDark() {
     SmovBookMTheme(isDarkTheme = true) {
         Surface {
             Column {
-                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {})
+                AppDrawer("SmovBook", {}, historyUrl = mutableListOf(), changeServerUrl = {}, serverUrl = "127.0.0.1:8000")
             }
         }
     }

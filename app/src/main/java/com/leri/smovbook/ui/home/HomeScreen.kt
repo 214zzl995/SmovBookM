@@ -79,10 +79,9 @@ fun HomeScreen(
                     serverUrl = serverUrl,
                     fetchNextSmovPage = fetchNextSmovPage
                 ) { hasData ->
-
                     SmovList(
                         smov = hasData.smovs,
-                        mainUrl = serverUrl,
+                        serverUrl = serverUrl,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
@@ -337,7 +336,7 @@ private fun FullScreenLoading() {
 @Composable
 fun SmovList(
     smov: List<Smov>,
-    mainUrl: String,
+    serverUrl: String,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
@@ -354,23 +353,9 @@ fun SmovList(
                 .fillMaxSize()
                 .align(Alignment.Center)
         ) {
-//            item {
-//                FlowRow(
-//                    modifier = Modifier
-//                        .align(Alignment.Center)
-//                        .fillMaxSize(),
-//
-//                    mainAxisAlignment = FlowMainAxisAlignment.Center,
-//                    crossAxisAlignment = FlowCrossAxisAlignment.Center,
-//                ) {
-//                    for (smovItem in smov.smovList) {
-//                        SmovCard(smovItem, mainUrl)
-//                    }
-//                }
-//            }
             for (smovItem in smov) {
                 item {
-                    SmovCard(smovItem, mainUrl)
+                    SmovCard(smovItem, serverUrl)
                 }
             }
         }

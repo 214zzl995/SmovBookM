@@ -17,6 +17,7 @@ fun AppScaffold(
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     currentRoute: String,
     historyUrl: MutableList<String>,
+    serverUrl: String,
     closeDrawer: () -> Unit,
     changeServerUrl: (String) -> Unit,
     content: @Composable () -> Unit,
@@ -29,6 +30,7 @@ fun AppScaffold(
                 closeDrawer = closeDrawer,
                 modifier = modifier,
                 historyUrl = historyUrl,
+                serverUrl = serverUrl,
                 changeServerUrl = changeServerUrl
             )
         },

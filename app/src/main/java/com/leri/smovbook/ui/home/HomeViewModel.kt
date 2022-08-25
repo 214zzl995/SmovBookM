@@ -106,6 +106,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             smovRepository.getSmovServiceUrlAndPort().map { if (it == ":0") "127.0.0.1:443" else it }.collectLatest {
                 smovServerUrl.value = it
+
             }
         }
     }

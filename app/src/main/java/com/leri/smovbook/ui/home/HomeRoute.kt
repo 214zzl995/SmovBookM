@@ -10,6 +10,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -120,6 +121,7 @@ fun HomeRoute(
         currentRoute = currentRoute,
         closeDrawer = { coroutineScope.launch { drawerState.close() } },
         historyUrl = historyUrl,
+        serverUrl = serverUrl,
         modifier = Modifier
             .statusBarsPadding()
             .navigationBarsPadding(),
