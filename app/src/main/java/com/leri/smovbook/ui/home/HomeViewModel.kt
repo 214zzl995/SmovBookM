@@ -1,5 +1,7 @@
 package com.leri.smovbook.ui.home
 
+import android.net.Uri
+import android.webkit.URLUtil
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
@@ -14,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -120,11 +123,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun changeServerUrl(url: String) {
+        //难以检查url是否合法
+
         //这个change 可能是有性能问题 测试后发现 只需要几毫秒 不影响
-        Timber.d("修改url为$url")
         smovRepository.changeSmovServiceUrl(url)
         smovServerUrl.value = url
-        Timber.d("查看当前url为为${smovServerUrl.value}")
         //刷新数据
         refreshData()
     }

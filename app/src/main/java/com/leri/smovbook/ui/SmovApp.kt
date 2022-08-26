@@ -13,7 +13,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 
 @Composable
 fun SmovApp(
-    appContainer: AppContainer
+    appContainer: AppContainer,
+    modifier: Modifier = Modifier
 ) {
     SmovBookMTheme {
         val systemUiController = rememberSystemUiController()
@@ -25,7 +26,7 @@ fun SmovApp(
         val navController = rememberNavController()
 
         Row(
-            Modifier
+            modifier
                 .fillMaxSize()
                 //.statusBarsPadding()设置一个 导航栏的上padding
                 .windowInsetsPadding(

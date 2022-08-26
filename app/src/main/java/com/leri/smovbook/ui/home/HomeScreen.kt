@@ -415,7 +415,7 @@ private fun RowScope.DayHeaderLine() {
 @Preview
 @Composable
 fun Screen() {
-    SmovBookMTheme() {
+    SmovBookMTheme(isDarkTheme = false) {
         HomeScreen(
             onErrorDismiss = {},
             uiState = testDataHasData,

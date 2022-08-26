@@ -28,9 +28,10 @@ fun AppScaffold(
             AppDrawer(
                 currentRoute = currentRoute,
                 closeDrawer = closeDrawer,
-                modifier = modifier,
                 historyUrl = historyUrl,
+                modifier = modifier,
                 serverUrl = serverUrl,
+                drawerState = drawerState,
                 changeServerUrl = changeServerUrl
             )
         },

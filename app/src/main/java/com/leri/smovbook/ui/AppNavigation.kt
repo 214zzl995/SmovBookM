@@ -4,8 +4,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
 object AppDestinations {
-    const val HOME_ROUTE = "home"
-    const val BARCODE_ROUTE = "barcode"
+    const val HOME_ROUTE = "home_screen"
+    const val BARCODE_ROUTE = "barcode_screen"
 }
 
 class AppNavigationActions(navController: NavHostController) {

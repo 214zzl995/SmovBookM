@@ -9,6 +9,7 @@ import android.view.WindowInsetsController
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.leri.smovbook.SmovBookApp
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
@@ -24,10 +25,11 @@ class MainActivity : AppCompatActivity() {
         val appContainer = (application as SmovBookApp).container
 
         setContent {
+            val decorView: View = window.decorView
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this.onBackPressedDispatcher
             ) {
-                SmovApp(appContainer = appContainer)
+                SmovApp(appContainer = appContainer , modifier = Modifier.autoCloseKeyboard(decorView))
             }
         }
     }
