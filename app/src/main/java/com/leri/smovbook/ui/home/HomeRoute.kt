@@ -128,11 +128,12 @@ fun HomeRoute(
         changeServerUrl = changeServerUrl
     ) {
         HomeScreen(
-            modifier = Modifier.windowInsetsPadding(
-                WindowInsets
-                    .navigationBars
-                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-            ),
+            modifier = Modifier
+                .windowInsetsPadding(
+                    WindowInsets
+                        .navigationBars
+                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                ),
             onErrorDismiss = onErrorDismiss,
             uiState = uiState,
             homeListLazyListState = homeListLazyListState,

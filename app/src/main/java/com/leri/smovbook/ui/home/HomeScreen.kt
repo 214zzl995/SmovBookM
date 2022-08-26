@@ -30,13 +30,14 @@ import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import com.blankj.utilcode.util.CloneUtils
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isLoading
 import com.leri.smovbook.ui.data.testDataHasData
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -102,7 +103,7 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun HomeScreenWithList(
     uiState: HomeUiState,
@@ -166,11 +167,13 @@ private fun HomeScreenWithList(
             },
         )
         if (showTopAppBar) {
+            val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
             ChannelNameBar(
                 channelName = "SmovBook",
                 onNavIconPressed = openDrawer,
                 scrollBehavior = scrollBehavior,
-                modifier = Modifier.statusBarsPadding(),
+                //modifier = Modifier.statusBarsPadding(),
+                modifier = Modifier.padding(contentPadding),
                 onRefreshSmovData = onRefreshSmovData,
                 onOpenBarScann = openBarScann,
                 serverUrl = serverUrl
@@ -214,7 +217,6 @@ fun ChannelNameBar(
     if (functionalityNotAvailablePopupShown) {
         FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
     }
-
 
     SmovAppBar(
         modifier = modifier,
@@ -333,6 +335,7 @@ private fun FullScreenLoading() {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SmovList(
     smov: List<Smov>,
@@ -341,13 +344,13 @@ fun SmovList(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
-
+    //statusBar 会出现高度突然刷新的情况
+    val contentPadding = WindowInsets.statusBarsIgnoringVisibility.add(WindowInsets(top = 70.dp)).asPaddingValues()
     Box(modifier = modifier) {
         LazyColumn(
             reverseLayout = false,
             state = scrollState,
-            contentPadding =
-            WindowInsets.statusBars.add(WindowInsets(top = 70.dp)).asPaddingValues(),
+            contentPadding = contentPadding,
             modifier = Modifier
                 .testTag("ConversationTestTag")
                 .fillMaxSize()

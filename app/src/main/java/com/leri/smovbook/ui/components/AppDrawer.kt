@@ -1,21 +1,30 @@
 package com.leri.smovbook.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
 import com.leri.smovbook.ui.theme.SmovBookMTheme
+import com.leri.smovbook.ui.theme.scanBorder
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +50,7 @@ fun ColumnScope.AppDrawer(
         )
 
         DrawerItemHeader("当前")
-        Text(serverUrl, modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp))
+        SmovUrl(url = serverUrl, modifier = Modifier)
         HistoryUrl(historyUrl = historyUrl, changeServerUrl = changeServerUrl, closeDrawer = closeDrawer)
     }
 
@@ -67,15 +76,19 @@ private fun HistoryUrl(
     Column(modifier = modifier) {
         DrawerItemHeader("历史")
         for (historyUrlItem in historyUrl) {
-            Text(historyUrlItem, modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp).clickable {
-                changeServerUrl(historyUrlItem)
-                closeDrawer()
-            })
+            SmovUrl(
+                url = historyUrlItem,
+                modifier = Modifier.clickable {
+                    changeServerUrl(historyUrlItem)
+                    closeDrawer()
+                },
+
+                )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun AddUrl(
     modifier: Modifier = Modifier,
@@ -83,25 +96,54 @@ private fun AddUrl(
     changeServerUrl: (String) -> Unit
 ) {
     var text by rememberSaveable { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(modifier = modifier) {
-
+        //此处 keyboardActions keyboardOptions的意思是 当ime发出 enter的指令后 隐藏键盘
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
             label = { Text("输入新的url") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth().clearFocusOnKeyboardDismiss().focusable(drawerState.isOpen),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            ),
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        changeServerUrl(text)
+                        text = ""
+                    },
+                    enabled = text != ""
+                ) {
+                    val visibilityIcon = Icons.TwoTone.Check
+
+                    Icon(imageVector = visibilityIcon, contentDescription = "缓存")
+                }
+            }
         )
-        Button(onClick = { changeServerUrl(text) }, modifier = Modifier) { Text("缓存") }
     }
 }
 
 @Composable
 private fun SmovUrl(
     modifier: Modifier = Modifier,
-    url: String
+    url: String,
+    textDecoration: TextDecoration? = null,
 ) {
+    Row(
+        modifier = modifier.fillMaxWidth()
+            .padding(horizontal = 28.dp, vertical = 2.dp).height(35.dp), verticalAlignment = CenterVertically
+    ) {
+        Text(
+            url,
+            textDecoration = textDecoration
+        )
+    }
 
 
 }
