@@ -16,18 +16,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.InputMode.Companion.Keyboard
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.blankj.utilcode.util.KeyboardUtils
 import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.leri.smovbook.ui.theme.scanBorder
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ColumnScope.AppDrawer(
     currentRoute: String,
@@ -39,7 +41,7 @@ fun ColumnScope.AppDrawer(
     changeServerUrl: (String) -> Unit,
 ) {
     Column(modifier = Modifier) {
-        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBarsIgnoringVisibility))
         DrawerHeader()
         DividerItem()
         DrawerItemHeader("手动新增")
@@ -66,6 +68,7 @@ private fun DrawerHeader() {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HistoryUrl(
     modifier: Modifier = Modifier,
@@ -73,16 +76,16 @@ private fun HistoryUrl(
     changeServerUrl: (String) -> Unit,
     closeDrawer: () -> Unit,
 ) {
+    val imeVisible = WindowInsets.isImeVisible
     Column(modifier = modifier) {
         DrawerItemHeader("历史")
         for (historyUrlItem in historyUrl) {
             SmovUrl(
                 url = historyUrlItem,
-                modifier = Modifier.clickable {
+                modifier = Modifier.clickable(enabled = !imeVisible) {
                     changeServerUrl(historyUrlItem)
                     closeDrawer()
                 },
-
                 )
         }
     }
@@ -117,6 +120,7 @@ private fun AddUrl(
                     onClick = {
                         changeServerUrl(text)
                         text = ""
+                        keyboardController?.hide()
                     },
                     enabled = text != ""
                 ) {
@@ -159,7 +163,7 @@ private fun DrawerItemHeader(text: String) {
             text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp)
         )
-        DividerItem(modifier = Modifier)
+        DividerItem(modifier = Modifier.padding(start = 5.dp))
     }
 }
 

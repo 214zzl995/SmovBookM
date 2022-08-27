@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.home
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -30,11 +32,16 @@ import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.blankj.utilcode.util.CloneUtils
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isLoading
 import com.leri.smovbook.ui.data.testDataHasData
+import com.leri.smovbook.ui.theme.changeServerUrlBak
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -55,6 +62,8 @@ fun HomeScreen(
 
     val scrollState = rememberLazyListState()
     val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
+
+    val changeServerUrlDialogVisible = rememberSaveable { false }
 
     Surface(modifier = modifier) {
         Box(
@@ -100,6 +109,7 @@ fun HomeScreen(
             }
 
         }
+        ChangeServerUrlDialog(openDrawer, changeServerUrlDialogVisible)
     }
 }
 
@@ -259,6 +269,30 @@ fun ChannelNameBar(
             )
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChangeServerUrlDialog(
+    openBarScann: () -> Unit,
+    visible: Boolean
+) {
+    if (visible) {
+        val context = LocalContext.current
+        Surface(color = changeServerUrlBak) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxHeight(0.2f).fillMaxWidth(0.7f)
+                ) {
+                    Box(Modifier.fillMaxSize()) {
+                        Text("Clickable", Modifier.align(Alignment.Center))
+                        //这里要实现两个按钮 不一定使用ElevatedCard 说实话用card 看着相当突兀
+                    }
+                }
+
+            }
+        }
+    }
 }
 
 

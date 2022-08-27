@@ -30,7 +30,7 @@ import android.content.ActivityNotFoundException
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
 
-
+//修改SmovCard为 https://developer.android.google.cn/reference/kotlin/androidx/compose/material3/package-summary#ElevatedCard(androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.material3.CardColors,androidx.compose.material3.CardElevation,kotlin.Function1)
 @Composable
 fun SmovCard(
     smov: Smov,

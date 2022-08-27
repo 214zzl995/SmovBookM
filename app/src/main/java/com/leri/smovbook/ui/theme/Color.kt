@@ -58,3 +58,5 @@ val scanMask = Color(0x6FE4E4E4)
 val scanBorder = Color(0xFF969696)
 
 val scanIco = Color(0xC1224B19)
+
+val changeServerUrlBak = Color(0x6FE4E4E4)
