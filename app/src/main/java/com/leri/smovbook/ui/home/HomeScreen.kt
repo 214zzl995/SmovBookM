@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
@@ -63,7 +64,7 @@ fun HomeScreen(
     val scrollState = rememberLazyListState()
     val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
 
-    val changeServerUrlDialogVisible = rememberSaveable { false }
+    var changeServerUrlDialogVisible by remember { mutableStateOf(false) }
 
     Surface(modifier = modifier) {
         Box(
@@ -83,7 +84,7 @@ fun HomeScreen(
                     onErrorDismiss = onErrorDismiss,
                     openDrawer = openDrawer,
                     homeListLazyListState = homeListLazyListState,
-                    openBarScann = openBarScann,
+                    openBarScann = { changeServerUrlDialogVisible = true },
                     scaffoldState = scaffoldState,
                     loadingState = loadingState,
                     serverUrl = serverUrl,
@@ -109,7 +110,10 @@ fun HomeScreen(
             }
 
         }
-        ChangeServerUrlDialog(openDrawer, changeServerUrlDialogVisible)
+        ChangeServerUrlDialog(
+            openBarScann,
+            changeServerUrlDialogVisible,
+            close = { changeServerUrlDialogVisible = false })
     }
 }
 
@@ -275,20 +279,54 @@ fun ChannelNameBar(
 @Composable
 private fun ChangeServerUrlDialog(
     openBarScann: () -> Unit,
-    visible: Boolean
+    visible: Boolean,
+    close: () -> Unit,
 ) {
+    val addUrlInputVisible = rememberSaveable { false }
     if (visible) {
-        val context = LocalContext.current
         Surface(color = changeServerUrlBak) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                ElevatedCard(
-                    modifier = Modifier.fillMaxHeight(0.2f).fillMaxWidth(0.7f)
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight(0.2f)
+                        .fillMaxWidth(0.7f),
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(Modifier.fillMaxSize()) {
-                        Text("Clickable", Modifier.align(Alignment.Center))
-                        //这里要实现两个按钮 不一定使用ElevatedCard 说实话用card 看着相当突兀
-                    }
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            close()
+                            openBarScann()
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_qr_scan_line),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                                    .height(21.dp),
+                                contentDescription = stringResource(id = R.string.search)
+                            )
+                        },
+                        text = { Text(text = "扫描二维码") },
+                    )
+
+                    ExtendedFloatingActionButton(
+                        onClick = { close() },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_enter_the_keyboard),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                                    .height(21.dp),
+                                contentDescription = stringResource(id = R.string.search)
+                            )
+                        },
+                        text = { Text(text = "输入框输入") },
+                    )
                 }
+
 
             }
         }
@@ -379,7 +417,8 @@ fun SmovList(
 ) {
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
-    val contentPadding = WindowInsets.statusBarsIgnoringVisibility.add(WindowInsets(top = 70.dp)).asPaddingValues()
+    val contentPadding =
+        WindowInsets.statusBarsIgnoringVisibility.add(WindowInsets(top = 70.dp)).asPaddingValues()
     Box(modifier = modifier) {
         LazyColumn(
             reverseLayout = false,

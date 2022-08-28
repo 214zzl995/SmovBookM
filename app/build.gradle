@@ -104,6 +104,7 @@ android {
             }
         }
     }
+    namespace 'com.leri.smovbook'
 }
 
 dependencies {
