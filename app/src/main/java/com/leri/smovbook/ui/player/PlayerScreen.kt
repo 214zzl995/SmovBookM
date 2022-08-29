@@ -41,12 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
-import com.leri.smovbook.model.SmovItem
+import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.util.isScrolled
 
 @Composable
 fun PlayerScreen(
-    smov: SmovItem,
+    smov: Smov,
     isExpandedScreen: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -90,7 +90,7 @@ fun PlayerScreen(
 
 @Composable
 private fun PlayerScreenContent(
-    smov: SmovItem,
+    smov: Smov,
     navigationIconContent: @Composable (() -> Unit)? = null,
     bottomBarContent: @Composable () -> Unit = { },
     lazyListState: LazyListState = rememberLazyListState()

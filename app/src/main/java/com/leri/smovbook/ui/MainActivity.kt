@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
-import com.leri.smovbook.SmovBookApp
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,14 +21,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val appContainer = (application as SmovBookApp).container
-
         setContent {
             val decorView: View = window.decorView
             CompositionLocalProvider(
                 LocalBackPressedDispatcher provides this.onBackPressedDispatcher
             ) {
-                SmovApp(appContainer = appContainer , modifier = Modifier.autoCloseKeyboard(decorView))
+                SmovApp(modifier = Modifier.autoCloseKeyboard(decorView))
             }
         }
     }

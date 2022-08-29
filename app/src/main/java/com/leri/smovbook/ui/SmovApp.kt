@@ -6,14 +6,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
-import com.leri.smovbook.data.AppContainer
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import androidx.compose.material3.ExperimentalMaterial3Api
 
 @Composable
 fun SmovApp(
-    appContainer: AppContainer,
     modifier: Modifier = Modifier
 ) {
     SmovBookMTheme {
@@ -36,7 +33,6 @@ fun SmovApp(
                 )
         ) {
             AppNavGraph(
-                appContainer = appContainer,
                 navController = navController,
             )
         }

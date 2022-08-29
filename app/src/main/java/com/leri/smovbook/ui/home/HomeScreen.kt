@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui.home
 
 import android.widget.Toast
+import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
@@ -282,52 +285,94 @@ private fun ChangeServerUrlDialog(
     visible: Boolean,
     close: () -> Unit,
 ) {
-    val addUrlInputVisible = rememberSaveable { false }
-    if (visible) {
+    var addUrlInputVisible by remember { mutableStateOf(false) }
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(), exit = fadeOut()
+    ) {
         Surface(color = changeServerUrlBak) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier
-                        .fillMaxHeight(0.2f)
+                        .fillMaxHeight(0.4f)
                         .fillMaxWidth(0.7f),
-                    verticalArrangement = Arrangement.SpaceAround,
+                    verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            close()
-                            openBarScann()
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_qr_scan_line),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    AnimatedVisibility(
+                        visible = !addUrlInputVisible,
+                        enter = slideInVertically(), exit = shrinkVertically()
+                    ) {
+                        Box {
+                            Column(
                                 modifier = Modifier
-                                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                                    .height(21.dp),
-                                contentDescription = stringResource(id = R.string.search)
-                            )
-                        },
-                        text = { Text(text = "扫描二维码") },
-                    )
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.SpaceEvenly,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                ExtendedFloatingActionButton(
+                                    onClick = {
+                                        close()
+                                        openBarScann()
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_qr_scan_line),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier
+                                                .padding(horizontal = 12.dp, vertical = 16.dp)
+                                                .height(21.dp),
+                                            contentDescription = stringResource(id = R.string.search)
+                                        )
+                                    },
+                                    text = { Text(text = "扫描二维码") },
+                                )
 
-                    ExtendedFloatingActionButton(
-                        onClick = { close() },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_enter_the_keyboard),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier
-                                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                                    .height(21.dp),
-                                contentDescription = stringResource(id = R.string.search)
-                            )
-                        },
-                        text = { Text(text = "输入框输入") },
-                    )
+                                ExtendedFloatingActionButton(
+                                    onClick = { addUrlInputVisible = true },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_enter_the_keyboard),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier
+                                                .padding(horizontal = 12.dp, vertical = 16.dp)
+                                                .height(21.dp),
+                                            contentDescription = stringResource(id = R.string.search)
+                                        )
+                                    },
+                                    text = { Text(text = "输入框输入") },
+                                )
+                            }
+                        }
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AnimatedVisibility(
+                            visible = addUrlInputVisible,
+                            enter = slideInVertically(), exit = shrinkVertically()
+                        ) {
+                            FilledIconButton(onClick = { close() }) {
+                                Icon(
+                                    Icons.Outlined.ArrowBack,
+                                    contentDescription = stringResource(id = R.string.search)
+                                )
+                            }
+                        }
+
+                        FilledIconButton(onClick = { close() }) {
+                            AnimatedVisibility(
+                                visible = !addUrlInputVisible,
+                                enter = slideInVertically(), exit = shrinkVertically()
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Close,
+                                    contentDescription = stringResource(id = R.string.search)
+                                )
+                            }
+                        }
+                    }
                 }
-
-
             }
         }
     }
