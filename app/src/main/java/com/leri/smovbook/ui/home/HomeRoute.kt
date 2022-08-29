@@ -153,7 +153,8 @@ fun HomeRoute(
             openDrawer = { coroutineScope.launch { drawerState.open() } },
             serverUrl = serverUrl,
             loadingState = loadingState,
-            fetchNextSmovPage = fetchNextSmovPage
+            fetchNextSmovPage = fetchNextSmovPage,
+            changeServerUrl = changeServerUrl
         )
     }
 
