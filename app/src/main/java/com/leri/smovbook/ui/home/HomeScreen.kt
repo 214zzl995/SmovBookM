@@ -299,6 +299,10 @@ private fun ChangeServerUrlDialog(
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    //尝试box包裹
+                    Box {
+
+                    }
                     AnimatedVisibility(
                         visible = !addUrlInputVisible,
                         enter = slideInVertically(), exit = shrinkVertically()
