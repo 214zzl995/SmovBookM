@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
@@ -238,14 +239,15 @@ fun ChannelNameBar(
         },
         actions = {
             Icon(
-                painter = painterResource(id = R.drawable.ic_qr_scan_line),
+                //painter = painterResource(id = R.drawable.ic_qr_scan_line),
+                imageVector = Icons.Outlined.Add,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .clickable(onClick = {
                         onOpenBarScann()
                     })
                     .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(21.dp),
+                    .height(24.dp),
                 contentDescription = stringResource(id = R.string.search)
             )
 

@@ -44,12 +44,6 @@ fun ColumnScope.AppDrawer(
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBarsIgnoringVisibility))
         DrawerHeader()
         DividerItem()
-        DrawerItemHeader("手动新增")
-        AddUrl(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp),
-            changeServerUrl = changeServerUrl,
-            drawerState = drawerState
-        )
 
         DrawerItemHeader("当前")
         SmovUrl(url = serverUrl, modifier = Modifier)

@@ -212,7 +212,7 @@ private fun AddUrlDialogOperate(
 
         AnimatedVisibility(
             visible = editInputVisible,
-            enter = slideInVertically() + fadeIn(), exit = slideOutVertically() + fadeOut()
+            enter = /*slideInVertically() +*/ fadeIn(), exit = /*slideOutVertically() +*/ fadeOut()
         ) {
             FilledIconButton(onClick = { closeEditInput() }, enabled = editInputVisible) {
                 Icon(
@@ -232,10 +232,13 @@ private fun AddUrlDialogOperate(
 
         AnimatedVisibility(
             visible = editInputVisible,
-            enter = slideInVertically() + fadeIn(), exit = slideOutVertically() + fadeOut()
+            enter = /*slideInVertically() +*/ fadeIn(), exit = /*slideOutVertically() + */fadeOut()
         ) {
             FilledIconButton(modifier = Modifier, enabled = url != "",
-                onClick = { changeServerUrl(url) }) {
+                onClick = {
+                    changeServerUrl(url)
+                    close()
+                }) {
                 Icon(
                     Icons.Outlined.Check,
                     contentDescription = stringResource(id = R.string.search)

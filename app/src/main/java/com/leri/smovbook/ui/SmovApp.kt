@@ -6,8 +6,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.leri.smovbook.AppNavGraph
 
 @Composable
 fun SmovApp(
@@ -20,7 +22,7 @@ fun SmovApp(
             systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = darkIcons)
         }
 
-        val navController = rememberNavController()
+        val navController = rememberAnimatedNavController()
 
         Row(
             modifier
