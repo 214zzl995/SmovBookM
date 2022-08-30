@@ -2,9 +2,7 @@ package com.leri.smovbook.ui
 
 import android.view.View
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +28,11 @@ fun Modifier.autoCloseKeyboard(view: View): Modifier =
             }
         )
     }
+
+fun Modifier.setWidthWithHeight(): Modifier =composed{
+    this@setWidthWithHeight
+}
+
 
 @OptIn(ExperimentalLayoutApi::class)
 fun Modifier.clearFocusOnKeyboardDismiss(): Modifier = composed {
