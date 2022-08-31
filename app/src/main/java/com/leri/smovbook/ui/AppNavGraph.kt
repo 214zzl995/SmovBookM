@@ -1,4 +1,4 @@
-package com.leri.smovbook
+package com.leri.smovbook.ui
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
@@ -10,8 +10,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.leri.smovbook.ui.AppDestinations
-import com.leri.smovbook.ui.AppNavigationActions
 import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.home.HomeRoute
 import com.leri.smovbook.ui.home.HomeViewModel
@@ -42,8 +40,38 @@ fun AppNavGraph(
                 when (initialState.destination.route) {
                     AppDestinations.BARCODE_ROUTE ->
                         slideIntoContainer(
-                            AnimatedContentScope.SlideDirection.Up,
-                            animationSpec = tween(700)
+                            AnimatedContentScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.BARCODE_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popEnterTransition = {
+                when (initialState.destination.route) {
+                    AppDestinations.BARCODE_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popExitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.BARCODE_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
                         )
                     else -> null
                 }
@@ -56,12 +84,42 @@ fun AppNavGraph(
             )
         }
         composable(AppDestinations.BARCODE_ROUTE,
-            exitTransition = {
+            enterTransition = {
                 when (initialState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
                     AppDestinations.HOME_ROUTE ->
                         slideOutOfContainer(
                             AnimatedContentScope.SlideDirection.Left,
-                            animationSpec = tween(700)
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popEnterTransition = {
+                when (initialState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popExitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
                         )
                     else -> null
                 }

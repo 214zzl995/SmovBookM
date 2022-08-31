@@ -1,6 +1,5 @@
 package com.leri.smovbook.ui.barcodeScann
 
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
@@ -15,18 +14,21 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.mlkit.vision.barcode.common.Barcode
+import timber.log.Timber
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
-    onSendCode: (code: String) -> Unit,
+    scanEnable: Boolean = true,
+    disableScan: () -> Unit,
+    onSendCode: (barcodes: List<String>) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var preview by remember { mutableStateOf<Preview?>(null) }
-    val barCodeVal = remember { mutableStateOf("") }
 
     AndroidView(
         factory = { AndroidViewContext ->
@@ -41,6 +43,7 @@ fun CameraPreview(
         },
         modifier = modifier,
         update = { previewView ->
+
             val cameraSelector: CameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
@@ -54,16 +57,13 @@ fun CameraPreview(
                 }
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
                 val barcodeAnalyser = BarCodeAnalyser { barcodes ->
-                    //code 可能会有多个 导致会出问题 现在需要弹出选择确定是哪一个
-                    barcodes.forEach { barcode ->
-                        barcode.rawValue?.let { barcodeValue ->
-                            barCodeVal.value = barcodeValue
-                            onSendCode(barcodeValue)
-                            Toast.makeText(context, barcodeValue, Toast.LENGTH_SHORT).show()
-                        }
+                    println("测试二维码扫描" + barcodes.size)
+                    if (scanEnable) {
+                        //code 可能会有多个 导致会出问题 现在需要弹出选择确定是哪一个
+                        barcodes.map { barcode ->
+                            barcode.rawValue!!
+                        }.let { onSendCode(it) }
                     }
-
-
                 }
                 val imageAnalysis: ImageAnalysis = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -81,7 +81,7 @@ fun CameraPreview(
                         imageAnalysis
                     )
                 } catch (e: Exception) {
-                    Log.d("TAG", "CameraPreview: ${e.localizedMessage}")
+                    Timber.tag("TAG").d("CameraPreview: %s", e.localizedMessage)
                 }
             }, ContextCompat.getMainExecutor(context))
         }

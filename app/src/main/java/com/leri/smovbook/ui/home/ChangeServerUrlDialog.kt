@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
@@ -26,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
-import com.leri.smovbook.ui.theme.changeServerUrlBak
+import com.leri.smovbook.ui.theme.ChangeServerUrlBackground
 
 
 @Composable
@@ -38,11 +39,14 @@ fun ChangeServerUrlDialog(
 ) {
     var editInputVisible by remember { mutableStateOf(false) }
     var url by rememberSaveable { mutableStateOf("") }
+
+    BackHandler(onBack = { close() }, enabled = visible)
+
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(), exit = fadeOut()
     ) {
-        Surface(color = changeServerUrlBak) {
+        Surface(color = ChangeServerUrlBackground) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

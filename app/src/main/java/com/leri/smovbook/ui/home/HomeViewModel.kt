@@ -109,7 +109,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             smovRepository.getSmovServiceUrlAndPort().map { if (it == ":0") "127.0.0.1:443" else it }.collectLatest {
                 smovServerUrl.value = it
-
             }
         }
     }
@@ -123,12 +122,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun changeServerUrl(url: String) {
-        //难以检查url是否合法
-
-        //这个change 可能是有性能问题 测试后发现 只需要几毫秒 不影响
         smovRepository.changeSmovServiceUrl(url)
         smovServerUrl.value = url
-        //刷新数据
         refreshData()
     }
 

@@ -1,6 +1,8 @@
 package com.leri.smovbook.ui.barcodeScann
 
-import androidx.compose.foundation.border
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -10,15 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.leri.smovbook.ui.theme.scanBorder
-import com.leri.smovbook.ui.theme.scanMask
-import kotlinx.coroutines.runBlocking
+import com.google.mlkit.vision.barcode.common.Barcode
 
 @Composable
 fun BarCodeScannScreen(
     navigateUp: () -> Unit,
     changeServer: (String) -> Unit,
 ) {
+
+    var scanEnable by remember { mutableStateOf(true) }
+    var urlSelectVisible by remember { mutableStateOf(false) }
+    var barcodes by remember { mutableStateOf(listOf<String>()) }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -29,28 +33,37 @@ fun BarCodeScannScreen(
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    //.width(350.dp)
-                    //.height(350.dp)
                     .fillMaxHeight(0.7f)
 
             ) {
                 CameraPreview(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp, 5.dp, 5.dp, 5.dp)).shadow(6.dp)
-
-
+                        .clip(RoundedCornerShape(5.dp, 5.dp, 5.dp, 5.dp))
+                        .shadow(6.dp),
+                    scanEnable = scanEnable,
+                    disableScan = { scanEnable = false }
                 ) { result ->
-                    changeServer(result)
-                    navigateUp()
+                    if (result.size == 1) {
+                        changeServer(result[0])
+                        navigateUp()
+                    } else {
+                        scanEnable = false
+                        barcodes = result
+                        urlSelectVisible = true
+                    }
                 }
-
-                //BarCodeScanMock()
-
             }
             BarCodeScanTitle()
-
-
         }
+    }
+    AnimatedVisibility(
+        visible = urlSelectVisible,
+        enter = fadeIn(), exit = fadeOut()
+    ) {
+        UrlSelect(barcodes = barcodes, changeServer = {
+            changeServer(it)
+            navigateUp()
+        })
     }
 }
 

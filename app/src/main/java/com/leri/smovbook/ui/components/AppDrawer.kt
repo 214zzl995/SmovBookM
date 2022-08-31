@@ -1,6 +1,6 @@
 package com.leri.smovbook.ui.components
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
@@ -12,21 +12,18 @@ import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.InputMode.Companion.Keyboard
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.blankj.utilcode.util.KeyboardUtils
 import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
 import com.leri.smovbook.ui.theme.SmovBookMTheme
-import com.leri.smovbook.ui.theme.scanBorder
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -46,8 +43,12 @@ fun ColumnScope.AppDrawer(
         DividerItem()
 
         DrawerItemHeader("当前")
-        SmovUrl(url = serverUrl, modifier = Modifier)
-        HistoryUrl(historyUrl = historyUrl, changeServerUrl = changeServerUrl, closeDrawer = closeDrawer)
+        SmovUrl(url = serverUrl, modifier = Modifier, changeServerUrl = {})
+        HistoryUrl(
+            historyUrl = historyUrl,
+            changeServerUrl = changeServerUrl,
+            closeDrawer = closeDrawer
+        )
     }
 
 
@@ -76,11 +77,12 @@ private fun HistoryUrl(
         for (historyUrlItem in historyUrl) {
             SmovUrl(
                 url = historyUrlItem,
-                modifier = Modifier.clickable(enabled = !imeVisible) {
+                modifier = Modifier,
+                changeServerUrl = {
                     changeServerUrl(historyUrlItem)
                     closeDrawer()
-                },
-                )
+                }
+            )
         }
     }
 }
@@ -102,7 +104,10 @@ private fun AddUrl(
             onValueChange = { text = it },
             label = { Text("输入新的url") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().clearFocusOnKeyboardDismiss().focusable(drawerState.isOpen),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clearFocusOnKeyboardDismiss()
+                .focusable(drawerState.isOpen),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -132,15 +137,22 @@ private fun SmovUrl(
     modifier: Modifier = Modifier,
     url: String,
     textDecoration: TextDecoration? = null,
+    changeServerUrl: () -> Unit
 ) {
     Row(
-        modifier = modifier.fillMaxWidth()
-            .padding(horizontal = 28.dp, vertical = 2.dp).height(35.dp), verticalAlignment = CenterVertically
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp, vertical = 2.dp)
+            .height(35.dp),
+        verticalAlignment = CenterVertically
     ) {
-        Text(
-            url,
-            textDecoration = textDecoration
-        )
+        Button(
+            onClick = { changeServerUrl() },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.elevatedButtonColors(),
+            elevation = ButtonDefaults.elevatedButtonElevation()
+        ) { Text(url) }
+
     }
 
 
@@ -150,11 +162,15 @@ private fun SmovUrl(
 private fun DrawerItemHeader(text: String) {
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp, horizontal = 20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 14.dp, horizontal = 20.dp),
         verticalAlignment = CenterVertically
     ) {
         Text(
-            text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp)
         )
         DividerItem(modifier = Modifier.padding(start = 5.dp))
@@ -180,7 +196,11 @@ fun DrawerPreview() {
                 AppDrawer(
                     "SmovBook",
                     {},
-                    historyUrl = mutableListOf("122.22.22.22:145", "122.22.22.22:145", "122.22.22.22:145"),
+                    historyUrl = mutableListOf(
+                        "122.22.22.22:145",
+                        "122.22.22.22:145",
+                        "122.22.22.22:145"
+                    ),
                     changeServerUrl = {},
                     serverUrl = "127.0.0.1:8000"
                 )

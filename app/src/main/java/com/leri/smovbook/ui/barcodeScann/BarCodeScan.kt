@@ -18,27 +18,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.theme.SmovBookMTheme
-import com.leri.smovbook.ui.theme.scanBorder
-import com.leri.smovbook.ui.theme.scanIco
-import com.leri.smovbook.ui.theme.scanMask
+import com.leri.smovbook.ui.theme.*
 
 @Composable
 fun BarCodeScanTitle(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.padding(0.dp,50.dp,0.dp,0.dp),
+        modifier = modifier.padding(0.dp, 50.dp, 0.dp, 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner_24),
-            tint = scanIco,
+            tint = ScanIco,
             modifier = Modifier
                 .padding(horizontal = 12.dp, vertical = 12.dp)
-                .height(60.dp).width(60.dp),
+                .height(60.dp)
+                .width(60.dp),
             contentDescription = stringResource(id = R.string.search)
         )
-        Text(text = stringResource(id = R.string.scan_server_qrcode), fontSize = 17.sp,fontWeight = FontWeight.W600, modifier = Modifier.padding(top = 20.dp))
+        Text(
+            text = stringResource(id = R.string.scan_server_qrcode),
+            color = ScanText,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.W600,
+            modifier = Modifier.padding(top = 20.dp)
+        )
     }
 
 }
@@ -50,20 +54,20 @@ fun BarCodeScanMock(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .clip(RoundedCornerShape(5.dp, 5.dp, 5.dp, 5.dp))
             //.background(color = scanMask)
-            .border(4.dp, color = scanBorder),
+            .border(4.dp, color = ScanBorder),
     ) {
-        Divider(thickness = 40.dp, color = scanMask)
+        Divider(thickness = 40.dp, color = ScanMask)
 
         Divider(
             modifier = Modifier
                 .height((310).dp)
                 .width(40.dp)
-                .align(Alignment.BottomStart), color = scanMask
+                .align(Alignment.BottomStart), color = ScanMask
         )
 
         Divider(
             thickness = 40.dp,
-            color = scanMask,
+            color = ScanMask,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .width((310).dp)
@@ -73,7 +77,7 @@ fun BarCodeScanMock(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height((270).dp)
                 .width(40.dp)
-                .align(Alignment.CenterEnd), color = scanMask
+                .align(Alignment.CenterEnd), color = ScanMask
         )
     }
 
@@ -100,7 +104,8 @@ fun BarCodeScanMockmPreview() {
             Column(
                 Modifier
                     .width(350.dp)
-                    .height(350.dp)) {
+                    .height(350.dp)
+            ) {
                 BarCodeScanMock()
             }
         }

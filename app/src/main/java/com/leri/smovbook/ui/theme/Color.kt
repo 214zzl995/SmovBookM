@@ -51,12 +51,14 @@ val BlueGrey90 = Color(0xFFE2E1EC)
 
 val ExtraLightBorder  = Color(0xFFF7F7F7)
 
-val shimmerHighLight = Color(0xA3C2C2C2)
+val ShimmerHighLight = Color(0xA3C2C2C2)
 
-val scanMask = Color(0x6FE4E4E4)
+val ScanMask = Color(0x6FE4E4E4)
 
-val scanBorder = Color(0xFF969696)
+val ScanBorder = Color(0xFF969696)
 
-val scanIco = Color(0xC1224B19)
+val ScanIco = Color(0xD0494949)
 
-val changeServerUrlBak = Color(0xB5E4E4E4)
+val ScanText = Color(0xD71B1B1B)
+
+val ChangeServerUrlBackground = Color(0xB5E4E4E4)
