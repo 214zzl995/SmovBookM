@@ -122,8 +122,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun changeServerUrl(url: String) {
-        smovRepository.changeSmovServiceUrl(url)
         smovServerUrl.value = url
+        smovRepository.changeSmovServiceUrl(url)
         refreshData()
     }
 

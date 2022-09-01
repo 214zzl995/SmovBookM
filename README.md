@@ -61,3 +61,5 @@ shared一般用于一次性读取的 第二次需要重新读取的数据 那个
 
 
 要看 [https://github.com/topics/datastore-android](https://github.com/topics/datastore-android) 案例
+
+Bug 已经定位 当当前这次请求时间过长就会导致这个问题 将修改url的位置提前 好像没有这个问题了 但是不知道是不是好的
