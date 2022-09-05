@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
@@ -360,10 +361,8 @@ fun SmovList(
                 .fillMaxSize()
                 .align(Alignment.Center)
         ) {
-            for (smovItem in smov) {
-                item {
-                    SmovCard(smovItem, serverUrl)
-                }
+            items(smov) { smovItem ->
+                SmovCard(smovItem, serverUrl)
             }
         }
         val jumpThreshold = with(LocalDensity.current) {

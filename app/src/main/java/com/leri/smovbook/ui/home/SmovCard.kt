@@ -27,8 +27,11 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
+import androidx.compose.animation.animateContentSize
+import androidx.compose.material3.CircularProgressIndicator
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
+import com.skydoves.landscapist.CircularReveal
 
 //修改SmovCard为 https://developer.android.google.cn/reference/kotlin/androidx/compose/material3/package-summary#ElevatedCard(androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.material3.CardColors,androidx.compose.material3.CardElevation,kotlin.Function1)
 @Composable
@@ -86,17 +89,21 @@ fun SmovCard(
                 GlideImage(
                     imageModel = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先满足哪条边
+                    circularReveal = CircularReveal(duration = 250),
                     modifier = Modifier
                         .fillMaxWidth(0.7F)
+                        .defaultMinSize(minHeight = 100.dp)
+                        .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
                     previewPlaceholder = R.drawable.smov_ico,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
-                            GlideImage(
-                                imageModel = R.drawable.smov_ico
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
                             )
                         }
-                    }, failure = {
+                    }, 
+                    failure = {
                         Box(modifier = Modifier.matchParentSize()) {
                             GlideImage(
                                 imageModel = R.drawable.ic_error

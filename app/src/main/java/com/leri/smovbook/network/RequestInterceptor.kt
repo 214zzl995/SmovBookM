@@ -71,7 +71,7 @@ fun OkHttpClient.Builder.ignoreAllSSLErrors(): OkHttpClient.Builder {
     }.socketFactory
 
     sslSocketFactory(insecureSocketFactory, naiveTrustManager)
-    hostnameVerifier(HostnameVerifier { _, _ -> true })
+    hostnameVerifier { _, _ -> true }
     return this
 }
 

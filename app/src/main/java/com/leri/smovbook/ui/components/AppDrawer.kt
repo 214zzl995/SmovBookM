@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
@@ -64,7 +66,6 @@ private fun DrawerHeader() {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HistoryUrl(
     modifier: Modifier = Modifier,
@@ -72,18 +73,21 @@ private fun HistoryUrl(
     changeServerUrl: (String) -> Unit,
     closeDrawer: () -> Unit,
 ) {
-    Column(modifier = modifier) {
-        DrawerItemHeader("历史")
-        for (historyUrlItem in historyUrl) {
+    LazyColumn {
+        item {
+            DrawerItemHeader("历史")
+        }
+        items(historyUrl){
             SmovUrl(
-                url = historyUrlItem,
-                modifier = Modifier,
+                url = it,
+                modifier = Modifier.animateItemPlacement(),
                 changeServerUrl = {
-                    changeServerUrl(historyUrlItem)
-                    closeDrawer()
+                    changeServerUrl(it)
+                    //closeDrawer()
                 }
             )
         }
+
     }
 }
 

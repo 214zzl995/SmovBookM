@@ -46,8 +46,8 @@ fun JumpToTop(
                 .padding(16.dp)
                 .navigationBarsPadding()
                 .offset(x = 0.dp, y = -bottomOffset)
-                .height(48.dp)
-                ,
+                .height(48.dp),
+
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.primary,
 
