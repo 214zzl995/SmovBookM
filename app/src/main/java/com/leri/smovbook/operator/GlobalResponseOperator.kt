@@ -48,9 +48,9 @@ class GlobalResponseOperator<T> constructor(
     override suspend fun onException(apiResponse: ApiResponse.Failure.Exception<T>) =
         apiResponse.run {
             Timber.d(message())
-            //Looper.prepare()
+            Looper.prepare()
             toast("请求失败: ${message()}")
-            //Looper.loop()
+            Looper.loop()
         }
 
     private fun toast(message: String) {

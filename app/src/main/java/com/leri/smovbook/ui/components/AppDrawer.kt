@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -71,7 +72,6 @@ private fun HistoryUrl(
     changeServerUrl: (String) -> Unit,
     closeDrawer: () -> Unit,
 ) {
-    val imeVisible = WindowInsets.isImeVisible
     Column(modifier = modifier) {
         DrawerItemHeader("历史")
         for (historyUrlItem in historyUrl) {
@@ -145,7 +145,8 @@ private fun SmovUrl(
             .padding(horizontal = 28.dp, vertical = 2.dp)
             .height(35.dp)
             .clip(Shapes.small)
-            .background(ScanMask),
+            .background(ScanMask)
+            .clickable { changeServerUrl() },
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
