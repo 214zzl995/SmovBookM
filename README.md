@@ -59,7 +59,16 @@ shared一般用于一次性读取的 第二次需要重新读取的数据 那个
    那么需要重新获取的new数据 应该为 hisUrl 和 newSmovs 获取到值后 将 值插入到 state中 所以 new hisUrl 和 newHisUrl
    一个应该为flow 一个为state 给前台使用
 
-
 要看 [https://github.com/topics/datastore-android](https://github.com/topics/datastore-android) 案例
 
 Bug 已经定位 当当前这次请求时间过长就会导致这个问题 将修改url的位置提前 好像没有这个问题了 但是不知道是不是好的
+
+
+
+
+
+### BUG
+
+1.  因为StateFlow的防抖导致的 多页面数据获取的bug
+
+2. 扫描二维码界面中间不知道为什么会重组一次

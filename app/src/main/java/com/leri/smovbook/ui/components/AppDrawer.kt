@@ -1,7 +1,6 @@
 package com.leri.smovbook.ui.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,14 +14,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
+import com.leri.smovbook.ui.theme.ScanMask
+import com.leri.smovbook.ui.theme.Shapes
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 
@@ -143,15 +143,16 @@ private fun SmovUrl(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 28.dp, vertical = 2.dp)
-            .height(35.dp),
-        verticalAlignment = CenterVertically
+            .height(35.dp)
+            .clip(Shapes.small)
+            .background(ScanMask),
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        Button(
-            onClick = { changeServerUrl() },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.elevatedButtonColors(),
-            elevation = ButtonDefaults.elevatedButtonElevation()
-        ) { Text(url) }
+        Text(
+            url,
+            modifier = Modifier
+        )
 
     }
 

@@ -80,7 +80,6 @@ class HomeViewModel @Inject constructor(
                 listOf<Smov>()
             }
         } else {
-            delay(500)
             smovRepository.getSmovPagination(
                 pageNum = it,
                 pageSize = 500,
@@ -100,21 +99,25 @@ class HomeViewModel @Inject constructor(
     init {
         Timber.d("Injection HomeViewModel")
         viewModelScope.launch(Dispatchers.IO) {
-            //这个会触发 newSmovFlow 的获取 当修改smovPageState时也会触发
             newSmovFlow.collectLatest {
+                //判断是否为首页 当为首页时 清除所有数据后刷入
+                if (smovPageState.value == 0) smovsState.value.smovs.removeAll { true }
                 smovsState.value.smovs.addAll(it)
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            smovRepository.getSmovServiceUrlAndPort().map { if (it == ":0") "127.0.0.1:443" else it }.collectLatest {
+            smovRepository.getSmovServiceUrlAndPort()
+                .map { if (it == ":0") "127.0.0.1:8080" else it }.collectLatest {
                 smovServerUrl.value = it
             }
         }
     }
 
     fun fetchNextSmovPage() {
-        smovPageState.value++
+        if (smovLoadingState.value != NetworkState.LOADING) {
+            smovPageState.value++
+        }
     }
 
     private fun fetchSmovPageForNum(page_num: Int) {
@@ -128,9 +131,6 @@ class HomeViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        //直接清除数据会造成 白屏 说实话 不舒服
-        smovsState.value.smovs.removeAll { true }
-
         if (smovPageState.value == 0) {
             //先更新为-1 因为防抖无法传0 这个防抖会造成 -1 比0更早实现 就会造成空数据
             fetchSmovPageForNum(-1)
