@@ -89,7 +89,7 @@ fun SmovCard(
                 GlideImage(
                     imageModel = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先满足哪条边
-                    circularReveal = CircularReveal(duration = 250),
+                    //circularReveal = CircularReveal(duration = 250),
                     modifier = Modifier
                         .fillMaxWidth(0.7F)
                         .defaultMinSize(minHeight = 100.dp)
