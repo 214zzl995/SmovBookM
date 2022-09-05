@@ -88,7 +88,7 @@ class HomeViewModel @Inject constructor(
             )
         }
 
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+    }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
     val smovServerUrl: MutableStateFlow<String> = MutableStateFlow("")
 
