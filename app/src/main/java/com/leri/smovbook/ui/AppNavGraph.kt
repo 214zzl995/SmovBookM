@@ -14,6 +14,7 @@ import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.home.HomeRoute
 import com.leri.smovbook.ui.home.HomeViewModel
 
+//开屏动画  https://github.com/stevdza-san/AnimatedSplashScreenDemo
 @Composable
 fun AppNavGraph(
     modifier: Modifier = Modifier,

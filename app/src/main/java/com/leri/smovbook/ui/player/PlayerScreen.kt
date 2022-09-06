@@ -44,6 +44,9 @@ import com.leri.smovbook.R
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.util.isScrolled
 
+//参考https://github.com/raheemadamboev/online-video-player
+//参考https://github.com/halilozercan/ComposeVideoPlayer
+//参考https://github.com/topics/jetpack-compose?q=player
 @Composable
 fun PlayerScreen(
     smov: Smov,
