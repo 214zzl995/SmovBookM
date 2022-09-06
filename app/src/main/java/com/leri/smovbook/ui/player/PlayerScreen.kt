@@ -47,6 +47,8 @@ import com.leri.smovbook.util.isScrolled
 //参考https://github.com/raheemadamboev/online-video-player
 //参考https://github.com/halilozercan/ComposeVideoPlayer
 //参考https://github.com/topics/jetpack-compose?q=player
+//参考https://exoplayer.dev/
+//这个界面肯定要用compose重写了 不用挣扎了 先完成开屏动画
 @Composable
 fun PlayerScreen(
     smov: Smov,
