@@ -6,10 +6,12 @@ import androidx.navigation.NavHostController
 object AppDestinations {
     const val HOME_ROUTE = "home_screen"
     const val BARCODE_ROUTE = "barcode_screen"
+    const val SPLASH_SCREEN = "splash_screen"
 }
 
 class AppNavigationActions(navController: NavHostController) {
     val navigateToHome: () -> Unit = {
+        navController.popBackStack()
         navController.navigate(AppDestinations.HOME_ROUTE) {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
@@ -20,6 +22,15 @@ class AppNavigationActions(navController: NavHostController) {
     }
     val navigateToBarCode: () -> Unit = {
         navController.navigate(AppDestinations.BARCODE_ROUTE) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+    val navigateToSplashScreen: () -> Unit = {
+        navController.navigate(AppDestinations.SPLASH_SCREEN) {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }

@@ -13,6 +13,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.home.HomeRoute
 import com.leri.smovbook.ui.home.HomeViewModel
+import com.leri.smovbook.ui.splash.SplashScreen
 
 //开屏动画  https://github.com/stevdza-san/AnimatedSplashScreenDemo
 @Composable
@@ -35,6 +36,53 @@ fun AppNavGraph(
     AnimatedNavHost(
         navController, startDestination = startDestination, modifier = modifier
     ) {
+        composable(
+            AppDestinations.SPLASH_SCREEN,
+            enterTransition = {
+                when (initialState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Start,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popEnterTransition = {
+                when (initialState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popExitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+        ) {
+            SplashScreen {
+                navigationActions.navigateToHome()
+            }
+        }
         composable(
             AppDestinations.HOME_ROUTE,
             enterTransition = {
