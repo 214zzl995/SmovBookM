@@ -8,16 +8,17 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
-@ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -25,32 +26,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val splashWasDisplayed = savedInstanceState != null
         if (!splashWasDisplayed) {
-            val splashScreen = installSplashScreen()
-
-
             splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
-                // Get icon instance and start a fade out animation
                 splashScreenViewProvider.iconView
                     .animate()
                     .setDuration(splashFadeDurationMillis.toLong())
                     .alpha(0f)
                     .withEndAction {
-                        // After the fade out, remove the splash and set content view
                         splashScreenViewProvider.remove()
-                        setContent {
-                            val decorView: View = window.decorView
-                            CompositionLocalProvider(
-                                LocalBackPressedDispatcher provides this.onBackPressedDispatcher
-                            ) {
-                                SmovApp(modifier = Modifier.autoCloseKeyboard(decorView))
-                            }
-                        }
                     }.start()
             }
         } else {
@@ -62,6 +50,21 @@ class MainActivity : AppCompatActivity() {
                     SmovApp(modifier = Modifier.autoCloseKeyboard(decorView))
                 }
             }
+        }
+
+        splashScreen.setKeepOnScreenCondition {
+            runBlocking {
+                delay(splashFadeDurationMillis.toLong())
+            }
+            setContent {
+                val decorView: View = window.decorView
+                CompositionLocalProvider(
+                    LocalBackPressedDispatcher provides this.onBackPressedDispatcher
+                ) {
+                    SmovApp(modifier = Modifier.autoCloseKeyboard(decorView))
+                }
+            }
+            return@setKeepOnScreenCondition false
         }
 
 

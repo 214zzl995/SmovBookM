@@ -110,7 +110,7 @@ private fun PlayerScreenContent(
                             .wrapContentWidth(align = Alignment.CenterHorizontally)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.icon_article_background),
+                            painter = painterResource(id = R.drawable.ic_article_background),
                             contentDescription = null,
                             modifier = Modifier
                                 .clip(CircleShape)

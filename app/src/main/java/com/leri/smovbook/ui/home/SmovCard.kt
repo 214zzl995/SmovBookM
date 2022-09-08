@@ -31,7 +31,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.material3.CircularProgressIndicator
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
-import com.skydoves.landscapist.CircularReveal
 
 //修改SmovCard为 https://developer.android.google.cn/reference/kotlin/androidx/compose/material3/package-summary#ElevatedCard(androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.material3.CardColors,androidx.compose.material3.CardElevation,kotlin.Function1)
 @Composable
@@ -95,7 +94,7 @@ fun SmovCard(
                         .defaultMinSize(minHeight = 100.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
-                    previewPlaceholder = R.drawable.smov_ico,
+                    previewPlaceholder = R.drawable.ic_smov_ico,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
                             CircularProgressIndicator(

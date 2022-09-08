@@ -36,8 +36,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.SmovBookM.AppSplash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/blue500</item>
+    <style name="Theme.SmovBookM.AppSplash" parent="Theme.SplashScreen.IconBackground">
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_content</item>
         <item name="postSplashScreenTheme">@style/Theme.SmovBookM.NoActionBar</item>
     </style>

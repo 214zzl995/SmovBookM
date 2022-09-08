@@ -41,7 +41,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTheSmovService(retrofit: Retrofit): SmovService {
+    fun provideTheSmovService(retrofit: Retrofit ): SmovService {
         return retrofit.create(SmovService::class.java)
     }
 

@@ -4,19 +4,12 @@ import android.annotation.SuppressLint
 import com.leri.smovbook.datastore.SmovDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.security.SecureRandom
-import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier
-import javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory
 import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
@@ -51,7 +44,7 @@ internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : In
         println("拦截器url$url")
 
         //动态设置url
-        val requestBuilder = originalRequest.newBuilder().url(url)
+        val requestBuilder = originalRequest.newBuilder().url(url).tag("request")
         val request = requestBuilder.build()
         return chain.proceed(request)
     }
@@ -74,5 +67,8 @@ fun OkHttpClient.Builder.ignoreAllSSLErrors(): OkHttpClient.Builder {
     hostnameVerifier { _, _ -> true }
     return this
 }
+
+
+
 
 

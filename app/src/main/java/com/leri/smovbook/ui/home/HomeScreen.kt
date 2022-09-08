@@ -73,7 +73,6 @@ fun HomeScreen(
 
                 HomeScreenWithList(
                     uiState = uiState,
-                    showTopAppBar = true,
                     onRefreshSmovData = onRefreshSmovData,
                     onErrorDismiss = onErrorDismiss,
                     openDrawer = openDrawer,
@@ -110,7 +109,6 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenWithList(
     uiState: HomeUiState,
-    showTopAppBar: Boolean,
     onErrorDismiss: (Long) -> Unit,
     onRefreshSmovData: () -> Unit,
     openDrawer: () -> Unit,
@@ -169,19 +167,22 @@ private fun HomeScreenWithList(
                 }
             },
         )
-        if (showTopAppBar) {
-            val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
-            ChannelNameBar(
-                channelName = "SmovBook",
-                onNavIconPressed = openDrawer,
-                scrollBehavior = scrollBehavior,
-                //modifier = Modifier.statusBarsPadding(),
-                modifier = Modifier.padding(contentPadding),
-                onRefreshSmovData = onRefreshSmovData,
-                onOpenBarScann = openBarScann,
-                serverUrl = serverUrl
-            )
-        }
+
+        //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
+        Text(text = serverUrl)
+
+        val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
+        ChannelNameBar(
+            channelName = "SmovBook",
+            onNavIconPressed = openDrawer,
+            scrollBehavior = scrollBehavior,
+            //modifier = Modifier.statusBarsPadding(),
+            modifier = Modifier.padding(contentPadding),
+            onRefreshSmovData = onRefreshSmovData,
+            onOpenBarScann = openBarScann,
+            serverUrl = serverUrl
+        )
+
 
         if (uiState.errorMessages.isNotEmpty()) {
 
@@ -240,7 +241,6 @@ fun ChannelNameBar(
         },
         actions = {
             Icon(
-                //painter = painterResource(id = R.drawable.ic_qr_scan_line),
                 imageVector = Icons.Outlined.Add,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier

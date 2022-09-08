@@ -31,7 +31,7 @@ import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun ColumnScope.AppDrawer(
+fun AppDrawer(
     currentRoute: String,
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
@@ -83,7 +83,7 @@ private fun HistoryUrl(
                 modifier = Modifier.animateItemPlacement(),
                 changeServerUrl = {
                     changeServerUrl(it)
-                    //closeDrawer()
+                    closeDrawer()
                 }
             )
         }

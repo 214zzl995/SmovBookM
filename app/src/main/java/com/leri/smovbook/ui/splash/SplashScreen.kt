@@ -5,10 +5,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -97,7 +95,7 @@ fun SplashScreen(navigateToHome: () -> Unit) {
                 .alpha(alpha = alphaAnim)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.smov_ico),
+                painter = painterResource(id = R.drawable.ic_smov_ico),
                 contentDescription = "",
                 modifier = Modifier.shadow(8.dp, RoundedCornerShape(6.dp))
             )

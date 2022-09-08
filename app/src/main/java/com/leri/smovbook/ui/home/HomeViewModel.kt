@@ -125,6 +125,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun changeServerUrl(url: String) {
+        //更新url前停止所有请求
+        smovRepository.cancelAll()
         smovServerUrl.value = url
         smovRepository.changeSmovServiceUrl(url)
         refreshData()
