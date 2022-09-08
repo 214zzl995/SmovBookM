@@ -110,11 +110,7 @@
 -keep class com.leri.smovbook.models.** {*;}
 -dontwarn  com.easemob.**
 #另外，demo中发送表情的时候使用到反射，需要keep SmileUtils
-#-keep class com.easemob.chatuidemo.utils.SmileUtils {*;}
-#注意前面的包名，如果把这个类复制到自己的项目底下，比如放在com.example.utils底下，应该这么写（实际要去掉#）
-#-keep class com.example.utils.SmileUtils {*;}
-#如果使用EaseUI库，需要这么写
-#-keep class com.easemob.easeui.utils.EaseSmileUtils {*;}
+
 #2.0.9后加入语音通话功能，如需使用此功能的API，加入以下keep
 -dontwarn ch.imvs.**
 -dontwarn org.slf4j.**
@@ -163,13 +159,7 @@
 #fastjson
 -dontwarn com.alibaba.fastjson.**
 -keep class com.alibaba.fastjson.** { *; }
-# fresco
-#-keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
-#-keep @com.facebook.common.internal.DoNotStrip class *
-#-keepclassmembers class * {@com.facebook.common.internal.DoNotStrip *;}
-#-keep class com.facebook.imagepipeline.animated.factory.AnimatedFactoryImpl {
-#    public AnimatedFactoryImpl(com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory, com.facebook.imagepipeline.core.ExecutorSupplier);
-#}
+
 -keep class com.facebook.animated.gif.** {*;}
 -dontwarn javax.annotation.**
 #保留混淆mapping文件
