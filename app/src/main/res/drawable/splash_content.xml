@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:gravity="center" android:drawable="@drawable/ic_smov_round_ico" />
+    <item
+            android:gravity="center"
+            android:drawable="@drawable/ic_smov_round_ico" />
 </layer-list>
