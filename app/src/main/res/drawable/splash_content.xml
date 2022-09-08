@@ -3,4 +3,5 @@
     <item
             android:gravity="center"
             android:drawable="@drawable/ic_smov_round_ico" />
+
 </layer-list>
