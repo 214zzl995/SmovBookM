@@ -4,9 +4,7 @@ buildscript {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-    ext {
-        compose_version = '1.2.0'
-    }
+    apply from: './dependencies.gradle'
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.0-rc01'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"

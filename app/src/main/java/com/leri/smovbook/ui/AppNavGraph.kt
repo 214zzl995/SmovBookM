@@ -6,13 +6,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.home.HomeRoute
 import com.leri.smovbook.ui.home.HomeViewModel
+import com.leri.smovbook.ui.smovDetail.SmovDetailRouter
 import com.leri.smovbook.ui.splash.SplashScreen
 
 //开屏动画  https://github.com/stevdza-san/AnimatedSplashScreenDemo
@@ -22,6 +25,7 @@ fun AppNavGraph(
     navController: NavHostController = rememberAnimatedNavController(),
     startDestination: String = AppDestinations.HOME_ROUTE
 ) {
+
 
     val homeViewModel: HomeViewModel = hiltViewModel()
     val navigationActions = remember(navController) {
@@ -86,50 +90,35 @@ fun AppNavGraph(
         composable(
             AppDestinations.HOME_ROUTE,
             enterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.BARCODE_ROUTE ->
-                        slideIntoContainer(
-                            AnimatedContentScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-                    else -> null
-                }
+                slideIntoContainer(
+                    AnimatedContentScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
             },
             exitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.BARCODE_ROUTE ->
-                        slideOutOfContainer(
-                            AnimatedContentScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-                    else -> null
-                }
+                slideOutOfContainer(
+                    AnimatedContentScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
             },
             popEnterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.BARCODE_ROUTE ->
-                        slideIntoContainer(
-                            AnimatedContentScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-                    else -> null
-                }
+                slideIntoContainer(
+                    AnimatedContentScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
             },
             popExitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.BARCODE_ROUTE ->
-                        slideOutOfContainer(
-                            AnimatedContentScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-                    else -> null
-                }
+                slideOutOfContainer(
+                    AnimatedContentScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
             },
         ) {
             HomeRoute(
                 homeViewModel = homeViewModel,
                 openBarScann = navigationActions.navigateToBarCode,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                openSmovDetail = navigationActions.navigateToSmovDetail
             )
         }
         composable(AppDestinations.BARCODE_ROUTE,
@@ -179,6 +168,62 @@ fun AppNavGraph(
                     homeViewModel.changeServerUrl(it)
                 }
             )
+        }
+        composable(
+            route = AppDestinations.SMOV_DETAIL_WITH_ARGUMENT,
+            arguments = listOf(
+                navArgument(AppDestinations.SMOV_DETAIL_ARGUMENT0) { type = NavType.LongType },
+                navArgument(AppDestinations.SMOV_DETAIL_ARGUMENT1) { defaultValue = "SmovBook" }
+            ),
+            enterTransition = {
+                when (initialState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            exitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popEnterTransition = {
+                when (initialState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideIntoContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            },
+            popExitTransition = {
+                when (targetState.destination.route) {
+                    AppDestinations.HOME_ROUTE ->
+                        slideOutOfContainer(
+                            AnimatedContentScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    else -> null
+                }
+            }) { backStackEntry ->
+
+            val smovId = backStackEntry.arguments?.getLong(AppDestinations.SMOV_DETAIL_ARGUMENT0)
+                ?: return@composable
+            val smovName =
+                backStackEntry.arguments?.getString(AppDestinations.SMOV_DETAIL_ARGUMENT1)
+                    ?: return@composable
+
+            SmovDetailRouter(smovId, smovName, hiltViewModel()) { navController.navigateUp() }
+
         }
     }
 }

@@ -53,6 +53,7 @@ fun HomeScreen(
     loadingState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     changeServerUrl: (String) -> Unit,
+    openSmovDetail: (Long, String) -> Unit,
 ) {
 
     val scrollState = rememberLazyListState()
@@ -89,7 +90,8 @@ fun HomeScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
-                        scrollState = scrollState
+                        scrollState = scrollState,
+                        openSmovDetail = openSmovDetail
                     )
                 }
             }
@@ -346,6 +348,7 @@ fun SmovList(
     serverUrl: String,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
+    openSmovDetail: (Long, String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
@@ -362,7 +365,7 @@ fun SmovList(
                 .align(Alignment.Center)
         ) {
             items(smov) { smovItem ->
-                SmovCard(smovItem, serverUrl)
+                SmovCard(smovItem, serverUrl, openSmovDetail)
             }
         }
         val jumpThreshold = with(LocalDensity.current) {
@@ -430,7 +433,8 @@ fun Screen() {
             serverUrl = "127.0.0.1:8080",
             loadingState = NetworkState.SUCCESS,
             fetchNextSmovPage = { },
-            changeServerUrl = {}
+            changeServerUrl = {},
+            openSmovDetail = { _, _ -> }
         )
     }
 

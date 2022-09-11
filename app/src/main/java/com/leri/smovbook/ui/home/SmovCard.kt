@@ -36,7 +36,8 @@ import com.leri.smovbook.models.entities.Smov
 @Composable
 fun SmovCard(
     smov: Smov,
-    mainUrl: String
+    mainUrl: String,
+    openSmovDetail: (Long, String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -76,11 +77,14 @@ fun SmovCard(
                         val title = "打开视频"
                         val chooser = Intent.createChooser(intent, title)
 
-                        try {
-                            startActivity(context, intent, options.toBundle())
-                        } catch (e: ActivityNotFoundException) {
-                            // Define what your app should do if no activity can handle the intent.
-                        }
+                        /* try {
+
+                             startActivity(context, intent, options.toBundle())
+                         } catch (e: ActivityNotFoundException) {
+                             // Define what your app should do if no activity can handle the intent.
+                         }*/
+
+                        smov.id?.let { openSmovDetail(it.toLong(), smov.name) }
                     }
 
                 }) {
@@ -101,7 +105,7 @@ fun SmovCard(
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
-                    }, 
+                    },
                     failure = {
                         Box(modifier = Modifier.matchParentSize()) {
                             GlideImage(
@@ -165,7 +169,8 @@ fun SmovItemPreview() {
             Column {
                 SmovCard(
                     smov = testDataSin,
-                    mainUrl = "127.0.0.1"
+                    mainUrl = "127.0.0.1",
+                    openSmovDetail = { _, _ ->}
                 )
             }
         }

@@ -28,7 +28,8 @@ fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     homeViewModel: HomeViewModel,
     openBarScann: () -> Unit,
-    currentRoute: String
+    currentRoute: String,
+    openSmovDetail: (Long,String) -> Unit,
 ) {
     val uiState by homeViewModel.smovsState
     val detailOpen by homeViewModel.detailOpen
@@ -47,7 +48,8 @@ fun HomeRoute(
         historyUrl = historyUrl,
         loadingState = loadingState,
         fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() },
-        changeServerUrl = { homeViewModel.changeServerUrl(it) }
+        changeServerUrl = { homeViewModel.changeServerUrl(it) },
+        openSmovDetail = openSmovDetail
     )
 
 }
@@ -68,6 +70,7 @@ fun HomeRoute(
     loadingState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     changeServerUrl: (String) -> Unit,
+    openSmovDetail: (Long,String) -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -154,7 +157,8 @@ fun HomeRoute(
             serverUrl = serverUrl,
             loadingState = loadingState,
             fetchNextSmovPage = fetchNextSmovPage,
-            changeServerUrl = changeServerUrl
+            changeServerUrl = changeServerUrl,
+            openSmovDetail = openSmovDetail
         )
     }
 
