@@ -5,5 +5,8 @@ ext.versions = [
         versionName    : '1.0.0',
         compose_version: '1.2.0',
         camerax        : '1.2.0-beta01',
-        accompanist    : '0.25.1'
+        accompanist    : '0.25.1',
+        coreKtx        : '1.7.0',
+        appcompat      : '1.4.1',
+        material       : '1.7.0-alpha01'
 ]
