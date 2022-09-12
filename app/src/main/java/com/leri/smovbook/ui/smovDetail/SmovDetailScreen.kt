@@ -11,7 +11,7 @@ import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 
 //参考https://github.com/raheemadamboev/online-video-player
-//参考https://github.com/halilozercan/ComposeVideoPlayer
+//参考https://github.com/halilozercan/ComposeVideoPlayer 主要看这个
 //参考https://github.com/topics/jetpack-compose?q=player
 //参考https://exoplayer.dev/
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
