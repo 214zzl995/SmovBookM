@@ -10,4 +10,5 @@ class SmovDetailViewModel @Inject constructor(
     private val smovRepository: SmovRepository
 ): ViewModel() {
 
+
 }

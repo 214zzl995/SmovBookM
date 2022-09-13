@@ -27,9 +27,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
-
+/**
+ *这个东西有问题 可能需要做成viewmodel 界面不会刷新 不知道为什么 到时候做一个 libModel的版本看看大小 还有做一个viewmodel的版本看看
+ */
 internal class DefaultVideoPlayerController(
     private val context: Context,
     private val initialState: VideoPlayerState,
@@ -78,8 +81,19 @@ internal class DefaultVideoPlayerController(
     private var updateDurationAndPositionJob: Job? = null
     private val playerEventListener = object : Listener {
 
-        @Deprecated("Deprecated in Java")
-        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+        //状态监听准备好后 开始播放
+        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+            _state.set {
+                copy(
+                    isPlaying = playWhenReady,
+                )
+            }
+        }
+
+        //当前视频状态
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            //已经知道每次都能监听到 但是状态没有实时的出现
+            Timber.d("状态监听${PlaybackState.of(playbackState)} ")
             if (PlaybackState.of(playbackState) == PlaybackState.READY) {
                 initialStateRunner = initialStateRunner?.let {
                     it.invoke()
@@ -94,14 +108,14 @@ internal class DefaultVideoPlayerController(
                     }
                 }
             }
-
             _state.set {
                 copy(
-                    isPlaying = playWhenReady,
                     playbackState = PlaybackState.of(playbackState)
                 )
             }
+
         }
+
     }
 
     private val videoListener = object : Listener {

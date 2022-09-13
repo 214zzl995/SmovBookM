@@ -8,9 +8,16 @@ import com.leri.smovbook.ui.data.testDataSin
 fun SmovDetailRouter(
     smovId: Long,
     smovName: String,
+    serverUrl: String,
     viewModel: SmovDetailViewModel,
     onBack: () -> Unit,
 ) {
 
-    SmovDetailScreen(smov = testDataSin, smovName = smovName, onBack = onBack)
+    SmovDetailScreen(
+        smov = testDataSin,
+        serverUrl = serverUrl,
+        smovId = smovId,
+        smovName = smovName,
+        onBack = onBack
+    )
 }

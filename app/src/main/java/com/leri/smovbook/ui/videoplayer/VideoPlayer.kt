@@ -23,7 +23,7 @@ internal val LocalVideoPlayerController =
     compositionLocalOf<DefaultVideoPlayerController> { error("VideoPlayerController is not initialized") }
 
 @Composable
-fun rememberVideoPlayerController(
+fun rememberSaveableVideoPlayerController(
     source: VideoPlayerSource? = null
 ): VideoPlayerController {
     val context = LocalContext.current
@@ -58,6 +58,25 @@ fun rememberVideoPlayerController(
 }
 
 @Composable
+fun rememberVideoPlayerController(
+    source: VideoPlayerSource? = null
+): VideoPlayerController {
+    val context = LocalContext.current
+
+    val coroutineScope = rememberCoroutineScope()
+
+    return remember {
+        DefaultVideoPlayerController(
+            context = context,
+            initialState = VideoPlayerState(),
+            coroutineScope = coroutineScope
+        ).apply {
+            source?.let { setSource(it) }
+        }
+    }
+}
+
+@Composable
 fun VideoPlayer(
     videoPlayerController: VideoPlayerController,
     modifier: Modifier = Modifier,
@@ -77,6 +96,7 @@ fun VideoPlayer(
 
     CompositionLocalProvider(
         LocalContentColor provides Color.White,
+        //这里传递了参数 出现等待状态没有刷新的原因很可能出现在这里
         LocalVideoPlayerController provides videoPlayerController
     ) {
         Box(

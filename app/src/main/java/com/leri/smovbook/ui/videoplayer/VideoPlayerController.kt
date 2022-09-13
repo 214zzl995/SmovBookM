@@ -2,7 +2,7 @@ package com.leri.smovbook.ui.videoplayer
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface VideoPlayerController {
+interface VideoPlayerController{
 
     fun setSource(source: VideoPlayerSource)
 

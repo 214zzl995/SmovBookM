@@ -222,7 +222,14 @@ fun AppNavGraph(
                 backStackEntry.arguments?.getString(AppDestinations.SMOV_DETAIL_ARGUMENT1)
                     ?: return@composable
 
-            SmovDetailRouter(smovId, smovName, hiltViewModel()) { navController.navigateUp() }
+            val serverUrl by homeViewModel.smovServerUrl.collectAsState()
+
+            SmovDetailRouter(
+                smovId,
+                smovName,
+                serverUrl,
+                hiltViewModel()
+            ) { navController.navigateUp() }
 
         }
     }

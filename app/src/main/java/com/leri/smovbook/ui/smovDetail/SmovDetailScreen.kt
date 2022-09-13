@@ -16,6 +16,7 @@ import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.videoplayer.VideoPlayer
 import com.leri.smovbook.ui.videoplayer.VideoPlayerSource
+import com.leri.smovbook.ui.videoplayer.rememberSaveableVideoPlayerController
 import com.leri.smovbook.ui.videoplayer.rememberVideoPlayerController
 
 
@@ -24,6 +25,8 @@ import com.leri.smovbook.ui.videoplayer.rememberVideoPlayerController
 fun SmovDetailScreen(
     smov: Smov,
     smovName: String,
+    smovId: Long,
+    serverUrl: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -32,7 +35,7 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    val videoPlayerController = rememberVideoPlayerController()
+    val videoPlayerController = rememberSaveableVideoPlayerController()
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -49,7 +52,7 @@ fun SmovDetailScreen(
         }
     }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(key1 = smovId) {
         videoPlayerController.setSource(VideoPlayerSource.Network("https://prod-streaming-video-msn-com.akamaized.net/ba258271-89c7-47bc-9742-bcae67c23202/f7ff4fe4-1346-47bb-9466-3f4662c1ac3a.mp4"))
     }
 
@@ -93,7 +96,7 @@ fun SmovDetailScreen(
 @Preview
 @Composable
 fun SmovDetailScreenPreview() {
-    SmovDetailScreen(smov = testDataSin, smovName = "SmovBook", onBack = { })
+    SmovDetailScreen(smov = testDataSin, smovName = "SmovBook", onBack = { }, serverUrl = "", smovId = 10086)
 }
 
 

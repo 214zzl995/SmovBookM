@@ -15,6 +15,6 @@ data class VideoPlayerState(
     val secondaryProgress: Long = 1L,
     val videoSize: Pair<Float, Float> = 1920f to 1080f,
     val draggingProgress: DraggingProgress? = null,
-    val playbackState: PlaybackState = PlaybackState.IDLE,
+    val playbackState: PlaybackState = PlaybackState.BUFFERING,
     val quickSeekAction: QuickSeekAction = QuickSeekAction.none()
 ): Parcelable
