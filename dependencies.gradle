@@ -8,5 +8,6 @@ ext.versions = [
         accompanist    : '0.25.1',
         coreKtx        : '1.7.0',
         appcompat      : '1.4.1',
-        material       : '1.7.0-alpha01'
+        material       : '1.7.0-alpha01',
+        activityCompose: '1.5.1'
 ]

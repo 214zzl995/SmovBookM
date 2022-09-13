@@ -4,11 +4,18 @@ package com.leri.smovbook.ui.smovDetail
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
+import com.leri.videoplayer.VideoPlayer
+import com.leri.videoplayer.rememberVideoPlayerController
 
 //参考https://github.com/raheemadamboev/online-video-player
 //参考https://github.com/halilozercan/ComposeVideoPlayer 主要看这个
@@ -27,6 +34,23 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
+    val videoPlayerController = rememberVideoPlayerController()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(videoPlayerController, lifecycleOwner) {
+        val observer = object : DefaultLifecycleObserver {
+            override fun onPause(owner: LifecycleOwner) {
+                videoPlayerController.pause()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Scaffold(
         modifier = modifier
             .windowInsetsPadding(
@@ -44,6 +68,10 @@ fun SmovDetailScreen(
         }
     ) { innerPadding ->
         println(innerPadding)
+        VideoPlayer(
+            videoPlayerController = videoPlayerController,
+            backgroundColor = Color.Transparent
+        )
     }
 
 

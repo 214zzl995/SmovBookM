@@ -112,8 +112,6 @@ android {
 
 dependencies {
 
-    implementation project(":videoplayer")
-
     implementation "androidx.core:core-ktx:$versions.coreKtx"
     implementation "androidx.compose.ui:ui:$versions.compose_version"
 
@@ -123,7 +121,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
-    implementation "androidx.activity:activity-compose:1.5.1"
+    implementation "androidx.activity:activity-compose:$versions.activityCompose"
     implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
 
@@ -184,6 +182,9 @@ dependencies {
 
     //log
     implementation "com.jakewharton.timber:timber:5.0.1"
+
+    //exoplayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
 
     //room
     implementation "androidx.room:room-runtime:2.4.3"
