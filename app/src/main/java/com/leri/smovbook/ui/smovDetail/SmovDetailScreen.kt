@@ -49,8 +49,8 @@ fun SmovDetailScreen(
         }
     }
 
-    LaunchedEffect(smovName) {
-        videoPlayerController.setSource(VideoPlayerSource.Network("http://127.0.0.1/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}"))
+    LaunchedEffect(true) {
+        videoPlayerController.setSource(VideoPlayerSource.Network("https://prod-streaming-video-msn-com.akamaized.net/ba258271-89c7-47bc-9742-bcae67c23202/f7ff4fe4-1346-47bb-9466-3f4662c1ac3a.mp4"))
     }
 
     Scaffold(
