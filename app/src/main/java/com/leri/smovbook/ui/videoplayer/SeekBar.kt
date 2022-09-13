@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.leri.videoplayer.util.getDurationString
+import com.leri.smovbook.ui.videoplayer.util.getDurationString
 
 @SuppressLint("ComposableLambdaParameterPosition", "ComposableLambdaParameterNaming")
 @Composable

@@ -3,6 +3,7 @@ package com.leri.smovbook.ui.videoplayer
 import android.app.Activity
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 internal val LocalVideoPlayerController =
     compositionLocalOf<DefaultVideoPlayerController> { error("VideoPlayerController is not initialized") }
@@ -23,7 +26,7 @@ internal val LocalVideoPlayerController =
 fun rememberVideoPlayerController(
     source: VideoPlayerSource? = null
 ): VideoPlayerController {
-    val context = LocalContext.current as Activity
+    val context = LocalContext.current
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -76,13 +79,14 @@ fun VideoPlayer(
         LocalContentColor provides Color.White,
         LocalVideoPlayerController provides videoPlayerController
     ) {
-        val aspectRatio by videoPlayerController.collect { videoSize.first / videoSize.second }
-
         Box(
             modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f)
+                //纵横比 我没啥用 注释掉 视频优先满足宽度
+                //.aspectRatio(aspectRatio)
                 .background(color = backgroundColor)
-                .aspectRatio(aspectRatio)
-                .then(modifier)
+                .then(modifier),
         ) {
             PlayerSurface {
                 videoPlayerController.playerViewAvailable(it)
@@ -111,4 +115,10 @@ fun ConfigChangeExample() {
             Text("Portrait")
         }
     }
+}
+
+@Composable
+@Preview
+fun VideoPlayerPreview() {
+    VideoPlayer(videoPlayerController = rememberVideoPlayerController())
 }

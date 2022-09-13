@@ -1,7 +1,9 @@
 package com.leri.smovbook.ui.videoplayer
 
-import androidx.lifecycle.ViewModel
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class VideoPlayerState(
     val isPlaying: Boolean = true,
     val controlsVisible: Boolean = true,
@@ -15,4 +17,4 @@ data class VideoPlayerState(
     val draggingProgress: DraggingProgress? = null,
     val playbackState: PlaybackState = PlaybackState.IDLE,
     val quickSeekAction: QuickSeekAction = QuickSeekAction.none()
-) : ViewModel()
+): Parcelable

@@ -1,6 +1,5 @@
 package com.leri.smovbook.ui.videoplayer
 
-import android.os.Parcelable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -26,7 +25,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
-import com.leri.videoplayer.util.getDurationString
+import com.leri.smovbook.ui.videoplayer.util.getDurationString
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -248,10 +249,11 @@ fun Modifier.draggingProgressOverlay(draggingProgress: DraggingProgress?) = comp
     this
 }
 
+@Parcelize
 data class DraggingProgress(
     val finalTime: Float,
     val diffTime: Float
-) : ViewModel() {
+) : Parcelable {
     val progressText: String
         get() = "${getDurationString(finalTime.toLong(), false)} " +
                 "[${if (diffTime < 0) "-" else "+"}${
@@ -268,9 +270,10 @@ enum class QuickSeekDirection {
     Forward
 }
 
+@Parcelize
 data class QuickSeekAction(
     val direction: QuickSeekDirection
-) : ViewModel() {
+) : Parcelable {
     // Each action is unique
     override fun equals(other: Any?): Boolean {
         return false

@@ -1,26 +1,24 @@
 package com.leri.smovbook.ui.smovDetail
 
-
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.videoplayer.VideoPlayer
+import com.leri.smovbook.ui.videoplayer.VideoPlayerSource
 import com.leri.smovbook.ui.videoplayer.rememberVideoPlayerController
 
-//参考https://github.com/raheemadamboev/online-video-player
-//参考https://github.com/halilozercan/ComposeVideoPlayer 主要看这个
-//参考https://github.com/topics/jetpack-compose?q=player
-//参考https://exoplayer.dev/
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SmovDetailScreen(
@@ -51,8 +49,13 @@ fun SmovDetailScreen(
         }
     }
 
+    LaunchedEffect(smovName) {
+        videoPlayerController.setSource(VideoPlayerSource.Network("http://127.0.0.1/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}"))
+    }
+
     Scaffold(
         modifier = modifier
+            .fillMaxSize()
             .windowInsetsPadding(
                 WindowInsets
                     .navigationBars
@@ -68,10 +71,20 @@ fun SmovDetailScreen(
         }
     ) { innerPadding ->
         println(innerPadding)
-        VideoPlayer(
-            videoPlayerController = videoPlayerController,
-            backgroundColor = Color.Transparent
-        )
+        //参考https://exoplayer.dev/
+        //全屏参考 https://stackoverflow.com/questions/72102097/jetpack-compose-exoplayer-full-screen
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.TopStart
+        ) {
+            VideoPlayer(
+                modifier = Modifier,
+                videoPlayerController = videoPlayerController
+            )
+        }
+
     }
 
 

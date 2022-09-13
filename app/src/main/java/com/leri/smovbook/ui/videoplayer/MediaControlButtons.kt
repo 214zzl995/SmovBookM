@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.leri.videoplayer.util.getDurationString
+import com.leri.smovbook.ui.videoplayer.util.getDurationString
 
 //全部的控制按钮
 @Composable
@@ -68,10 +68,6 @@ fun MediaControlButtons(
                 .background(Color.Black.copy(alpha = appearAlpha.value * 0.3f))
                 .then(modifier)
         )
-
-        IconButton(onClick = { controller.setFullScreen() } ) {
-            Icon(Icons.Filled.Favorite, contentDescription = "Localized description")
-        }
     }
 }
 

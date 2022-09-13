@@ -20,8 +20,8 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.video.VideoSize
-import com.leri.videoplayer.util.FlowDebouncer
-import com.leri.videoplayer.util.set
+import com.leri.smovbook.ui.videoplayer.util.FlowDebouncer
+import com.leri.smovbook.ui.videoplayer.util.set
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,10 +37,7 @@ internal class DefaultVideoPlayerController(
 ) : VideoPlayerController {
 
     private val _state = MutableStateFlow(initialState)
-    override val state: StateFlow<VideoPlayerState>
-        get() = _state.asStateFlow()
-
-    private val active = context as Activity
+    override val state: StateFlow<VideoPlayerState> get() = _state.asStateFlow()
 
     /**
      * Some properties in initial state are not applicable until player is ready.
@@ -297,6 +294,7 @@ internal class DefaultVideoPlayerController(
     }
 
     override fun setFullScreen() {
+        val active = context as Activity
         if (!_state.value.fullScreen) {
             active.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             _state.set {
