@@ -14,8 +14,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
-import com.leri.videoplayer.VideoPlayer
-import com.leri.videoplayer.rememberVideoPlayerController
+import com.leri.smovbook.ui.videoplayer.VideoPlayer
+import com.leri.smovbook.ui.videoplayer.rememberVideoPlayerController
 
 //参考https://github.com/raheemadamboev/online-video-player
 //参考https://github.com/halilozercan/ComposeVideoPlayer 主要看这个
