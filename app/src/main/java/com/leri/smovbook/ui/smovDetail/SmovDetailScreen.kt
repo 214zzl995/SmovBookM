@@ -48,8 +48,12 @@ fun SmovDetailScreen(
         }
     }
 
+    val url = "http://$serverUrl/smovbook/file/IPX-215/IPX-215.mp4"
+
+    println("测试$url")
+
     LaunchedEffect(key1 = smovId) {
-        videoPlayerController.setSource(VideoPlayerSource.Network("https://prod-streaming-video-msn-com.akamaized.net/ba258271-89c7-47bc-9742-bcae67c23202/f7ff4fe4-1346-47bb-9466-3f4662c1ac3a.mp4"))
+        videoPlayerController.setSource(VideoPlayerSource.Network(url))
     }
 
     Scaffold(

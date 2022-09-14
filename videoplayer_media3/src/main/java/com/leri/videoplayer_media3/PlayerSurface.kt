@@ -17,6 +17,7 @@ fun PlayerSurface(
     AndroidView(factory = { context ->
         PlayerView(context).apply {
             hideController()
+            useController = false
             onPlayerViewAvailable(this)
         }
     }, modifier = modifier)

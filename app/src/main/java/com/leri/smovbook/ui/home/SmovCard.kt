@@ -77,12 +77,12 @@ fun SmovCard(
                         val title = "打开视频"
                         val chooser = Intent.createChooser(intent, title)
 
-                        /* try {
+                        /*try {
 
-                             startActivity(context, intent, options.toBundle())
-                         } catch (e: ActivityNotFoundException) {
-                             // Define what your app should do if no activity can handle the intent.
-                         }*/
+                            startActivity(context, intent, options.toBundle())
+                        } catch (e: ActivityNotFoundException) {
+                            // Define what your app should do if no activity can handle the intent.
+                        }*/
 
                         smov.id?.let { openSmovDetail(it.toLong(), smov.name) }
                     }

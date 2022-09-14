@@ -59,6 +59,7 @@ fun ProgressIndicator(
                             .width(48.dp * videoSize.first / videoSize.second)
                             .background(Color.DarkGray)
                     ) {
+
                         controller.previewPlayerViewAvailable(it)
                     }
                 },
