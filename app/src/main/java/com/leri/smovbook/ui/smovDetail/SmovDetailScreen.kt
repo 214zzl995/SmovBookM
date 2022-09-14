@@ -5,15 +5,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
-import com.leri.videoplayer_media3.VideoPlayer
-import com.leri.videoplayer_media3.VideoPlayerSource
-import com.leri.videoplayer_media3.rememberVideoPlayerController
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -31,30 +25,10 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    val videoPlayerController = rememberVideoPlayerController()
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(videoPlayerController, lifecycleOwner) {
-        val observer = object : DefaultLifecycleObserver {
-            override fun onPause(owner: LifecycleOwner) {
-                videoPlayerController.pause()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     val url = "http://$serverUrl/smovbook/file/IPX-215/IPX-215.mp4"
 
     println("测试$url")
 
-    LaunchedEffect(key1 = smovId) {
-        videoPlayerController.setSource(VideoPlayerSource.Network(url))
-    }
 
     Scaffold(
         modifier = modifier
@@ -73,19 +47,13 @@ fun SmovDetailScreen(
             )
         }
     ) { innerPadding ->
-        println(innerPadding)
-        //参考https://exoplayer.dev/
-        //全屏参考 https://stackoverflow.com/questions/72102097/jetpack-compose-exoplayer-full-screen
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
             contentAlignment = Alignment.TopStart
         ) {
-            VideoPlayer(
-                modifier = Modifier,
-                videoPlayerController = videoPlayerController
-            )
+
         }
 
     }
