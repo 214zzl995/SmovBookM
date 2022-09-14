@@ -170,6 +170,10 @@ dependencies {
 
     implementation "com.google.code.gson:gson:2.9.0"
 
+    //video
+    implementation 'cn.jzvd:jiaozivideoplayer:7.7.0'
+    implementation 'com.aliyun.sdk.android:AliyunPlayer:4.5.0-full'
+
     //utils
     implementation 'com.blankj:utilcodex:1.31.0'
 
