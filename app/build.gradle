@@ -113,6 +113,8 @@ android {
 
 dependencies {
 
+    implementation project(":videoplayer_media3")
+
     implementation "androidx.core:core-ktx:$versions.coreKtx"
     implementation "androidx.compose.ui:ui:$versions.compose_version"
 
@@ -183,9 +185,6 @@ dependencies {
 
     //log
     implementation "com.jakewharton.timber:timber:5.0.1"
-
-    //exoplayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
 
     //room
     implementation "androidx.room:room-runtime:2.4.3"

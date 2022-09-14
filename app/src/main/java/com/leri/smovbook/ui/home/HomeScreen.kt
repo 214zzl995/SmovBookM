@@ -184,6 +184,9 @@ private fun HomeScreenWithList(
             serverUrl = serverUrl
         )
 
+        //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
+        Text(text = serverUrl)
+
 
         if (uiState.errorMessages.isNotEmpty()) {
 

@@ -1,23 +1,19 @@
 package com.leri.smovbook.ui.smovDetail
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
-import com.leri.smovbook.ui.videoplayer.VideoPlayer
-import com.leri.smovbook.ui.videoplayer.VideoPlayerSource
-import com.leri.smovbook.ui.videoplayer.rememberSaveableVideoPlayerController
-import com.leri.smovbook.ui.videoplayer.rememberVideoPlayerController
+import com.leri.videoplayer_media3.VideoPlayer
+import com.leri.videoplayer_media3.VideoPlayerSource
+import com.leri.videoplayer_media3.rememberVideoPlayerController
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -35,7 +31,7 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    val videoPlayerController = rememberSaveableVideoPlayerController()
+    val videoPlayerController = rememberVideoPlayerController()
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
