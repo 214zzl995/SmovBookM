@@ -31,7 +31,8 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    val url = "http://$serverUrl/smovbook/file/IPX-215/IPX-215.mp4"
+    //val url = "http://$serverUrl/smovbook/file/IPX-215/IPX-215.mp4"
+    val url = "http://192.168.31.8:8000/smovbook/file/PPPD-927/PPPD-927.mp4"
 
     println("测试$url")
 
