@@ -14,6 +14,7 @@ import cn.jzvd.JZMediaSystem
 import cn.jzvd.JzvdStd
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
+import com.leri.smovbook.ui.player.AGVideo
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -32,7 +33,7 @@ fun SmovDetailScreen(
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
     //val url = "http://$serverUrl/smovbook/file/IPX-215/IPX-215.mp4"
-    val url = "http://192.168.31.8:8000/smovbook/file/PPPD-927/PPPD-927.mp4"
+    val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
 
     println("测试$url")
 
@@ -64,10 +65,17 @@ fun SmovDetailScreen(
             //文档地址 http://jzvd.org/jzplayer/extends-usage.html
             //项目地址 https://github.com/Jzvd/JZVideo/tree/develop/demo
             AndroidView(factory = {
-                JzvdStd(it).apply {
+//                JzvdStd(it).apply {
+//                    setUp(
+//                        url,
+//                        "饺子闭眼睛",
+//                        JzvdStd.SCREEN_NORMAL
+//                    )
+//                }
+                AGVideo(it).apply {
                     setUp(
                         url,
-                        "饺子闭眼睛",
+                        "测试",
                         JzvdStd.SCREEN_NORMAL
                     )
                 }
