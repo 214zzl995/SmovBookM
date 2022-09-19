@@ -15,6 +15,7 @@ import cn.jzvd.JzvdStd
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.AGVideo
+import com.leri.smovbook.ui.player.JzvdStdShowTitleAfterFullscreen
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -64,15 +65,8 @@ fun SmovDetailScreen(
             //证明方案可行 需要模仿AgVideo 用jetpack compose 写一个播放器
             //文档地址 http://jzvd.org/jzplayer/extends-usage.html
             //项目地址 https://github.com/Jzvd/JZVideo/tree/develop/demo
-            AndroidView(factory = {
-//                JzvdStd(it).apply {
-//                    setUp(
-//                        url,
-//                        "饺子闭眼睛",
-//                        JzvdStd.SCREEN_NORMAL
-//                    )
-//                }
-                AGVideo(it).apply {
+            AndroidView(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f), factory = {
+                JzvdStdShowTitleAfterFullscreen(it).apply {
                     setUp(
                         url,
                         "测试",

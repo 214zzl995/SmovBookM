@@ -53,6 +53,27 @@ public class AGVideo extends JzvdStd {
     private Timer mDismissLockViewTimer, mDismissNextViewTimer;
     private DismissNextViewTimerTask mDismissNextViewTimerTask;
 
+    @Override
+    public void setUp(JZDataSource jzDataSource, int screen) {
+        super.setUp(jzDataSource, screen);
+        titleTextView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void gotoFullscreen() {
+        super.gotoFullscreen();
+        titleTextView.setVisibility(View.VISIBLE);
+
+    }
+
+    @Override
+    public void gotoNormalScreen() {
+        super.gotoNormalScreen();
+        titleTextView.setVisibility(View.INVISIBLE);
+    }
+
+
+
     public AGVideo(Context context) {
         super(context);
     }
@@ -135,7 +156,6 @@ public class AGVideo extends JzvdStd {
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.start || id == R.id.start_bottom || id == R.id.playAndPauseView) {
-            boolean clickPlayOrPause = true;
             playAndPauseView.playOrPause();
             if (jzDataSource == null || jzDataSource.urlsMap.isEmpty() || jzDataSource.getCurrentUrl() == null) {
                 Toast.makeText(getContext(), getResources().getString(cn.jzvd.R.string.no_url), Toast.LENGTH_SHORT).show();
