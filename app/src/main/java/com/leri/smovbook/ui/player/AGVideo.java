@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 
 import com.blankj.utilcode.util.NetworkUtils;
 import com.leri.smovbook.R;
+import com.leri.smovbook.databinding.LayoutAgVideoBinding;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,6 +31,7 @@ import cn.jzvd.JZDataSource;
 import cn.jzvd.JZUtils;
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
+import timber.log.Timber;
 
 public class AGVideo extends JzvdStd {
     protected DismissLockViewTimerTask mDismissLockViewTimerTask;
@@ -104,22 +105,19 @@ public class AGVideo extends JzvdStd {
         quickRetreat.setOnClickListener(this);
         fastForward.setOnClickListener(this);
         screenIV.setOnClickListener(this);
-        lock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                isLock = isChecked;
-                if (isChecked) {
-                    //锁屏按钮单独延迟隐藏
-                    goneLock();
-                    //隐藏其他功能
-                    dissmissControlView();
-                } else {
-                    cancelDismissControlViewTimer();
-                    startDismissControlViewTimer();
-                    //取消锁屏按钮的单独延迟隐藏，使锁屏按钮的延迟隐藏和其他功能按钮相同
-                    cancelGoneLock();
-                    onClickUiToggle();
-                }
+        lock.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            isLock = isChecked;
+            if (isChecked) {
+                //锁屏按钮单独延迟隐藏
+                goneLock();
+                //隐藏其他功能
+                dissmissControlView();
+            } else {
+                cancelDismissControlViewTimer();
+                startDismissControlViewTimer();
+                //取消锁屏按钮的单独延迟隐藏，使锁屏按钮的延迟隐藏和其他功能按钮相同
+                cancelGoneLock();
+                onClickUiToggle();
             }
         });
 
@@ -136,6 +134,7 @@ public class AGVideo extends JzvdStd {
 
     @Override
     public void onClick(View v) {
+        LayoutAgVideoBinding layoutAgVideoBinding = LayoutAgVideoBinding.bind(v);
         int id = v.getId();
         switch (id) {
             case R.id.start:
@@ -156,7 +155,7 @@ public class AGVideo extends JzvdStd {
                     }
                     startVideo();
                 } else if (state == STATE_PLAYING) {
-                    Log.d(TAG, "pauseVideo [" + this.hashCode() + "] ");
+                    Timber.tag(TAG).d("pauseVideo [" + this.hashCode() + "] ");
                     mediaInterface.pause();
                     onStatePause();
                 } else if (state == STATE_PAUSE) {
@@ -197,9 +196,9 @@ public class AGVideo extends JzvdStd {
                 OnClickListener mQualityListener = v1 -> {
                     int index = (int) v1.getTag();
 
-//                    this.seekToInAdvance = getCurrentPositionWhenPlaying();
+                    //this.seekToInAdvance = getCurrentPositionWhenPlaying();
                     jzDataSource.currentUrlIndex = index;
-//                    onStatePreparingChangeUrl();
+                    //onStatePreparingChangeUrl();
 
                     changeUrl(jzDataSource, getCurrentPositionWhenPlaying());
 
@@ -300,11 +299,7 @@ public class AGVideo extends JzvdStd {
                 long currentPositionWhenPlaying = getCurrentPositionWhenPlaying();
                 //快进（15S）
                 long fastForwardProgress = currentPositionWhenPlaying + 15 * 1000;
-                if (duration > fastForwardProgress) {
-                    mediaInterface.seekTo(fastForwardProgress);
-                } else {
-                    mediaInterface.seekTo(duration);
-                }
+                mediaInterface.seekTo(Math.min(duration, fastForwardProgress));
                 break;
             case R.id.quick_retreat:
                 //当前时间
@@ -340,7 +335,6 @@ public class AGVideo extends JzvdStd {
         if (id == R.id.surface_container) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    break;
                 case MotionEvent.ACTION_MOVE:
                     break;
                 case MotionEvent.ACTION_UP:
@@ -370,7 +364,7 @@ public class AGVideo extends JzvdStd {
         if (id == R.id.surface_container) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    Log.i(TAG, "onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
+                    Timber.tag(TAG).i("onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
                     mTouchingProgressBar = true;
 
                     mDownX = x;
@@ -380,12 +374,12 @@ public class AGVideo extends JzvdStd {
                     mChangeBrightness = false;
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    Log.i(TAG, "onTouch surfaceContainer actionMove [" + this.hashCode() + "] ");
+                    Timber.tag(TAG).i("onTouch surfaceContainer actionMove [" + this.hashCode() + "] ");
                     float deltaX = x - mDownX;
                     float deltaY = y - mDownY;
                     if (!isLock) {
-                        touchActionMove(x,y);
-//                        moveChange(event);
+                        touchActionMove(x, y);
+                        //moveChange(event);
                     }
                     if (mChangePosition) {
                         long totalTimeDuration = getDuration();
@@ -422,11 +416,11 @@ public class AGVideo extends JzvdStd {
                         //dialog中显示百分比
                         int brightnessPercent = (int) (mGestureDownBrightness * 100 / 255 + deltaY * 3 * 100 / mScreenHeight);
                         showBrightnessDialog(brightnessPercent);
-//                        mDownY = y;
+                        //mDownY = y;
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-                    Log.i(TAG, "onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
+                    Timber.tag(TAG).i("onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
                     mTouchingProgressBar = false;
                     dismissProgressDialog();
                     dismissVolumeDialog();
@@ -536,7 +530,7 @@ public class AGVideo extends JzvdStd {
             startButton.setVisibility(VISIBLE);
             startButton.setImageResource(R.mipmap.ag_btn_movie_suspend);
             start_bottom.setImageResource(R.mipmap.ag_btn_movie_stop_bottom);
-            if (playAndPauseView.getAnimationType()!=2){
+            if (playAndPauseView.getAnimationType() != 2) {
                 playAndPauseView.pause();
             }
             fastForward.setVisibility(VISIBLE);
@@ -561,7 +555,7 @@ public class AGVideo extends JzvdStd {
         } else {
             startButton.setImageResource(R.mipmap.ag_btn_movie_play);
             start_bottom.setImageResource(R.mipmap.ag_btn_movie_play_bottom);
-            if (playAndPauseView.getAnimationType()!=1){
+            if (playAndPauseView.getAnimationType() != 1) {
                 playAndPauseView.play();
             }
             replayTextView.setVisibility(GONE);
@@ -571,7 +565,7 @@ public class AGVideo extends JzvdStd {
     }
 
     private void updateConfigChanged(int state) {
-        Log.d(TAG, "updateConfigChanged state: " + (state == Jzvd.SCREEN_FULLSCREEN));
+        Timber.tag(TAG).d("updateConfigChanged state: " + (state == Jzvd.SCREEN_FULLSCREEN));
         if (state == Jzvd.SCREEN_FULLSCREEN) {
             StatusBarUtil.setNoTranslucentForImageView((Activity) getContext(), 0, findViewById(R.id.layout_top));
             ll_top.setBackgroundResource(R.drawable.jz_title_bg);
@@ -620,7 +614,7 @@ public class AGVideo extends JzvdStd {
     @Override
     public void onStatePlaying() {
 //        super.onStatePlaying();
-        Log.i(TAG, "onStatePlaying " + " [" + this.hashCode() + "] ");
+        Timber.tag(TAG).i("onStatePlaying " + " [" + this.hashCode() + "] ");
         if (state == STATE_PREPARED) {//如果是准备完成视频后第一次播放，先判断是否需要跳转进度。
             mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
             mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
@@ -645,7 +639,7 @@ public class AGVideo extends JzvdStd {
     @Override
     public void onCompletion() {
         Runtime.getRuntime().gc();
-        Log.i(TAG, "onAutoCompletion " + " [" + this.hashCode() + "] ");
+        Timber.tag(TAG).i("onAutoCompletion " + " [" + this.hashCode() + "] ");
         cancelProgressTimer();
         dismissBrightnessDialog();
         dismissProgressDialog();
@@ -889,7 +883,6 @@ public class AGVideo extends JzvdStd {
 
     /**
      * 点击播放下一集时设置按钮状态
-     *
      */
     public void changeNextBottonUi(boolean isNext) {
         this.isNext = isNext;
