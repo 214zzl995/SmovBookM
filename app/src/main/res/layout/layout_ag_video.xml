@@ -17,12 +17,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:background="#000000"
+            android:contentDescription="@string/content_description"
             android:scaleType="fitCenter" />
 
     <RelativeLayout
@@ -44,34 +43,36 @@
                     android:id="@+id/start_bottom"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:padding="5dp"
                     android:src="@mipmap/ag_btn_movie_play_bottom"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:contentDescription="@string/content_description" />
 
             <com.leri.smovbook.ui.player.PlayAndPauseView
                     android:id="@+id/playAndPauseView"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:padding="5dp" />
 
             <ImageView
                     android:id="@+id/next_bottom"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
                     android:padding="5dp"
+                    android:contentDescription="@string/content_description"
                     android:src="@mipmap/ag_btn_movie_next" />
 
             <TextView
                     android:id="@+id/current"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="14dp"
-                    android:text="00:00"
+                    android:layout_marginStart="14dp"
+                    android:text="@string/current"
                     android:textColor="#ffffff"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             <SeekBar
                     android:id="@+id/bottom_seek_progress"
@@ -94,17 +95,17 @@
                     android:id="@+id/total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:text="00:00"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/current"
                     android:textColor="#ffffff"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             <TextView
                     android:id="@+id/clarity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:text="clarity"
+                    android:text="@string/clarity"
                     android:textAlignment="center"
                     android:textColor="#ffffff" />
 
@@ -113,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:text="倍数"
+                    android:text="@string/tv_speed"
                     android:textAlignment="center"
                     android:textColor="#ffffff"
                     android:textSize="15sp" />
@@ -125,7 +126,7 @@
                     android:clickable="true"
                     android:paddingStart="20dp"
                     android:paddingEnd="30dp"
-                    android:text="选集"
+                    android:text="@string/tv_select_parts"
                     android:textAlignment="center"
                     android:textColor="#ffffff"
                     android:textSize="15sp" />
@@ -134,7 +135,8 @@
                     android:id="@+id/fullscreen"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/content_description"
                     android:scaleType="centerInside"
                     android:src="@drawable/jz_enlarge"
                     android:visibility="gone" />
@@ -153,16 +155,17 @@
                 android:id="@+id/back_tiny"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginLeft="6dp"
+                android:layout_marginStart="6dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/jz_click_back_tiny_selector"
+                android:contentDescription="@string/content_description"
                 android:visibility="gone" />
 
         <LinearLayout
                 android:id="@+id/layout_top"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/jz_title_bg"
                 android:gravity="center_vertical">
@@ -171,23 +174,18 @@
                     android:id="@+id/back"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
                     android:padding="11dp"
                     android:scaleType="centerInside"
                     android:src="@mipmap/ag_nav_return_1"
+                    android:contentDescription="@string/content_description"
                     android:visibility="gone" />
 
             <TextView
                     android:id="@+id/title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_marginLeft="12dp"
                     android:layout_marginRight="12dp"
-                    android:layout_toLeftOf="@+id/screen"
-                    android:layout_toRightOf="@+id/top_back"
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
@@ -198,11 +196,10 @@
                     android:id="@+id/screen"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:layout_marginRight="10dp"
-                    android:layout_toLeftOf="@id/battery_time_layout"
+                    android:layout_marginEnd="10dp"
                     android:padding="5dp"
                     android:src="@mipmap/ag_throwing_screen"
+                    android:contentDescription="@string/content_description"
                     android:visibility="gone" />
 
 
@@ -210,21 +207,10 @@
                     android:id="@+id/battery_time_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
                     android:layout_marginEnd="14dp"
-                    android:layout_marginRight="14dp"
                     android:gravity="center_vertical"
                     android:orientation="vertical"
                     android:visibility="gone">
-
-                <ImageView
-                        android:id="@+id/battery_level"
-                        android:layout_width="23dp"
-                        android:layout_height="10dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@drawable/jz_battery_level_10" />
 
                 <TextView
                         android:id="@+id/video_current_time"
@@ -234,7 +220,8 @@
                         android:gravity="center_vertical"
                         android:maxLines="1"
                         android:textColor="#ffffffff"
-                        android:textSize="12.0sp" />
+                        android:textSize="12.0sp"
+                        app:drawableTopCompat="@drawable/jz_battery_level_10" />
             </LinearLayout>
 
         </LinearLayout>
@@ -245,7 +232,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:background="@drawable/player_ag_lock"
                 android:button="@null"
                 android:visibility="gone" />
@@ -263,6 +250,7 @@
                     android:layout_width="@dimen/jz_start_button_w_h_normal"
                     android:layout_height="@dimen/jz_start_button_w_h_normal"
                     android:src="@mipmap/ag_btn_back_off_15s"
+                    android:contentDescription="@string/content_description"
                     android:visibility="gone" />
 
             <ImageView
@@ -272,6 +260,7 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:src="@mipmap/ag_btn_movie_play"
+                    android:contentDescription="@string/content_description"
                     android:visibility="gone" />
 
             <ImageView
@@ -279,6 +268,7 @@
                     android:layout_width="@dimen/jz_start_button_w_h_normal"
                     android:layout_height="@dimen/jz_start_button_w_h_normal"
                     android:src="@mipmap/ag_btn_fast_forward_15s"
+                    android:contentDescription="@string/content_description"
                     android:visibility="gone" />
         </LinearLayout>
 
@@ -292,11 +282,9 @@
                     android:id="@+id/replay_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/start_layout"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/bg_video_button"
-                    android:text="再次观看"
+                    android:text="@string/replay_text"
                     android:textColor="#ffffff"
                     android:textSize="14sp"
                     android:visibility="invisible" />
@@ -305,12 +293,10 @@
                     android:id="@+id/next_set"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/start_layout"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/bg_video_button"
-                    android:text="3秒后播放下一集"
+                    android:text="@string/next_set"
                     android:textColor="#ffffff"
                     android:textSize="14sp"
                     android:visibility="gone" />
@@ -377,7 +363,7 @@
                 android:id="@+id/player_notNetWork_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="网络无连接，请检查网络后重试"
+                android:text="@string/player_notNetWork_content"
                 android:textColor="#ffffffff"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toTopOf="@id/player_notNetWork_retry"
@@ -392,7 +378,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/player_ag_bg_retry"
-                android:text="重试"
+                android:text="@string/player_notNetWork_retry"
                 android:textColor="#ffffffff"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"

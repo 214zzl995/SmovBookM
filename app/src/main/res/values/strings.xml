@@ -22,4 +22,18 @@
 
     <string name="scan_server_qrcode">扫描服务端二维码</string>
 
+    <string name="current">00:00</string>
+    <string name="clarity">clarity</string>
+    <string name="tv_speed">倍数</string>
+    <string name="tv_select_parts">选集</string>
+
+    <string name="content_description">图片</string>
+
+    <string name="next_set">3秒后播放下一集</string>
+    <string name="replay_text">再次观看</string>
+    <string name="player_notNetWork_content">网络无连接，请检查网络后重试</string>
+    <string name="player_notNetWork_retry">重试</string>
+    <string name="player_next_timer_date">%1$d秒后播放下一集</string>
+
+
 </resources>
