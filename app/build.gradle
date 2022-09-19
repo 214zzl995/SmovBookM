@@ -55,7 +55,6 @@ android {
 
     buildFeatures {
         compose true
-        viewBinding true
     }
 
     //可以通过 buildConfigField判断环境
