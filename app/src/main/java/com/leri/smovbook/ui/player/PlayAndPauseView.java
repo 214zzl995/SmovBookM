@@ -9,11 +9,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Keep;
+import androidx.core.content.ContextCompat;
 
 import com.leri.smovbook.R;
 
@@ -25,9 +25,7 @@ public class PlayAndPauseView extends View {
     private int animationStep = 1;
     private int animationType = 2;
     //左边动画时间
-    private long leftDuration = 300;
-    //右边动画时间
-    private long rightDuration = 2 * leftDuration / 3;
+    private final long leftDuration = 300;
 
     private Path leftPath;
 
@@ -36,12 +34,12 @@ public class PlayAndPauseView extends View {
     private float leftZoomValue;
 
     //线的间隔
-    private float mLineInterval = Utils.dp2px(15);
+    private final float mLineInterval = Utils.dp2px(15);
     //线的长度
-    private float mLineLength = Utils.dp2px(18);
+    private final float mLineLength = Utils.dp2px(18);
     private Paint linePaint;
     //线的粗度
-    private float lineThickness = Utils.dp2px(4);
+    private final float lineThickness = Utils.dp2px(4);
 
     private Float mLeftCurAnimValue;
 
@@ -68,7 +66,7 @@ public class PlayAndPauseView extends View {
 
     public PlayAndPauseView(Context paramContext, AttributeSet paramAttributeSet) {
         super(paramContext, paramAttributeSet);
-        init();
+        init(paramContext);
     }
 
     public int getAnimationType() {
@@ -79,7 +77,7 @@ public class PlayAndPauseView extends View {
         this.animationType = animationType;
     }
 
-    private void init() {
+    private void init(Context paramContext) {
         leftPath = new Path();
         rightPath = new Path();
         mLeftDstPath = new Path();
@@ -87,7 +85,7 @@ public class PlayAndPauseView extends View {
         leftPathMeasure = new PathMeasure();
         rightPathMeasure = new PathMeasure();
         linePaint = new Paint(1);
-        linePaint.setColor(getResources().getColor(R.color.colorWhite));
+        linePaint.setColor(ContextCompat.getColor(paramContext, R.color.colorWhite));
         linePaint.setStrokeCap(Paint.Cap.ROUND);
         linePaint.setStrokeWidth(lineThickness);
         mLeftCurAnimValue = 1.0f;
@@ -120,11 +118,9 @@ public class PlayAndPauseView extends View {
         });
         //左边线条动画
         ValueAnimator valueAnimator1 = ValueAnimator.ofFloat(0f, 1.0f);
-        valueAnimator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator param1ValueAnimator) {
-                mLeftCurAnimValue = (Float) param1ValueAnimator.getAnimatedValue();
-                invalidate();
-            }
+        valueAnimator1.addUpdateListener(param1ValueAnimator -> {
+            mLeftCurAnimValue = (Float) param1ValueAnimator.getAnimatedValue();
+            invalidate();
         });
         valueAnimator1.setDuration(leftDuration);
         //右边线条动画
@@ -135,6 +131,8 @@ public class PlayAndPauseView extends View {
                 invalidate();
             }
         });
+        //右边动画时间
+        long rightDuration = 2 * leftDuration / 3;
         valueAnimator2.setDuration(rightDuration);
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -150,19 +148,15 @@ public class PlayAndPauseView extends View {
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "leftZoomValue", 0.2f, 0f);
         objectAnimator.setDuration(200);
         ValueAnimator valueAnimator1 = ValueAnimator.ofFloat(0f, 1.0f);
-        valueAnimator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator param1ValueAnimator) {
-                mLeftCurAnimValue = (Float) param1ValueAnimator.getAnimatedValue();
-                invalidate();
-            }
+        valueAnimator1.addUpdateListener(param1ValueAnimator -> {
+            mLeftCurAnimValue = (Float) param1ValueAnimator.getAnimatedValue();
+            invalidate();
         });
         valueAnimator1.setDuration(leftDuration);
         ValueAnimator valueAnimator2 = ValueAnimator.ofFloat(0f, 1.0f);
-        valueAnimator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator param1ValueAnimator) {
-                mRightCurAnimValue = (Float) param1ValueAnimator.getAnimatedValue();
-                invalidate();
-            }
+        valueAnimator2.addUpdateListener(param1ValueAnimator -> {
+            mRightCurAnimValue = (Float) param1ValueAnimator.getAnimatedValue();
+            invalidate();
         });
         valueAnimator2.setDuration(leftDuration);
         AnimatorSet animatorSet = new AnimatorSet();
@@ -208,6 +202,7 @@ public class PlayAndPauseView extends View {
         return leftZoomValue;
     }
 
+    @Keep
     public void setLeftZoomValue(float paramFloat) {
         leftZoomValue = paramFloat;
         postInvalidate();
@@ -222,7 +217,6 @@ public class PlayAndPauseView extends View {
         postInvalidate();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void onDraw(Canvas canvas) {
         float leftWidth = (getWidth() - mLineInterval + 2 * lineThickness) / 2;
         float height = getHeight();

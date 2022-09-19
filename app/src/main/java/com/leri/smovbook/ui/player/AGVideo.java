@@ -1,5 +1,6 @@
 package com.leri.smovbook.ui.player;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -181,7 +182,8 @@ public class AGVideo extends JzvdStd {
         } else if (id == R.id.clarity) {
             LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final LinearLayout layout = (LinearLayout) inflater.inflate(cn.jzvd.R.layout.jz_layout_clarity, null);
+
+            @SuppressLint("InflateParams") final LinearLayout layout = (LinearLayout) inflater.inflate(cn.jzvd.R.layout.jz_layout_clarity, null);
 
             OnClickListener mQualityListener = v1 -> {
                 int index = (int) v1.getTag();
