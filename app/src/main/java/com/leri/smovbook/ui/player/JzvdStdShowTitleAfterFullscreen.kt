@@ -1,42 +1,35 @@
-package com.leri.smovbook.ui.player;
+package com.leri.smovbook.ui.player
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-
-import cn.jzvd.JZDataSource;
-import cn.jzvd.JZMediaSystem;
-import cn.jzvd.JzvdStd;
+import android.content.Context
+import android.util.AttributeSet
+import cn.jzvd.JZDataSource
+import cn.jzvd.JzvdStd
 
 /**
- * Created by Nathen
- * On 2016/04/27 10:49
+ * Created by Leri
+ * On 2022/09/19 22:24
  */
-public class JzvdStdShowTitleAfterFullscreen extends JzvdStd {
-    public JzvdStdShowTitleAfterFullscreen(Context context) {
-        super(context);
+class JzvdStdShowTitleAfterFullscreen : JzvdStd {
+
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+
+    lateinit var changeFullscreen: () -> Unit
+
+    override fun setUp(jzDataSource: JZDataSource, screen: Int) {
+        super.setUp(jzDataSource, screen)
+        titleTextView.visibility = INVISIBLE
     }
 
-    public JzvdStdShowTitleAfterFullscreen(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    override fun gotoFullscreen() {
+        super.gotoFullscreen()
+        titleTextView.visibility = VISIBLE
+        changeFullscreen()
     }
 
-    @Override
-    public void setUp(JZDataSource jzDataSource, int screen) {
-        super.setUp(jzDataSource, screen);
-        titleTextView.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void gotoFullscreen() {
-        super.gotoFullscreen();
-        titleTextView.setVisibility(View.VISIBLE);
-
-    }
-
-    @Override
-    public void gotoNormalScreen() {
-        super.gotoNormalScreen();
-        titleTextView.setVisibility(View.INVISIBLE);
+    override fun gotoNormalScreen() {
+        super.gotoNormalScreen()
+        titleTextView.visibility = INVISIBLE
+        changeFullscreen()
     }
 }
