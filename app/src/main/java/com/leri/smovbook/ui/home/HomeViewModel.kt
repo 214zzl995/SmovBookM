@@ -1,7 +1,5 @@
 package com.leri.smovbook.ui.home
 
-import android.net.Uri
-import android.webkit.URLUtil
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
@@ -13,10 +11,8 @@ import com.leri.smovbook.repository.SmovRepository
 import com.leri.smovbook.util.ErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import timber.log.Timber
 import javax.inject.Inject
 
