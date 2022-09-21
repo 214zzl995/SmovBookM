@@ -171,7 +171,8 @@ dependencies {
     implementation "com.google.code.gson:gson:2.9.0"
 
     //video
-    implementation 'cn.jzvd:jiaozivideoplayer:7.7.0'
+    implementation "cn.jzvd:jiaozivideoplayer:7.7.2.3300"
+    implementation "androidx.media3:media3-exoplayer:$versions.media3_version"
 
     //utils
     implementation 'com.blankj:utilcodex:1.31.0'

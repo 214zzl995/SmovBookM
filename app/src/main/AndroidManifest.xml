@@ -19,7 +19,7 @@
                 android:exported="true"
                 android:theme="@style/Theme.SmovBookM.AppSplash"
                 android:configChanges="orientation|screenSize|keyboardHidden"
-                android:screenOrientation="fullSensor"
+                android:screenOrientation="unspecified"
                 android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

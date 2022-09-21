@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import cn.jzvd.JzvdStd
+import com.leri.smovbook.mediaRealization.JZMediaExo
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovBookVideoActive
@@ -75,14 +76,10 @@ fun SmovDetailScreen(
                         setUp(
                             url,
                             smovName,
-                            JzvdStd.SCREEN_NORMAL
+                            JzvdStd.SCREEN_NORMAL,
+                            JZMediaExo::class.java
                         )
                         changeScreen = {
-                            if (isFullScreen){
-
-                            }else{
-
-                            }
                             isFullScreen = !isFullScreen
                         }
                     }

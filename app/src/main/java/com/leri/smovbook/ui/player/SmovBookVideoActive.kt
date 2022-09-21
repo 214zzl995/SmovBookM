@@ -1,8 +1,10 @@
 package com.leri.smovbook.ui.player
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.util.AttributeSet
 import cn.jzvd.JZDataSource
+import cn.jzvd.JZUtils
 import cn.jzvd.JzvdStd
 
 /**
@@ -14,6 +16,8 @@ class SmovBookVideoActive : JzvdStd {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+
+    private val requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
     lateinit var changeScreen: () -> Unit
 
@@ -33,6 +37,7 @@ class SmovBookVideoActive : JzvdStd {
         changeScreen()
         //这里要调旋转屏幕 因为jzplayer的旋转屏幕可能会失效
         super.gotoNormalScreen()
+        JZUtils.setRequestedOrientation(jzvdContext, requestedOrientation)
         titleTextView.visibility = INVISIBLE
     }
 
