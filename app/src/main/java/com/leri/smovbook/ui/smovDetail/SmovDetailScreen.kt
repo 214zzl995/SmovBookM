@@ -4,20 +4,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import cn.jzvd.Jzvd
+import cn.jzvd.JzvdStd
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
-import com.leri.smovbook.ui.player.rememberVideoPlayer
+import com.leri.smovbook.ui.player.SmovBookVideoActive
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -37,9 +34,11 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+    var isFullScreen by rememberSaveable {
+        mutableStateOf(false)
+    }
 
-    val videoPlayer = rememberVideoPlayer(url, smovName)
+    val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
 
     println("测试$url")
 
@@ -53,7 +52,7 @@ fun SmovDetailScreen(
                     .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
             ),
         topBar = {
-            if (videoPlayer.screen != Jzvd.SCREEN_FULLSCREEN) {
+            if (!isFullScreen) {
                 SmovDetailAppBar(
                     scrollBehavior = scrollBehavior,
                     title = smovName,
@@ -71,17 +70,24 @@ fun SmovDetailScreen(
         ) {
             AndroidView(modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(if (videoPlayer.screen == Jzvd.SCREEN_FULLSCREEN) 1f else 0.3f), factory = {
-                videoPlayer
-
-
-            })
-
-
+                .fillMaxHeight(if (isFullScreen) 1f else 0.3f),
+                factory = {
+                    SmovBookVideoActive(
+                        context = context,
+                    ).apply {
+                        setUp(
+                            url,
+                            smovName,
+                            JzvdStd.SCREEN_NORMAL
+                        )
+                    }
+                })
         }
 
     }
 }
+
+
 
 
 @Preview
