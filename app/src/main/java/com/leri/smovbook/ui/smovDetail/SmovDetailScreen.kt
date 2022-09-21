@@ -34,13 +34,10 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    var isFullScreen by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var isFullScreen by rememberSaveable { mutableStateOf(false) }
 
     val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
 
-    println("测试$url")
 
 
     Scaffold(
@@ -80,14 +77,20 @@ fun SmovDetailScreen(
                             smovName,
                             JzvdStd.SCREEN_NORMAL
                         )
+                        changeScreen = {
+                            if (isFullScreen){
+
+                            }else{
+
+                            }
+                            isFullScreen = !isFullScreen
+                        }
                     }
                 })
         }
 
     }
 }
-
-
 
 
 @Preview

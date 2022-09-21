@@ -3,7 +3,6 @@ package com.leri.smovbook.ui.player
 import android.content.Context
 import android.util.AttributeSet
 import cn.jzvd.JZDataSource
-import cn.jzvd.JZDataSource.URL_KEY_DEFAULT
 import cn.jzvd.JzvdStd
 
 /**
@@ -16,18 +15,30 @@ class SmovBookVideoActive : JzvdStd {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
+    lateinit var changeScreen: () -> Unit
+
     override fun setUp(jzDataSource: JZDataSource, screen: Int) {
         super.setUp(jzDataSource, screen)
         titleTextView.visibility = INVISIBLE
     }
 
     override fun gotoFullscreen() {
+        changeScreen()
+        //这里要调旋转屏幕 因为jzplayer的旋转屏幕可能会失效
         super.gotoFullscreen()
         titleTextView.visibility = VISIBLE
     }
 
     override fun gotoNormalScreen() {
+        changeScreen()
+        //这里要调旋转屏幕 因为jzplayer的旋转屏幕可能会失效
         super.gotoNormalScreen()
+        titleTextView.visibility = INVISIBLE
+    }
+
+    override fun onCompletion() {
+        changeScreen()
+        super.onCompletion()
         titleTextView.visibility = INVISIBLE
     }
 
