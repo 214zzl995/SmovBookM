@@ -2,7 +2,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://maven.aliyun.com/repository/public/" } //jcenter & central
+        maven { url 'https://jitpack.io' }
+        maven { url "https://maven.aliyun.com/repository/public" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     apply from: './dependencies.gradle'
@@ -25,7 +26,8 @@ subprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://maven.aliyun.com/repository/public/" } //jcenter & central
+        maven { url 'https://jitpack.io' }
+        maven { url "https://maven.aliyun.com/repository/public" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 

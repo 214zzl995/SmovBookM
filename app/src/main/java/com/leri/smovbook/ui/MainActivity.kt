@@ -8,11 +8,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import cn.jzvd.Jzvd
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
+import com.shuyu.gsyvideoplayer.GSYVideoManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (Jzvd.backPress()) {
+        if (GSYVideoManager.backFromWindowFull(this)) {
             return
         }
         super.onBackPressed()
@@ -74,6 +75,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        Jzvd.releaseAllVideos()
+        GSYVideoManager.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        GSYVideoManager.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        GSYVideoManager.releaseAllVideos()
     }
 }
