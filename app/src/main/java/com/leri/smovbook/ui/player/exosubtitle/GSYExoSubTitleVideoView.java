@@ -18,20 +18,20 @@ import com.google.android.exoplayer2.ui.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.leri.smovbook.R;
 import com.shuyu.gsyvideoplayer.utils.Debuger;
+import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.NormalGSYVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer;
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer;
 
 import java.util.HashMap;
 
-public class GSYExoSubTitleVideoView extends NormalGSYVideoPlayer implements Player.Listener {
+public class GSYExoSubTitleVideoView extends NormalGSYVideoPlayer implements Player.Listener, View.OnClickListener {
 
     private SubtitleView mSubtitleView;
 
     private String mSubTitle;
 
-    //顶部和底部区域
-    protected ViewGroup mTopContainer;
+    private OrientationUtils orientationUtils;
 
     public GSYExoSubTitleVideoView(Context context, Boolean fullFlag) {
         super(context, fullFlag);
@@ -39,24 +39,29 @@ public class GSYExoSubTitleVideoView extends NormalGSYVideoPlayer implements Pla
 
     public GSYExoSubTitleVideoView(Context context) {
         super(context);
+
+        mTitleTextView.setVisibility(View.GONE);
+
+        mBackButton.setVisibility(View.GONE);
     }
 
     public GSYExoSubTitleVideoView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public void changeTopContainerVisible(int visible){
-        setViewShowState(mTopContainer, visible);
-    }
-
 
     @Override
     protected void init(Context context) {
         super.init(context);
+
+        getFullscreenButton().setOnClickListener(this);
+
         mSubtitleView = findViewById(R.id.sub_title_view);
 
         mSubtitleView.setStyle(new CaptionStyleCompat(Color.RED, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, CaptionStyleCompat.EDGE_TYPE_NONE, null));
         mSubtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+
+
     }
 
     @Override
@@ -91,6 +96,30 @@ public class GSYExoSubTitleVideoView extends NormalGSYVideoPlayer implements Pla
         setStateAndUi(CURRENT_STATE_PREPAREING);
     }
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        System.out.println("让我康康是哪个点了"+ v);
+        if (id == R.id.fullscreen) {
+            System.out.println("被点击了哦");
+            orientationUtils.resolveByClick();
+            startWindowFullscreen(v.getContext(), true, true);
+        }
+        super.onClick(v);
+    }
+
+    public OrientationUtils getOrientationUtils() {
+        return orientationUtils;
+    }
+
+    public void setOrientationUtils(OrientationUtils orientationUtils) {
+        this.orientationUtils = orientationUtils;
+    }
+
+    public ViewGroup getTopContainer() {
+        return mTopContainer;
+    }
+
 
     @Override
     public void onCues(@NonNull CueGroup cueGroup) {
@@ -113,6 +142,7 @@ public class GSYExoSubTitleVideoView extends NormalGSYVideoPlayer implements Pla
 
     @Override
     public GSYBaseVideoPlayer startWindowFullscreen(Context context, boolean actionBar, boolean statusBar) {
+        System.out.println("什么时候会调用这个");
         GSYBaseVideoPlayer gsyBaseVideoPlayer = super.startWindowFullscreen(context, actionBar, statusBar);
         GSYExoSubTitleVideoView gsyExoSubTitleVideoView = (GSYExoSubTitleVideoView) gsyBaseVideoPlayer;
         ((GSYExoSubTitlePlayerManager) GSYExoSubTitleVideoManager.instance().getPlayer())

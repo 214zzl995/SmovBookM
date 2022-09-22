@@ -2,18 +2,17 @@ package com.leri.smovbook.ui.smovDetail
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.view.View
 import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.exoplayer2.SeekParameters
@@ -38,13 +37,9 @@ fun SmovDetailScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val context = LocalContext.current
-
     val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
-
-    var isFullScreen by rememberSaveable { mutableStateOf(false) }
 
     val gsyVideoOption = GSYVideoOptionBuilder()
 
@@ -59,14 +54,14 @@ fun SmovDetailScreen(
                     .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
             ),
         topBar = {
-            if (!isFullScreen) {
-                SmovDetailAppBar(
-                    scrollBehavior = scrollBehavior,
-                    title = smovName,
-                    onBack = onBack,
-                    modifier = Modifier.padding(contentPadding)
-                )
-            }
+
+            SmovDetailAppBar(
+                scrollBehavior = scrollBehavior,
+                title = smovName,
+                onBack = onBack,
+                modifier = Modifier.padding(contentPadding)
+            )
+
         }
     ) { innerPadding ->
         Box(
@@ -77,12 +72,12 @@ fun SmovDetailScreen(
         ) {
             AndroidView(modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(if (isFullScreen) 1f else 0.3f),
+                .fillMaxHeight(0.3f),
                 factory = {
 
                     GSYExoSubTitleVideoView(it).apply {
                         //外部辅助的旋转，帮助全屏
-                        val orientationUtils = OrientationUtils(it.getActivity(), this)
+                        orientationUtils = OrientationUtils(it.getActivity(), this)
                         //初始化不打开外部的旋转
                         orientationUtils.isEnable = false
 
@@ -91,7 +86,7 @@ fun SmovDetailScreen(
                             .setRotateViewAuto(true)
                             .setLockLand(false)
                             .setAutoFullWithSize(false)
-                            .setShowFullAnimation(true)
+                            .setShowFullAnimation(false)
                             .setNeedLockFull(true)
                             .setUrl(url)
                             .setCacheWithPlay(true)
@@ -116,7 +111,6 @@ fun SmovDetailScreen(
 
                                 override fun onEnterFullscreen(url: String, vararg objects: Any) {
                                     super.onEnterFullscreen(url, *objects)
-                                    changeTopContainerVisible(VISIBLE)
                                     Debuger.printfError("***** onEnterFullscreen **** " + objects[0]) //title
                                     Debuger.printfError("***** onEnterFullscreen **** " + objects[1]) //当前全屏player
                                 }
@@ -131,7 +125,6 @@ fun SmovDetailScreen(
 
                                 override fun onQuitFullscreen(url: String, vararg objects: Any) {
                                     super.onQuitFullscreen(url, *objects)
-                                    changeTopContainerVisible(INVISIBLE)
                                     Debuger.printfError("***** onQuitFullscreen **** " + objects[0]) //title
                                     Debuger.printfError("***** onQuitFullscreen **** " + objects[1]) //当前非全屏player
 
@@ -148,16 +141,6 @@ fun SmovDetailScreen(
                             }
                             .build(this)
 
-                        fullscreenButton.setOnClickListener { _ ->
-                            orientationUtils.resolveByClick()
-                            //changeTopContainerVisible(VISIBLE)
-
-                            startWindowFullscreen(
-                                it,
-                                true,
-                                true
-                            )
-                        }
                         subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt";
 
                     }
