@@ -19,7 +19,7 @@
                 android:exported="true"
                 android:theme="@style/Theme.SmovBookM.AppSplash"
                 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
-                android:screenOrientation="sensor">
+                android:screenOrientation="unspecified">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

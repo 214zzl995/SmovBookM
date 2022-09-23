@@ -178,9 +178,3 @@
     public void onPause();
 }
 
--keep public class cn.jzvd.JZMediaSystem {*; }
-
--keep class tv.danmaku.ijk.media.player.** {*; }
--dontwarn tv.danmaku.ijk.media.player.*
--keep interface tv.danmaku.ijk.media.player.** { *; }
-
