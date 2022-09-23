@@ -22,7 +22,6 @@ import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoView
 
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SmovDetailScreen(
@@ -44,10 +43,10 @@ fun SmovDetailScreen(
 
     val videoView = SmovVideoView(context, smovName, url)
 
-    val isFullScreen by rememberSaveable { mutableStateOf(false) }
-    
+    var isFullScreen by rememberSaveable { mutableStateOf(false) }
+
     BackHandler(enabled = isFullScreen) {
-         //退出全屏
+        //退出全屏
 
     }
 
@@ -88,7 +87,7 @@ fun SmovDetailScreen(
                     videoView.apply {
                         smovInit()
                         subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt";
-
+                        changeScreenOrientation = { isFullScreen = !isFullScreen }
                     }
                 })
         }

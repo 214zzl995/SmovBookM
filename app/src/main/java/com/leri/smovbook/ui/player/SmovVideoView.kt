@@ -256,12 +256,14 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     override fun onEnterFullscreen(url: String, vararg objects: Any) {
         println("进入全屏")
+        changeScreenOrientation()
         Debuger.printfError("***** onEnterFullscreen **** " + objects[0]) //title
         Debuger.printfError("***** onEnterFullscreen **** " + objects[1]) //当前全屏player
     }
 
     override fun onQuitFullscreen(url: String?, vararg objects: Any?) {
         println("退出全屏")
+        changeScreenOrientation()
     }
 
     override fun onQuitSmallWidget(url: String?, vararg objects: Any?) {
