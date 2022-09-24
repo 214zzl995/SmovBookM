@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black">
@@ -31,10 +32,12 @@
             android:background="#000000"
             android:scaleType="fitCenter" />
 
+
     <LinearLayout
             android:id="@+id/layout_bottom"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="45dp"
+            android:paddingBottom="20dp"
             android:layout_alignParentBottom="true"
             android:background="#00000000"
             android:gravity="center_vertical"
@@ -45,6 +48,8 @@
                 android:id="@+id/current"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:layout_marginStart="16dp"
                 android:text="@string/video_time_start"
                 android:textColor="#ffffff" />
@@ -62,13 +67,12 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:progressDrawable="@drawable/video_seek_progress"
-                android:thumb="@drawable/video_seek_thumb" />
+                android:thumb="@drawable/ic_seekbar_thumb" />
 
         <TextView
                 android:id="@+id/total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:text="@string/video_time_start"
                 android:textColor="#ffffff" />
 
@@ -79,7 +83,8 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:scaleType="center"
-                android:src="@drawable/ic_add_to_booksheelf" />
+                android:src="@drawable/ic_add_to_booksheelf"
+                app:tint="#FFFFFF" />
 
 
     </LinearLayout>

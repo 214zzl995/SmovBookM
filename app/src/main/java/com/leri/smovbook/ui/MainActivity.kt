@@ -9,7 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
-import com.shuyu.gsyvideoplayer.GSYVideoManager
+import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitleVideoManager
+import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -65,26 +66,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (GSYVideoManager.backFromWindowFull(this)) {
-            return
-        }
-        super.onBackPressed()
-    }
-
     override fun onPause() {
         super.onPause()
-        GSYVideoManager.onPause()
+        /// 打开硬解码
+        GSYVideoType.enableMediaCodec()
+        GSYExoSubTitleVideoManager.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        GSYVideoManager.onResume()
+        GSYExoSubTitleVideoManager.onResume()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        GSYVideoManager.releaseAllVideos()
+        /// 关闭硬解码
+        GSYVideoType.disableMediaCodec()
+        GSYExoSubTitleVideoManager.releaseAllVideos()
     }
 }

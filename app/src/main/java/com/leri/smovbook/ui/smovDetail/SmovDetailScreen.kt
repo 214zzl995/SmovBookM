@@ -4,22 +4,28 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
+import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
+import com.skydoves.sandwich.message
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -33,21 +39,22 @@ fun SmovDetailScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val context = LocalContext.current
-
     val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+    //val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+    val url = "http://192.168.31.8:8000/smovbook/file/PPPD-927/PPPD-927.mp4"
 
-    val videoView = SmovVideoView(context, smovName, url)
+    val videoView = rememberVideoPlayerState(title = smovName, url = url)
 
-    var isFullScreen by rememberSaveable { mutableStateOf(false) }
-
-    BackHandler(enabled = isFullScreen) {
-        //退出全屏
-
+    BackHandler {
+        if (videoView.isIfCurrentIsFullscreen){
+            videoView.onBackFullscreen()
+        }else{
+            onBack()
+            videoView.release()
+        }
     }
 
 
@@ -60,7 +67,6 @@ fun SmovDetailScreen(
                     .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
             ),
         topBar = {
-
             SmovDetailAppBar(
                 scrollBehavior = scrollBehavior,
                 title = smovName,
@@ -78,7 +84,8 @@ fun SmovDetailScreen(
         ) {
             AndroidView(modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.3f),
+                .fillMaxHeight(0.3f)
+                .background(Color.White),
                 factory = {
                     /**
                      * 对于全屏的问题的猜想
@@ -87,12 +94,49 @@ fun SmovDetailScreen(
                     videoView.apply {
                         smovInit()
                         subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt";
-                        changeScreenOrientation = { isFullScreen = !isFullScreen }
                     }
                 })
         }
 
     }
+}
+
+@Composable
+fun rememberVideoPlayerState(
+    title: String,
+    url: String
+): SmovVideoView {
+    val context = LocalContext.current
+
+    val coroutineScope = rememberCoroutineScope()
+
+    return rememberSaveable(
+        context, coroutineScope,
+        saver = object : Saver<SmovVideoView, SmovVideoState> {
+            override fun restore(value: SmovVideoState): SmovVideoView {
+                return SmovVideoView(
+                    context = context,
+                    title = value.title,
+                    url = value.url
+                )
+            }
+
+            override fun SaverScope.save(value: SmovVideoView): SmovVideoState {
+                return SmovVideoState(
+                    isIfCurrentIsFullscreen = value.isIfCurrentIsFullscreen,
+                    title = value.title,
+                    url = value.url
+                )
+            }
+        },
+        init = {
+            SmovVideoView(
+                context = context,
+                title = title,
+                url = url
+            )
+        }
+    )
 }
 
 

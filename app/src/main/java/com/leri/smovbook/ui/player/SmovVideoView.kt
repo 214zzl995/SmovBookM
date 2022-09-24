@@ -7,12 +7,14 @@ import android.media.AudioManager
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.*
+import androidx.compose.runtime.State
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.text.CueGroup
 import com.google.android.exoplayer2.ui.CaptionStyleCompat
 import com.google.android.exoplayer2.ui.SubtitleView
 import com.leri.smovbook.R
+import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitlePlayerManager
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitleVideoManager
 import com.leri.smovbook.ui.player.utils.OrientationUtils
@@ -32,10 +34,11 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     var subTitle: String? = null
     lateinit var orientationUtils: OrientationUtils
 
-    lateinit var changeScreenOrientation: () -> Unit
+    private var sTitle: String = ""
+    private var sUrl: String = ""
 
-    private var title: String = ""
-    private var url: String = ""
+    val title: String get() = sTitle
+    val url: String get() = sUrl
 
     private var gsyVideoOption = GSYVideoOptionBuilder()
 
@@ -51,13 +54,14 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
             .setAutoFullWithSize(false)
             .setShowFullAnimation(false)
             .setNeedLockFull(true)
-            .setUrl(url)
-            .setCacheWithPlay(true)
+            .setUrl(sUrl)
+            .setCacheWithPlay(false)
             .setVideoAllCallBack(this)
-            .setVideoTitle(title).setLockClickListener { _, lock ->
+            .setVideoTitle(sTitle).setLockClickListener { _, lock ->
                 orientationUtils.isEnable = !lock
             }
-            .setVideoAllCallBack(this)
+            .setEnlargeImageRes(R.drawable.ic_add_to_booksheelf)
+            .setShrinkImageRes(R.drawable.ic_add_to_booksheelf)
             .setGSYVideoProgressListener { progress, secProgress, currentPosition, duration ->
                 Debuger.printfLog(
                     " progress $progress secProgress $secProgress currentPosition $currentPosition duration $duration"
@@ -70,8 +74,8 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
     constructor(context: Context?, title: String, url: String) : super(context) {
-        this.title = title
-        this.url = url
+        this.sTitle = title
+        this.sUrl = url
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
 
@@ -169,8 +173,9 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         //加了这个横竖屏旋转正常了。。。
         orientationUtils.resolveByClick()
         val gsyExoSubTitleVideoView = gsyVideoPlayer as SmovVideoView
-        (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager)
-            .removeTextOutput(gsyExoSubTitleVideoView)
+        (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager).removeTextOutput(
+            gsyExoSubTitleVideoView
+        )
     }
 
     /**********以下重载GSYVideoPlayer的GSYVideoViewBridge相关实现 */
@@ -256,14 +261,12 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     override fun onEnterFullscreen(url: String, vararg objects: Any) {
         println("进入全屏")
-        changeScreenOrientation()
         Debuger.printfError("***** onEnterFullscreen **** " + objects[0]) //title
         Debuger.printfError("***** onEnterFullscreen **** " + objects[1]) //当前全屏player
     }
 
     override fun onQuitFullscreen(url: String?, vararg objects: Any?) {
         println("退出全屏")
-        changeScreenOrientation()
     }
 
     override fun onQuitSmallWidget(url: String?, vararg objects: Any?) {
