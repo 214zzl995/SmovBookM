@@ -1,24 +1,29 @@
 package com.leri.smovbook.ui.player
 
+import android.animation.AnimatorInflater
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.media.AudioManager
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.*
-import androidx.compose.runtime.State
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.ImageView
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.animation.addListener
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.text.CueGroup
 import com.google.android.exoplayer2.ui.CaptionStyleCompat
 import com.google.android.exoplayer2.ui.SubtitleView
 import com.leri.smovbook.R
-import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitlePlayerManager
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitleVideoManager
 import com.leri.smovbook.ui.player.utils.OrientationUtils
 import com.leri.smovbook.ui.smovDetail.getActivity
+import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack
 import com.shuyu.gsyvideoplayer.utils.Debuger
@@ -26,6 +31,7 @@ import com.shuyu.gsyvideoplayer.video.NormalGSYVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer
 import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
+
 
 class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     View.OnClickListener, VideoAllCallBack {
@@ -42,6 +48,21 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     private var gsyVideoOption = GSYVideoOptionBuilder()
 
+    private lateinit var mBottomFunction: ViewGroup
+
+    private lateinit var mDialog: ViewGroup
+
+    private lateinit var mClarityDialog: ViewGroup
+
+    private lateinit var mClarityButton: ViewGroup
+
+    private lateinit var mSpeedDialog: ViewGroup
+
+    private lateinit var mSpeedButton: ViewGroup
+
+    private lateinit var mOtherButton: ViewGroup
+
+    private lateinit var mOtherDialog: ViewGroup
 
     fun smovInit() {
         mTitleTextView.visibility = GONE
@@ -73,15 +94,17 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     constructor(context: Context?) : super(context) {}
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
-    constructor(context: Context?, title: String, url: String) : super(context) {
+    constructor(context: Context?, title: String, url: String, subTitle: String?) : super(context) {
         this.sTitle = title
         this.sUrl = url
+        this.subTitle = subTitle
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
 
     override fun init(context: Context) {
         super.init(context)
         fullscreenButton.setOnClickListener(this)
+
         mSubtitleView = findViewById(R.id.sub_title_view)
         mSubtitleView.setStyle(
             CaptionStyleCompat(
@@ -94,10 +117,53 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
             )
         )
         mSubtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
+
+        mBottomFunction = findViewById(R.id.layout_bottom_function)
+        mDialog = findViewById(R.id.dialog)
+
+        mClarityDialog = findViewById(R.id.clarity_dialog)
+        mClarityButton = findViewById(R.id.clarity)
+        mSpeedButton = findViewById(R.id.speed)
+        mSpeedDialog = findViewById(R.id.speed_dialog)
+        mOtherButton = findViewById(R.id.other)
+        mOtherDialog = findViewById(R.id.other_dialog)
+
+        mDialog.setOnClickListener(this)
+        mSpeedButton.setOnClickListener(this)
+        mClarityButton.setOnClickListener(this)
+        mOtherButton.setOnClickListener(this)
+
+        mBottomContainer.setPadding(5, 0, 20, 0)
+
+        val greeting = findViewById<ComposeView>(R.id.compose_dialog)
+
+        //Compose嵌入View 但是无法控制它是否显示 优先以View完成这个功能
+        greeting.setContent {
+            SmovBookMTheme {
+                ComposeDialog()
+            }
+        }
     }
 
     override fun getLayoutId(): Int {
         return R.layout.video_layout_subtitle
+    }
+
+    override fun updateStartImage() {
+        if (mStartButton is ImageView) {
+            val imageView = mStartButton as ImageView
+            when (mCurrentState) {
+                CURRENT_STATE_PLAYING -> {
+                    imageView.setImageResource(R.drawable.video_click_pause_selector_smovbook)
+                }
+                CURRENT_STATE_ERROR -> {
+                    imageView.setImageResource(R.drawable.video_click_play_selector_smovbook)
+                }
+                else -> {
+                    imageView.setImageResource(R.drawable.video_click_play_selector_smovbook)
+                }
+            }
+        }
     }
 
     override fun startPrepare() {
@@ -123,6 +189,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
         mBackUpPlayingBufferState = -1
         gsyVideoManager.prepare(
             mUrl,
@@ -139,17 +206,70 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     }
 
     override fun onClick(v: View) {
-        val id = v.id
-        if (id == R.id.fullscreen) {
-            /**
-             * 确定出现错误的位置
-             * orientationUtils.resolveByClick() 没有成功的把屏幕旋转过来
-             */
-            orientationUtils.resolveByClick()
-            startWindowFullscreen(v.context, actionBar = true, statusBar = true)
+        when (v.id) {
+            R.id.fullscreen -> {
+                /**
+                 * 确定出现错误的位置
+                 * orientationUtils.resolveByClick() 没有成功的把屏幕旋转过来
+                 */
+                orientationUtils.resolveByClick()
+                startWindowFullscreen(context, actionBar = true, statusBar = true)
+            }
+            R.id.clarity -> {
+                showDialog(mClarityDialog)
+                //查看 GSYVideoControlView 1097行 1026行 829行 需要添加状态 设置页出现 重写 resolveUIState
+                changeUiToPauseShow()
+            }
+            R.id.other -> {
+                showDialog(mOtherDialog)
+                changeUiToPauseShow()
+            }
+            R.id.speed -> {
+                showDialog(mSpeedDialog)
+                changeUiToPauseShow()
+            }
+            R.id.dialog -> {
+                disableDialog(getShowDialog())
+            }
         }
+
         super.onClick(v)
     }
+
+    /**
+     * 显示对话弹出框后 控件一直存在
+     */
+    private fun showDialog(v: ViewGroup) {
+        mDialog.visibility = VISIBLE
+        v.visibility = VISIBLE
+        val animator = AnimatorInflater.loadAnimator(context, R.animator.dialog_in)
+        animator.setTarget(v)
+        animator.start()
+    }
+
+    /**
+     * 显示对话弹出框后 控件消失
+     */
+    private fun disableDialog(v: ViewGroup) {
+        val animator = AnimatorInflater.loadAnimator(context, R.animator.dialog_out)
+        animator.addListener(onEnd = {
+            v.visibility = GONE
+            mDialog.visibility = GONE
+        })
+        animator.setTarget(v)
+        animator.start()
+    }
+
+    private fun getShowDialog(): ViewGroup {
+        return if (mOtherDialog.visibility == VISIBLE) {
+            mOtherDialog
+        } else if (mSpeedDialog.visibility == VISIBLE) {
+            mSpeedDialog
+        } else {
+            mClarityDialog
+        }
+    }
+
 
     override fun onCues(cueGroup: CueGroup) {
         mSubtitleView.setCues(cueGroup.cues)
@@ -165,17 +285,24 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         val gsyExoSubTitleVideoView = gsyBaseVideoPlayer as SmovVideoView
         (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager)
             .addTextOutputPlaying(gsyExoSubTitleVideoView)
+
+        gsyBaseVideoPlayer.mBottomFunction.visibility = VISIBLE
+        gsyBaseVideoPlayer.mBottomContainer.setPadding(20, 0, 10, 0)
         return gsyBaseVideoPlayer
     }
 
     override fun resolveNormalVideoShow(oldF: View, vp: ViewGroup, gsyVideoPlayer: GSYVideoPlayer) {
         super.resolveNormalVideoShow(oldF, vp, gsyVideoPlayer)
-        //加了这个横竖屏旋转正常了。。。
-        orientationUtils.resolveByClick()
+
         val gsyExoSubTitleVideoView = gsyVideoPlayer as SmovVideoView
         (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager).removeTextOutput(
             gsyExoSubTitleVideoView
         )
+
+        //加了这个横竖屏旋转正常了。。。
+        orientationUtils.resolveByClick()
+        gsyExoSubTitleVideoView.mBottomFunction.visibility = GONE
+        gsyExoSubTitleVideoView.mBottomContainer.setPadding(5, 0, 5, 0)
     }
 
     /**********以下重载GSYVideoPlayer的GSYVideoViewBridge相关实现 */
@@ -305,3 +432,4 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     }
 }
+

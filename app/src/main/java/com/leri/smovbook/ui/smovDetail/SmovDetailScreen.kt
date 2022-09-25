@@ -24,8 +24,6 @@ import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
-import com.skydoves.sandwich.message
-import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -44,14 +42,15 @@ fun SmovDetailScreen(
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
     //val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+    val subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt"
     val url = "http://192.168.31.8:8000/smovbook/file/PPPD-927/PPPD-927.mp4"
 
-    val videoView = rememberVideoPlayerState(title = smovName, url = url)
+    val videoView = rememberVideoPlayerState(title = "TEST", url = url, subTitle)
 
     BackHandler {
-        if (videoView.isIfCurrentIsFullscreen){
+        if (videoView.isIfCurrentIsFullscreen) {
             videoView.onBackFullscreen()
-        }else{
+        } else {
             onBack()
             videoView.release()
         }
@@ -93,7 +92,6 @@ fun SmovDetailScreen(
                      */
                     videoView.apply {
                         smovInit()
-                        subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt";
                     }
                 })
         }
@@ -104,7 +102,8 @@ fun SmovDetailScreen(
 @Composable
 fun rememberVideoPlayerState(
     title: String,
-    url: String
+    url: String,
+    subTitle: String?
 ): SmovVideoView {
     val context = LocalContext.current
 
@@ -117,7 +116,8 @@ fun rememberVideoPlayerState(
                 return SmovVideoView(
                     context = context,
                     title = value.title,
-                    url = value.url
+                    url = value.url,
+                    subTitle = value.subTitle
                 )
             }
 
@@ -125,7 +125,8 @@ fun rememberVideoPlayerState(
                 return SmovVideoState(
                     isIfCurrentIsFullscreen = value.isIfCurrentIsFullscreen,
                     title = value.title,
-                    url = value.url
+                    url = value.url,
+                    subTitle = value.subTitle
                 )
             }
         },
@@ -133,7 +134,8 @@ fun rememberVideoPlayerState(
             SmovVideoView(
                 context = context,
                 title = title,
-                url = url
+                url = url,
+                subTitle = subTitle
             )
         }
     )

@@ -179,6 +179,9 @@ dependencies {
     implementation 'com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-x86:v8.3.4-release-jitpack'
     implementation 'com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-x64:v8.3.4-release-jitpack'
 
+    //模糊效果 因为可能带来不必要的性能开销模糊效果可以放弃
+    implementation 'com.github.Dimezis:BlurView:version-2.0.2'
+
     //utils
     implementation 'com.blankj:utilcodex:1.31.0'
 
@@ -192,6 +195,7 @@ dependencies {
 
     //log
     implementation "com.jakewharton.timber:timber:5.0.1"
+
 
     //room
     implementation "androidx.room:room-runtime:2.4.3"

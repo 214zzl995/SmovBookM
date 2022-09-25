@@ -23,9 +23,7 @@
     <string name="scan_server_qrcode">扫描服务端二维码</string>
 
     <string name="current">00:00</string>
-    <string name="clarity">clarity</string>
-    <string name="tv_speed">倍数</string>
-    <string name="tv_select_parts">选集</string>
+    <string name="clarity">清晰度</string>
 
     <string name="content_description">图片</string>
 
@@ -35,6 +33,17 @@
     <string name="player_notNetWork_retry">重试</string>
     <string name="player_next_timer_date">%1$d秒后播放下一集</string>
     <string name="video_time_start">00:00</string>
+    <string name="speed">倍速</string>
+    <string name="other">其他</string>
+    <string name="clarity4000">4K</string>
+    <string name="clarity1080">1080P</string>
+    <string name="clarity720">720P</string>
+    <string name="speed_0_5">0.5X</string>
+    <string name="speed_0_75">0.75X</string>
+    <string name="speed_1_0">1.0X</string>
+    <string name="speed_2_0">2.0X</string>
+    <string name="speed_4_0">4.0X</string>
+    <string name="other_nothing">现在这里什么都没有哦</string>
 
 
 </resources>

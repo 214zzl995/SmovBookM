@@ -7,5 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class SmovVideoState(
     val isIfCurrentIsFullscreen: Boolean = true,
     val title: String = "",
-    val url: String = ""
+    val url: String = "",
+    val subTitle: String? = "",
 ) : Parcelable

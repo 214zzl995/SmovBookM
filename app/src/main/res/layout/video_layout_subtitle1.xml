@@ -103,7 +103,7 @@
                 android:id="@+id/layout_bottom_function"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="15dp"
+                android:paddingBottom="0dp"
                 android:background="#00000000"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -114,79 +114,54 @@
 
             <LinearLayout
                     android:id="@+id/speed"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:descendantFocusability="blocksDescendants"
                     android:visibility="visible"
                     android:layout_weight="1">
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="5dp"
-                        app:srcCompat="@drawable/ic_outline_browse_gallery_24"
-                        android:contentDescription="@string/speed" />
-
-                <TextView
+                <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/speed"
-                        android:textColor="#ffffff" />
-
+                        android:background="#00000000"
+                        app:icon="@drawable/ic_outline_browse_gallery_24" />
             </LinearLayout>
 
             <LinearLayout
                     android:id="@+id/clarity"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:descendantFocusability="blocksDescendants"
                     android:visibility="visible"
                     android:layout_weight="1">
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="5dp"
-                        app:srcCompat="@drawable/ic_baseline_calendar_view_day_24"
-                        android:contentDescription="@string/clarity" />
-
-                <TextView
+                <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/clarity"
-                        android:textColor="#ffffff" />
+                        android:background="#00000000"
+                        app:icon="@drawable/ic_baseline_calendar_view_day_24" />
 
             </LinearLayout>
 
             <LinearLayout
                     android:id="@+id/other"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:gravity="center"
                     android:layout_height="match_parent"
-                    android:descendantFocusability="blocksDescendants"
                     android:visibility="visible"
                     android:layout_weight="1">
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="5dp"
-                        app:srcCompat="@drawable/ic_outline_pending_24"
-                        android:contentDescription="@string/other" />
-
-                <TextView
+                <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/other"
-                        android:textColor="#ffffff" />
+                        android:background="#00000000"
+                        app:icon="@drawable/ic_outline_pending_24" />
 
             </LinearLayout>
 
@@ -244,7 +219,7 @@
         <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/compose_dialog"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
@@ -289,157 +264,5 @@
             android:scaleType="centerInside"
             android:src="@drawable/unlock"
             android:visibility="gone" />
-
-    <LinearLayout
-            android:id="@+id/dialog"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:visibility="gone"
-            android:gravity="bottom|center_horizontal">
-
-        <LinearLayout
-                android:id="@+id/clarity_dialog"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/shape_dialog"
-                android:layout_marginBottom="20dp"
-                android:visibility="gone"
-                android:orientation="vertical">
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/clarity4000"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/clarity1080"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/clarity720"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-                android:id="@+id/speed_dialog"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/shape_dialog"
-                android:layout_marginBottom="20dp"
-                android:visibility="gone"
-                android:orientation="vertical">
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/speed_0_5"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/speed_0_75"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/speed_1_0"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/speed_2_0"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/speed_4_0"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-                android:id="@+id/other_dialog"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/shape_dialog"
-                android:visibility="gone"
-                android:orientation="vertical">
-
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:drawablePadding="16dp"
-                    android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:text="@string/other_nothing"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-
 
 </RelativeLayout>
