@@ -50,6 +50,18 @@ class SmovRepository(
     }.onCompletion { success() }.flowOn(Dispatchers.IO)
 
     @WorkerThread
+    fun getSmovById(id: Long , success: () -> Unit, error: () -> Unit) = flow {
+        val response = smovService.getSmovById(id)
+        response.suspendOnSuccess {
+            Timber.d(data.toString())
+            emit(data.data)
+        }.onError {
+            error()
+        }.onException { error() }
+    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+
+
+    @WorkerThread
     fun getSmovServiceUrl() = smovDataStore.serverUrl
 
     @WorkerThread

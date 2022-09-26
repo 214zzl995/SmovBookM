@@ -60,7 +60,6 @@ fun SmovCard(
                 .padding(0.dp)
                 .clickable {
                     coroutineScope.launch {
-                        println("http://$mainUrl/smovbook/file${smov.realname}/${smov.realname}.${smov.extension}")
                         val options: ActivityOptions = ActivityOptions.makeBasic()
 
                         val intent = Intent(Intent.ACTION_VIEW)

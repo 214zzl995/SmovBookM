@@ -64,7 +64,10 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     private lateinit var mOtherDialog: ViewGroup
 
-    fun smovInit() {
+    fun smovInit(title: String, url: String, subTitle: String) {
+        this.sTitle = title
+        this.sUrl = url
+        this.subTitle = subTitle
         mTitleTextView.visibility = GONE
         mBackButton.visibility = GONE
         orientationUtils.isEnable = false
@@ -91,7 +94,9 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
             .build(this)
     }
 
-    constructor(context: Context?) : super(context) {}
+    constructor(context: Context?) : super(context) {
+        this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
+    }
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
     constructor(context: Context?, title: String, url: String, subTitle: String?) : super(context) {
@@ -167,6 +172,9 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     }
 
     override fun startPrepare() {
+
+        println("测试$url")
+
         if (gsyVideoManager.listener() != null) {
             gsyVideoManager.listener().onCompletion()
         }
