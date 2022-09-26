@@ -42,8 +42,9 @@ fun SmovDetailScreen(
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
     //val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+    val url = "https://v-cdn.zjol.com.cn/276994.mp4"
     val subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt"
-    val url = "http://192.168.31.8:8000/smovbook/file/PPPD-927/PPPD-927.mp4"
+    //val url = "http://192.168.31.8:8000/smovbook/file/PPPD-927/PPPD-927.mp4"
 
     val videoView = rememberVideoPlayerState(title = "TEST", url = url, subTitle)
 

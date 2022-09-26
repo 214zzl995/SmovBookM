@@ -218,18 +218,19 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
             R.id.clarity -> {
                 showDialog(mClarityDialog)
                 //查看 GSYVideoControlView 1097行 1026行 829行 需要添加状态 设置页出现 重写 resolveUIState
-                changeUiToPauseShow()
+                resolveUIState(CURRENT_STATE_PAUSE)
             }
             R.id.other -> {
                 showDialog(mOtherDialog)
-                changeUiToPauseShow()
+                resolveUIState(CURRENT_STATE_PAUSE)
             }
             R.id.speed -> {
                 showDialog(mSpeedDialog)
-                changeUiToPauseShow()
+                resolveUIState(CURRENT_STATE_PAUSE)
             }
             R.id.dialog -> {
                 disableDialog(getShowDialog())
+                resolveUIState(CURRENT_STATE_PLAYING)
             }
         }
 

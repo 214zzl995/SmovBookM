@@ -39,7 +39,6 @@ public class GSYExoSubTitlePlayer extends IjkExo2MediaPlayer {
         super(context);
     }
 
-
     @Override
     public void onCues(List<Cue> cues) {
         super.onCues(cues);
@@ -106,10 +105,10 @@ public class GSYExoSubTitlePlayer extends IjkExo2MediaPlayer {
                 /// 其他的比如 text/x-ssa ，text/vtt，application/ttml+xml 等等
                 .setSampleMimeType(MimeTypes.APPLICATION_SUBRIP)
                 .setSelectionFlags(C.SELECTION_FLAG_FORCED)
-                /// 如果出现字幕不显示，可以通过修改这个语音去对应，
+                /// 如果出现字幕不显示，可以通过修改这个语言去对应，
                 //  这个问题在内部的 selectTextTrack 时，TextTrackScore 通过 getFormatLanguageScore 方法判断语言获取匹配不上
                 //  就会不出现字幕
-                .setLanguage("en")
+                // .setLanguage("zh-CN")
                 .build();
 
         MediaItem.SubtitleConfiguration  subtitle = new MediaItem.SubtitleConfiguration.Builder(subTitle)
