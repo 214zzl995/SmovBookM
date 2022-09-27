@@ -54,6 +54,7 @@ fun SmovDetailScreen(
 
     val videoView = rememberVideoPlayerState(title = "", url = url, subTitle)
 
+    //当url发生更改 且smov不为空时触发初始化
     LaunchedEffect(key1 = url) {
         if (smov != null) {
             videoView.smovInit(url = url, title = smovName, subTitle = subTitle)
@@ -139,6 +140,7 @@ fun rememberVideoPlayerState(
             }
         },
         init = {
+            //需要对 view做一个基础的初始化 例如作为加载界面打开
             SmovVideoView(
                 context = context,
                 title = title,
