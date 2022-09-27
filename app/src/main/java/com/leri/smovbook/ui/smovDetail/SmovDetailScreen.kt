@@ -49,9 +49,16 @@ fun SmovDetailScreen(
     //反正当前的 取到smov再渲染虽有用 但是不好
     //突然想到我好sb 完美的结局方案时把 那些数据直接从主页传过来 其他数据照常获取就好了。。。
     val subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt"
-    val url = "http://$serverUrl/smovbook/file/${smov?.realname}/${smov?.realname}.${smov?.extension}"
+    val url =
+        "http://$serverUrl/smovbook/file/${smov?.realname}/${smov?.realname}.${smov?.extension}"
 
-    val videoView = rememberVideoPlayerState(title = "TEST", url = url, subTitle)
+    val videoView = rememberVideoPlayerState(title = "", url = url, subTitle)
+
+    LaunchedEffect(key1 = url) {
+        if (smov != null) {
+            videoView.smovInit(url = url, title = smovName, subTitle = subTitle)
+        }
+    }
 
     BackHandler {
         if (videoView.isIfCurrentIsFullscreen) {
@@ -86,21 +93,15 @@ fun SmovDetailScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.TopStart
         ) {
-            if (smov != null){
-                AndroidView(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.3f)
-                    .background(Color.White),
-                    factory = {
-                        /**
-                         * 对于全屏的问题的猜想
-                         * 其实全屏没有问题 但是设置当前方向出现了问题 就是当我点击了按钮之后 去设置方向出现了问题
-                         */
-                        videoView.apply {
-                            smovInit(url= url, title = title, subTitle = subTitle)
-                        }
-                    })
-            }
+
+            AndroidView(modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.3f)
+                .background(Color.White),
+                factory = {
+                    videoView
+                })
+
         }
 
     }
