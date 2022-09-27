@@ -48,16 +48,19 @@ fun SmovDetailScreen(
     //可能的解决方案2 设置一个伪界面 添加加载的样式 让用户看不出来
     //反正当前的 取到smov再渲染虽有用 但是不好
     //突然想到我好sb 完美的结局方案时把 那些数据直接从主页传过来 其他数据照常获取就好了。。。
-    val subTitle = "http://img.cdn.guoshuyu.cn/subtitle2.srt"
+    val subTitle = "" //http://img.cdn.guoshuyu.cn/subtitle2.srt
     val url =
         "http://$serverUrl/smovbook/file/${smov?.realname}/${smov?.realname}.${smov?.extension}"
+    val cover = "http://$serverUrl/smovbook/file/${smov?.realname}/img/thumbs_${smov?.name}.jpg"
+
+
 
     val videoView = rememberVideoPlayerState(title = "", url = url, subTitle)
 
     //当url发生更改 且smov不为空时触发初始化
     LaunchedEffect(key1 = url) {
         if (smov != null) {
-            videoView.smovInit(url = url, title = smovName, subTitle = subTitle)
+            videoView.smovInit(url = url, title = smovName, subTitle = subTitle, cover = cover)
         }
     }
 

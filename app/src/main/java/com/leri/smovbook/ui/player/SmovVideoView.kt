@@ -3,7 +3,8 @@ package com.leri.smovbook.ui.player
 import android.animation.AnimatorInflater
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
+import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -13,6 +14,8 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.animation.addListener
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.text.CueGroup
@@ -42,6 +45,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     private var sTitle: String = ""
     private var sUrl: String = ""
+    private var sCover: String = ""
 
     val title: String get() = sTitle
     val url: String get() = sUrl
@@ -64,14 +68,26 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     private lateinit var mOtherDialog: ViewGroup
 
-    fun smovInit(title: String, url: String, subTitle: String) {
+    fun smovInit(title: String, url: String, subTitle: String, cover: String) {
         this.sTitle = title
         this.sUrl = url
         this.subTitle = subTitle
+        this.sCover = cover
+
+
+        //增加封面
+        val imageView = ImageView(context)
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+        imageView.load(cover) {
+            crossfade(true)
+            error(R.drawable.ic_error)
+        }
+
         mTitleTextView.visibility = GONE
         mBackButton.visibility = GONE
         orientationUtils.isEnable = false
         gsyVideoOption
+            .setThumbImageView(imageView)
             .setIsTouchWiget(true)
             .setRotateViewAuto(false)
             .setLockLand(false)
@@ -94,9 +110,13 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
             .build(this)
     }
 
+
+
+
     constructor(context: Context?) : super(context) {
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
+
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
     constructor(context: Context?, title: String, url: String, subTitle: String?) : super(context) {

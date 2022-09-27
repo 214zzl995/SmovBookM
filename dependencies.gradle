@@ -11,5 +11,6 @@ ext.versions = [
         material       : '1.7.0-alpha01',
         activityCompose: '1.5.1',
         media3_version : '1.0.0-beta02',
-        ijkplayer      : '0.88'
+        ijkplayer      : '0.88',
+        coil           : '2.2.1'
 ]

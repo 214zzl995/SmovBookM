@@ -144,7 +144,10 @@ dependencies {
     implementation "androidx.compose.runtime:runtime:$versions.compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$versions.compose_version"
     implementation "androidx.compose.ui:ui-viewbinding:$versions.compose_version"
-    implementation "com.github.skydoves:landscapist-glide:1.6.1"
+
+    //image
+    implementation "io.coil-kt:coil:$versions.coil"
+    implementation "io.coil-kt:coil-compose:$versions.coil"
 
     //google
     implementation "com.google.accompanist:accompanist-navigation-animation:$versions.accompanist"

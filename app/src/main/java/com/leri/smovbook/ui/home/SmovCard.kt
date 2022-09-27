@@ -14,25 +14,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.theme.SmovBookMTheme
-import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 import android.app.ActivityOptions
-import android.content.ActivityNotFoundException
 import androidx.compose.animation.animateContentSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.res.stringResource
+import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
 
-//修改SmovCard为 https://developer.android.google.cn/reference/kotlin/androidx/compose/material3/package-summary#ElevatedCard(androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.material3.CardColors,androidx.compose.material3.CardElevation,kotlin.Function1)
 @Composable
 fun SmovCard(
     smov: Smov,
@@ -40,7 +38,6 @@ fun SmovCard(
     openSmovDetail: (Long, String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
     Box(
         modifier = Modifier
             .padding(15.dp, 0.dp, 15.dp, 0.dp) //21
@@ -88,16 +85,14 @@ fun SmovCard(
 
                 }) {
 
-                GlideImage(
-                    imageModel = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
-                    contentScale = ContentScale.FillWidth, //这个参数代表这张图像优先满足哪条边
-                    //circularReveal = CircularReveal(duration = 250),
+                SubcomposeAsyncImage(
                     modifier = Modifier
                         .fillMaxWidth(0.7F)
                         .defaultMinSize(minHeight = 100.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
-                    previewPlaceholder = R.drawable.ic_smov_ico,
+                    model =  "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
+                    contentScale = ContentScale.FillWidth,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
                             CircularProgressIndicator(
@@ -105,14 +100,18 @@ fun SmovCard(
                             )
                         }
                     },
-                    failure = {
+                    error = {
                         Box(modifier = Modifier.matchParentSize()) {
-                            GlideImage(
-                                imageModel = R.drawable.ic_error
+                            AsyncImage(
+                                model = R.drawable.ic_error,
+                                contentDescription = null
                             )
                         }
-                    }
+                    },
+                    contentDescription = stringResource(R.string.content_description)
                 )
+
+
                 Column(
                     Modifier
                         .padding(horizontal = 10.dp)
@@ -169,7 +168,7 @@ fun SmovItemPreview() {
                 SmovCard(
                     smov = testDataSin,
                     mainUrl = "127.0.0.1",
-                    openSmovDetail = { _, _ ->}
+                    openSmovDetail = { _, _ -> }
                 )
             }
         }
