@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
+import androidx.annotation.Dimension.DP
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.animation.addListener
 import coil.load
@@ -68,7 +69,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
     private lateinit var mOtherDialog: ViewGroup
 
-    fun smovInit(title: String, url: String, subTitle: String, cover: String) {
+    fun smovInit(title: String, url: String, subTitle: String?, cover: String) {
         this.sTitle = title
         this.sUrl = url
         this.subTitle = subTitle
@@ -95,6 +96,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
             .setShowFullAnimation(false)
             .setNeedLockFull(true)
             .setUrl(sUrl)
+            .setSeekRatio(2.5f)
             .setCacheWithPlay(false)
             .setVideoAllCallBack(this)
             .setVideoTitle(sTitle).setLockClickListener { _, lock ->
@@ -111,8 +113,6 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     }
 
 
-
-
     constructor(context: Context?) : super(context) {
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
@@ -126,6 +126,10 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
 
+    fun setSubtitleViewTextSize(size: Float) {
+        mSubtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, size)
+    }
+
     override fun init(context: Context) {
         super.init(context)
         fullscreenButton.setOnClickListener(this)
@@ -133,7 +137,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         mSubtitleView = findViewById(R.id.sub_title_view)
         mSubtitleView.setStyle(
             CaptionStyleCompat(
-                Color.RED,
+                Color.WHITE,
                 Color.TRANSPARENT,
                 Color.TRANSPARENT,
                 CaptionStyleCompat.EDGE_TYPE_NONE,
@@ -141,7 +145,8 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
                 null
             )
         )
-        mSubtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
+
+        setSubtitleViewTextSize(14F)
 
         mBottomFunction = findViewById(R.id.layout_bottom_function)
         mDialog = findViewById(R.id.dialog)
@@ -192,8 +197,6 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     }
 
     override fun startPrepare() {
-
-        println("测试$url")
 
         if (gsyVideoManager.listener() != null) {
             gsyVideoManager.listener().onCompletion()
@@ -312,8 +315,10 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     ): GSYBaseVideoPlayer {
         val gsyBaseVideoPlayer = super.startWindowFullscreen(context, actionBar, statusBar)
         val gsyExoSubTitleVideoView = gsyBaseVideoPlayer as SmovVideoView
-        (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager)
-            .addTextOutputPlaying(gsyExoSubTitleVideoView)
+
+        (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager).addTextOutputPlaying(gsyExoSubTitleVideoView)
+
+        gsyBaseVideoPlayer.setSubtitleViewTextSize(24f)
 
         gsyBaseVideoPlayer.mBottomFunction.visibility = VISIBLE
         gsyBaseVideoPlayer.mBottomContainer.setPadding(20, 0, 10, 0)
@@ -327,6 +332,8 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager).removeTextOutput(
             gsyExoSubTitleVideoView
         )
+
+        gsyExoSubTitleVideoView.setSubtitleViewTextSize(14f)
 
         //加了这个横竖屏旋转正常了。。。
         orientationUtils.resolveByClick()

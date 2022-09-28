@@ -6,9 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
@@ -29,7 +27,7 @@ import com.leri.smovbook.ui.player.SmovVideoView
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SmovDetailScreen(
-    smov: Smov?,
+    smov: Smov,
     smovName: String,
     serverUrl: String,
     onBack: () -> Unit,
@@ -40,27 +38,26 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    //val url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-    //val url = "https://v-cdn.zjol.com.cn/276994.mp4"
-
     //设置要点 要点1.确定视频窗体在 加载过程无法操作 要点二.smov已经加载完成后 需要重新设置他的url
     //可能的解决方案1 当数据出现变更时 将方法给 viewmodel执行 在当前的compose 进行监听 可能将方法传递给viewmodel 更加优雅
     //可能的解决方案2 设置一个伪界面 添加加载的样式 让用户看不出来
     //反正当前的 取到smov再渲染虽有用 但是不好
     //突然想到我好sb 完美的结局方案时把 那些数据直接从主页传过来 其他数据照常获取就好了。。。
-    val subTitle = "" //http://img.cdn.guoshuyu.cn/subtitle2.srt
-    val url =
-        "http://$serverUrl/smovbook/file/${smov?.realname}/${smov?.realname}.${smov?.extension}"
-    val cover = "http://$serverUrl/smovbook/file/${smov?.realname}/img/thumbs_${smov?.name}.jpg"
+    val subTitle = smov.getDefaultSub(serverUrl)
 
+    println("测试字幕$subTitle")
 
+    val url = smov.getVideoUrl(serverUrl)
+    val cover = smov.getThumbsImg(serverUrl)
 
     val videoView = rememberVideoPlayerState(title = "", url = url, subTitle)
 
     //当url发生更改 且smov不为空时触发初始化
     LaunchedEffect(key1 = url) {
-        if (smov != null) {
-            videoView.smovInit(url = url, title = smovName, subTitle = subTitle, cover = cover)
+        if (smov.id != 0) {
+            videoView.smovInit(
+                url = url, title = smovName, subTitle = subTitle, cover = cover
+            )
         }
     }
 
@@ -73,24 +70,19 @@ fun SmovDetailScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .windowInsetsPadding(
-                WindowInsets
-                    .navigationBars
-                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-            ),
-        topBar = {
-            SmovDetailAppBar(
-                scrollBehavior = scrollBehavior,
-                title = smovName,
-                onBack = onBack,
-                modifier = Modifier.padding(contentPadding)
-            )
+    Scaffold(modifier = modifier
+        .fillMaxSize()
+        .windowInsetsPadding(
+            WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+        ), topBar = {
+        SmovDetailAppBar(
+            scrollBehavior = scrollBehavior,
+            title = smovName,
+            onBack = onBack,
+            modifier = Modifier.padding(contentPadding)
+        )
 
-        }
-    ) { innerPadding ->
+    }) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -98,31 +90,37 @@ fun SmovDetailScreen(
             contentAlignment = Alignment.TopStart
         ) {
 
-            AndroidView(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.3f)
-                .background(Color.White),
-                factory = {
-                    videoView
-                })
+            Column(modifier = Modifier.fillMaxSize()) {
+                AndroidView(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.3f)
+                    .background(Color.White),
+                    factory = {
+                        videoView
+                    })
+                Button(onClick = { videoView.setSubtitleViewTextSize(28F) }) {
+                    Text(text = "字幕变大术")
+                }
+            }
+
 
         }
 
     }
+
+
 }
 
 @Composable
 fun rememberVideoPlayerState(
-    title: String,
-    url: String,
-    subTitle: String?
+    title: String, url: String, subTitle: String?
 ): SmovVideoView {
     val context = LocalContext.current
 
     val coroutineScope = rememberCoroutineScope()
 
-    return rememberSaveable(
-        context, coroutineScope,
+    return rememberSaveable(context,
+        coroutineScope,
         saver = object : Saver<SmovVideoView, SmovVideoState> {
             override fun restore(value: SmovVideoState): SmovVideoView {
                 return SmovVideoView(
@@ -145,13 +143,9 @@ fun rememberVideoPlayerState(
         init = {
             //需要对 view做一个基础的初始化 例如作为加载界面打开
             SmovVideoView(
-                context = context,
-                title = title,
-                url = url,
-                subTitle = subTitle
+                context = context, title = title, url = url, subTitle = subTitle
             )
-        }
-    )
+        })
 }
 
 

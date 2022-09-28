@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.leri.smovbook.models.entities.Actor
+import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.models.entities.Tag
 import com.leri.smovbook.ui.data.testDataSin
 
 
@@ -16,7 +19,9 @@ fun SmovDetailRouter(
     onBack: () -> Unit,
 ) {
 
-    val smov by viewModel.smovFlow.collectAsState(initial = null)
+    val smov by viewModel.smovFlow.collectAsState(
+        initial = initialSmov
+    )
 
     LaunchedEffect(key1 = smovId) {
         viewModel.fetchSmovDetailsById(smovId)
@@ -29,3 +34,32 @@ fun SmovDetailRouter(
         onBack = onBack
     )
 }
+
+private val initialSmov = Smov(
+    0,
+    "",
+    "",
+    "",
+    "",
+    0,
+    0,
+    0,
+    "",
+    "",
+    "",
+    0,
+    "",
+    0,
+    "",
+    0,
+    "",
+    0,
+    "",
+    0,
+    listOf(),
+    listOf(),
+    isch = false,
+    "",
+    "",
+    listOf(),
+)

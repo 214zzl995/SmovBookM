@@ -63,5 +63,24 @@ data class Smov(
     var isch: Boolean,
     var thumbs_img: String,
     var main_img: String,
-    var detail_img: List<String> = listOf()
-)
+    var detail_img: List<String> = listOf(),
+    var sub_title: List<String> = listOf()
+) {
+
+    fun getThumbsImg(url: String): String {
+        return "http://$url/smovbook/file/${this.realname}/img/thumbs_${this.name}.jpg"
+    }
+
+    fun getVideoUrl(url: String): String {
+        return "http://$url/smovbook/file/${this.realname}/${this.realname}.${this.extension}"
+    }
+
+    fun getDefaultSub(url: String): String? {
+        return if (this.sub_title.isEmpty()) {
+            null
+        } else {
+            "http://$url/smovbook/file/${this.realname}/${this.sub_title.get(0)}"
+        }
+    }
+
+}

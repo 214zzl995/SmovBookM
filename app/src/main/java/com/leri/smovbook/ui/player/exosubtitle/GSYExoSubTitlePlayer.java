@@ -106,8 +106,7 @@ public class GSYExoSubTitlePlayer extends IjkExo2MediaPlayer {
                 .setSampleMimeType(MimeTypes.APPLICATION_SUBRIP)
                 .setSelectionFlags(C.SELECTION_FLAG_FORCED)
                 /// 如果出现字幕不显示，可以通过修改这个语言去对应，
-                //  这个问题在内部的 selectTextTrack 时，TextTrackScore 通过 getFormatLanguageScore 方法判断语言获取匹配不上
-                //  就会不出现字幕
+                //  这个问题在内部的 selectTextTrack 时，TextTrackScore 通过 getFormatLanguageScore 方法判断语言获取匹配不上 就会不出现字幕
                 // .setLanguage("zh-CN")
                 .build();
 

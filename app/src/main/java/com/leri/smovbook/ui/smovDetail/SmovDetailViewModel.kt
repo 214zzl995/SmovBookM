@@ -18,7 +18,6 @@ class SmovDetailViewModel @Inject constructor(
     private val smovIdSharedFlow: MutableSharedFlow<Long> = MutableSharedFlow(replay = 1)
 
     val smovFlow = smovIdSharedFlow.flatMapLatest {
-        println("测试会执行几次")
         smovRepository.getSmovById(it,
             success = {},
             error = {}
@@ -26,6 +25,4 @@ class SmovDetailViewModel @Inject constructor(
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     fun fetchSmovDetailsById(id: Long) = smovIdSharedFlow.tryEmit(id)
-
-
 }
