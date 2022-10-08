@@ -11,6 +11,10 @@ import androidx.room.Entity
 @Immutable
 @Entity(primaryKeys = [("id")])
 data class Actor(
-    var id: Int,
-    var name: String,
-)
+    override var id: Int,
+    override var name: String
+) : DetailModel {
+    override fun getType(): Type {
+        return Type.ACTOR
+    }
+}

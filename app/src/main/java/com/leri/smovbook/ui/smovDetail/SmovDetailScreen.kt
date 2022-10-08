@@ -5,7 +5,9 @@ import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
@@ -16,8 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoState
@@ -38,35 +46,27 @@ fun SmovDetailScreen(
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
-    //设置要点 要点1.确定视频窗体在 加载过程无法操作 要点二.smov已经加载完成后 需要重新设置他的url
-    //可能的解决方案1 当数据出现变更时 将方法给 viewmodel执行 在当前的compose 进行监听 可能将方法传递给viewmodel 更加优雅
-    //可能的解决方案2 设置一个伪界面 添加加载的样式 让用户看不出来
-    //反正当前的 取到smov再渲染虽有用 但是不好
-    //突然想到我好sb 完美的结局方案时把 那些数据直接从主页传过来 其他数据照常获取就好了。。。
     val subTitle = smov.getDefaultSub(serverUrl)
-
-    println("测试字幕$subTitle")
-
     val url = smov.getVideoUrl(serverUrl)
     val cover = smov.getThumbsImg(serverUrl)
 
-    val videoView = rememberVideoPlayerState(title = "", url = url, subTitle)
+    val smovVideoView = rememberVideoPlayerState(title = "", url = url, subTitle)
 
     //当url发生更改 且smov不为空时触发初始化
     LaunchedEffect(key1 = url) {
         if (smov.id != 0) {
-            videoView.smovInit(
+            smovVideoView.smovInit(
                 url = url, title = smovName, subTitle = subTitle, cover = cover
             )
         }
     }
 
     BackHandler {
-        if (videoView.isIfCurrentIsFullscreen) {
-            videoView.onBackFullscreen()
+        if (smovVideoView.isIfCurrentIsFullscreen) {
+            smovVideoView.onBackFullscreen()
         } else {
             onBack()
-            videoView.release()
+            smovVideoView.release()
         }
     }
 
@@ -89,27 +89,115 @@ fun SmovDetailScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.TopStart
         ) {
-
             Column(modifier = Modifier.fillMaxSize()) {
-                AndroidView(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.3f)
-                    .background(Color.White),
-                    factory = {
-                        videoView
-                    })
-                Button(onClick = { videoView.setSubtitleViewTextSize(28F) }) {
-                    Text(text = "字幕变大术")
-                }
+                VideoPlayer(smovVideoView = smovVideoView)
+                VideoDetail(smov = smov)
             }
-
-
         }
-
     }
+}
+
+@Composable
+fun VideoPlayer(smovVideoView: SmovVideoView) {
+    AndroidView(modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight(0.3f)
+        .background(Color.White),
+        factory = {
+            smovVideoView
+        })
+}
+
+@Composable
+fun VideoDetail(smov: Smov) {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = Color.White,
+        modifier = Modifier
+            .padding(15.dp)
+            .fillMaxWidth()
+            .border(1.dp, color = Color.Gray, shape = RoundedCornerShape(8.dp))
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            NameValueAlone(name = "标题", value = smov.title)
+        }
+    }
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = Color.White,
+        modifier = Modifier
+            .padding(15.dp)
+            .fillMaxWidth()
+            .border(1.dp, color = Color.Gray, shape = RoundedCornerShape(8.dp))
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            NameValueAlone(name = "发行时间", value = smov.release_time)
+            NameValueAlone(name = "制作", value = smov.maker)
+            NameValueAlone(name = "导演", value = smov.director)
+            NameValueAlone(name = "出版社", value = smov.publisher)
+            NameValueAlone(name = "系列", value = smov.serie)
+        }
+    }
+}
+
+@Composable
+fun NameValueAlone(name: String, value: String) {
+    if (value != "") {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = name,
+                modifier = Modifier.fillMaxWidth(),
+                style = nameStyle
+            )
+            Text(
+                text = value,
+                modifier = Modifier.fillMaxWidth(),
+                style = valueStyle
+            )
+        }
+    }
+
+}
+
+@Composable
+fun NameValueMultiple(name: String, value: List<DetailModel>) {
 
 
 }
+
+private val titleStyle = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.W500,
+    fontSize = 15.sp,
+    lineHeight = 25.0.sp,
+    letterSpacing = 0.4.sp,
+)
+
+private val nameStyle = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.W400,
+    fontSize = 11.sp,
+    lineHeight = 11.0.sp,
+    letterSpacing = 0.4.sp,
+)
+
+private val valueStyle = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.W500,
+    fontSize = 16.sp,
+    lineHeight = 19.0.sp,
+    letterSpacing = 0.4.sp,
+)
+
 
 @Composable
 fun rememberVideoPlayerState(
@@ -160,16 +248,10 @@ fun Context.getActivity(): AppCompatActivity? {
     return null
 }
 
-
 @Preview
 @Composable
-fun SmovDetailScreenPreview() {
-    SmovDetailScreen(
-        smov = testDataSin,
-        smovName = "SmovBook",
-        onBack = { },
-        serverUrl = "",
-    )
+fun SmovDetailPreview() {
+    VideoDetail(smov = testDataSin)
 }
 
 
