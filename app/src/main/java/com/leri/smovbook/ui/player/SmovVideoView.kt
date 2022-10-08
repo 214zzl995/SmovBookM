@@ -78,7 +78,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
         //增加封面
         val imageView = ImageView(context)
-        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+        imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         imageView.load(cover) {
             crossfade(true)
             error(R.drawable.ic_error)
@@ -89,7 +89,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         orientationUtils.isEnable = false
         gsyVideoOption
             .setThumbImageView(imageView)
-            .setIsTouchWiget(true)
+            .setIsTouchWiget(false)
             .setRotateViewAuto(false)
             .setLockLand(false)
             .setAutoFullWithSize(false)

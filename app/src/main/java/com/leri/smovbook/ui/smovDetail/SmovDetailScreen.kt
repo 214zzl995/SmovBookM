@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.data.testDataSin
@@ -32,6 +35,7 @@ import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
 
 
+//实现图片轮播 暂时还没有理想的方案
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SmovDetailScreen(
@@ -74,22 +78,25 @@ fun SmovDetailScreen(
         .fillMaxSize()
         .windowInsetsPadding(
             WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-        ), topBar = {
-        SmovDetailAppBar(
-            scrollBehavior = scrollBehavior,
-            title = smovName,
-            onBack = onBack,
-            modifier = Modifier.padding(contentPadding)
         )
+        .background(MaterialTheme.colorScheme.background),
+        topBar = {
+            SmovDetailAppBar(
+                scrollBehavior = scrollBehavior,
+                title = smovName,
+                onBack = onBack,
+                modifier = Modifier.padding(contentPadding)
+            )
 
-    }) { innerPadding ->
+        }) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
             contentAlignment = Alignment.TopStart
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            val scrollState = rememberScrollState()
+            Column(modifier = Modifier.verticalScroll(scrollState).fillMaxSize()) {
                 VideoPlayer(smovVideoView = smovVideoView)
                 VideoDetail(smov = smov)
             }
@@ -101,7 +108,7 @@ fun SmovDetailScreen(
 fun VideoPlayer(smovVideoView: SmovVideoView) {
     AndroidView(modifier = Modifier
         .fillMaxWidth()
-        .fillMaxHeight(0.3f)
+        .animateContentSize()
         .background(Color.White),
         factory = {
             smovVideoView
@@ -110,43 +117,86 @@ fun VideoPlayer(smovVideoView: SmovVideoView) {
 
 @Composable
 fun VideoDetail(smov: Smov) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        modifier = Modifier
-            .padding(15.dp)
-            .fillMaxWidth()
-            .border(1.dp, color = Color.Gray, shape = RoundedCornerShape(8.dp))
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            NameValueAlone(name = "标题", value = smov.title)
-        }
-    }
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = Color.White,
-        modifier = Modifier
-            .padding(15.dp)
-            .fillMaxWidth()
-            .border(1.dp, color = Color.Gray, shape = RoundedCornerShape(8.dp))
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
 
-            NameValueAlone(name = "发行时间", value = smov.release_time)
-            NameValueAlone(name = "制作", value = smov.maker)
-            NameValueAlone(name = "导演", value = smov.director)
-            NameValueAlone(name = "出版社", value = smov.publisher)
-            NameValueAlone(name = "系列", value = smov.serie)
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.inversePrimary,
+            shadowElevation = 6.dp,
+            modifier = Modifier
+                .padding(start = 15.dp, end = 15.dp, top = 15.dp)
+                .fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                NameValueAlone(name = "标题", value = smov.title)
+            }
+        }
+
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            shadowElevation = 6.dp,
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+                .fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                NameValueMultiple(name = "演员", values = smov.actors)
+            }
+        }
+
+
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            shadowElevation = 6.dp,
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+                .fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                NameValueMultiple(name = "标签", values = smov.tags)
+            }
+        }
+
+
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = Color.White,
+            shadowElevation = 6.dp,
+            modifier = Modifier
+                .padding(start = 15.dp, end = 15.dp, bottom = 20.dp)
+                .fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                NameValueAlone(name = "发行时间", value = smov.release_time)
+                NameValueAlone(name = "制作", value = smov.maker)
+                NameValueAlone(name = "导演", value = smov.director)
+                NameValueAlone(name = "出版社", value = smov.publisher)
+                NameValueAlone(name = "系列", value = smov.serie)
+            }
         }
     }
+
 }
 
 @Composable
@@ -165,12 +215,29 @@ fun NameValueAlone(name: String, value: String) {
             )
         }
     }
-
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NameValueMultiple(name: String, value: List<DetailModel>) {
+fun NameValueMultiple(name: String, values: List<DetailModel>) {
+    if (values.isNotEmpty()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = name,
+                modifier = Modifier.fillMaxWidth(),
+                style = nameStyle
+            )
+            FlowRow(mainAxisSpacing = 6.dp,crossAxisSpacing = (-10).dp) {
+                for (value in values) {
+                    ElevatedSuggestionChip(
+                        onClick = { /* Do something! */ },
+                        label = { Text(text = value.name, style = valueStyle) }
+                    )
+                }
+            }
 
+        }
+    }
 
 }
 

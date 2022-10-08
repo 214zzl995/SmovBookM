@@ -15,7 +15,7 @@
 **参考项目** [https://github.com/skydoves/MovieCompose]()
 **重构将会在 Refactor-hilt进行**
 
-重构中出现的问题
+重构中出现的问题 
 
 1. [x]  Protobuf v3中的重复 无法针对单项去删除或去重
    暂定的解决办法为 在代码中处理，将所有的全部删除后写入
@@ -74,3 +74,7 @@ Bug 已经定位 当当前这次请求时间过长就会导致这个问题 将�
 开屏动画设计思路
 
 进入动画 
+
+
+
+颜色参考 SmovDetailScreen
