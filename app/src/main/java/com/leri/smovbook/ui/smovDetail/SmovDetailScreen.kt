@@ -78,8 +78,7 @@ fun SmovDetailScreen(
         .fillMaxSize()
         .windowInsetsPadding(
             WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-        )
-        .background(MaterialTheme.colorScheme.background),
+        ),
         topBar = {
             SmovDetailAppBar(
                 scrollBehavior = scrollBehavior,
@@ -92,11 +91,13 @@ fun SmovDetailScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize().background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.TopStart
         ) {
             val scrollState = rememberScrollState()
-            Column(modifier = Modifier.verticalScroll(scrollState).fillMaxSize()) {
+            Column(modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxSize()) {
                 VideoPlayer(smovVideoView = smovVideoView)
                 VideoDetail(smov = smov)
             }
@@ -108,6 +109,7 @@ fun SmovDetailScreen(
 fun VideoPlayer(smovVideoView: SmovVideoView) {
     AndroidView(modifier = Modifier
         .fillMaxWidth()
+        .height(220.dp)
         .animateContentSize()
         .background(Color.White),
         factory = {
@@ -117,14 +119,12 @@ fun VideoPlayer(smovVideoView: SmovVideoView) {
 
 @Composable
 fun VideoDetail(smov: Smov) {
-
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.inversePrimary,
-            shadowElevation = 6.dp,
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp, top = 15.dp)
                 .fillMaxWidth()
@@ -141,7 +141,6 @@ fun VideoDetail(smov: Smov) {
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.primaryContainer,
-            shadowElevation = 6.dp,
             modifier = Modifier
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth()
@@ -159,7 +158,6 @@ fun VideoDetail(smov: Smov) {
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.primaryContainer,
-            shadowElevation = 6.dp,
             modifier = Modifier
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth()
@@ -176,8 +174,7 @@ fun VideoDetail(smov: Smov) {
 
         Surface(
             shape = RoundedCornerShape(8.dp),
-            color = Color.White,
-            shadowElevation = 6.dp,
+            color = MaterialTheme.colorScheme.inverseOnSurface,
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp, bottom = 20.dp)
                 .fillMaxWidth()
@@ -227,7 +224,7 @@ fun NameValueMultiple(name: String, values: List<DetailModel>) {
                 modifier = Modifier.fillMaxWidth(),
                 style = nameStyle
             )
-            FlowRow(mainAxisSpacing = 6.dp,crossAxisSpacing = (-10).dp) {
+            FlowRow(mainAxisSpacing = 6.dp, crossAxisSpacing = (-10).dp) {
                 for (value in values) {
                     ElevatedSuggestionChip(
                         onClick = { /* Do something! */ },
@@ -241,13 +238,6 @@ fun NameValueMultiple(name: String, values: List<DetailModel>) {
 
 }
 
-private val titleStyle = TextStyle(
-    fontFamily = FontFamily.SansSerif,
-    fontWeight = FontWeight.W500,
-    fontSize = 15.sp,
-    lineHeight = 25.0.sp,
-    letterSpacing = 0.4.sp,
-)
 
 private val nameStyle = TextStyle(
     fontFamily = FontFamily.SansSerif,

@@ -78,7 +78,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
 
         //增加封面
         val imageView = ImageView(context)
-        imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         imageView.load(cover) {
             crossfade(true)
             error(R.drawable.ic_error)
