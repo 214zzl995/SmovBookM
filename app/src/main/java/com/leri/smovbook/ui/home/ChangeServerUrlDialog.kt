@@ -252,7 +252,7 @@ private fun AddUrlDialogOperate(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun AddUrlInput(
     editInputVisible: Boolean,
@@ -289,7 +289,7 @@ private fun AddUrlInput(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun AddUrlInputNoneCheck(
     editInputVisible: Boolean,

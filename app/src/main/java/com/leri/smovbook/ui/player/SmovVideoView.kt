@@ -4,7 +4,6 @@ import android.animation.AnimatorInflater
 import android.app.Activity
 import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -12,11 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
-import androidx.annotation.Dimension.DP
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.animation.addListener
 import coil.load
-import coil.transform.CircleCropTransformation
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.text.CueGroup

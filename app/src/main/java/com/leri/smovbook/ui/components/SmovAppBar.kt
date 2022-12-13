@@ -1,6 +1,5 @@
 package com.leri.smovbook.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -14,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovAppBar(
     modifier: Modifier = Modifier,
@@ -22,15 +22,11 @@ fun SmovAppBar(
     title: @Composable () -> Unit,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    val backgroundColor = backgroundColors.containerColor(
-        scrollFraction = scrollBehavior?.scrollFraction ?: 0f
-    ).value
-    val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
         containerColor = Color.Transparent,
         scrolledContainerColor = Color.Transparent
     )
-    Box(modifier = Modifier.background(backgroundColor)) {
+    Box(modifier = Modifier) {
         CenterAlignedTopAppBar(
             modifier = modifier,
             actions = actions,
@@ -51,6 +47,7 @@ fun SmovAppBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun AppBarPreview() {
@@ -71,6 +68,7 @@ fun AppBarPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun AppBarPreviewDark() {

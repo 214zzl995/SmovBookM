@@ -46,7 +46,7 @@ fun SmovDetailScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
@@ -91,13 +91,16 @@ fun SmovDetailScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize().background(MaterialTheme.colorScheme.background),
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.TopStart
         ) {
             val scrollState = rememberScrollState()
-            Column(modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .fillMaxSize()
+            ) {
                 VideoPlayer(smovVideoView = smovVideoView)
                 VideoDetail(smov = smov)
             }

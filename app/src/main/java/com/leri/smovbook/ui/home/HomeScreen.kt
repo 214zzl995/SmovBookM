@@ -56,7 +56,7 @@ fun HomeScreen(
 ) {
 
     val scrollState = rememberLazyListState()
-    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var changeServerUrlDialogVisible by remember { mutableStateOf(false) }
 
@@ -170,22 +170,20 @@ private fun HomeScreenWithList(
         )
 
         //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
-        Text(text = serverUrl)
+        //Text(text = serverUrl)
 
         val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
+
         ChannelNameBar(
             channelName = "SmovBook",
             onNavIconPressed = openDrawer,
             scrollBehavior = scrollBehavior,
             //modifier = Modifier.statusBarsPadding(),
-            modifier = Modifier.padding(contentPadding),
+            modifier = Modifier,
             onRefreshSmovData = onRefreshSmovData,
             onOpenBarScann = openBarScann,
             serverUrl = serverUrl
         )
-
-        //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
-        //Text(text = serverUrl)
 
         if (uiState.errorMessages.isNotEmpty()) {
 
@@ -210,6 +208,7 @@ private fun HomeScreenWithList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelNameBar(
     channelName: String,
@@ -442,6 +441,7 @@ fun Screen() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun ChannelBarPrev() {

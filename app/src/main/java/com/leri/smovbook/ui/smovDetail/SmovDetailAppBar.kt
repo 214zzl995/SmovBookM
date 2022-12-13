@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovDetailAppBar(
     modifier: Modifier = Modifier,
@@ -20,19 +21,13 @@ fun SmovDetailAppBar(
     onBack: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    val backgroundColor = backgroundColors.containerColor(
-        scrollFraction = scrollBehavior?.scrollFraction ?: 0f
-    ).value
 
     val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = Color.Transparent,
+        containerColor =  MaterialTheme.colorScheme.inverseOnSurface,
         scrolledContainerColor = Color.Transparent
     )
-    Box(modifier = Modifier.background(backgroundColor)) {
-        SmallTopAppBar(
-            modifier = modifier,
-            actions = actions,
+    Box(modifier = Modifier) {
+        TopAppBar(
             title = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -41,7 +36,7 @@ fun SmovDetailAppBar(
                     )
                 }
             },
-            colors = foregroundColors,
+            modifier = modifier,
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(
@@ -51,11 +46,14 @@ fun SmovDetailAppBar(
                     )
                 }
             },
+            actions = actions,
+            colors = foregroundColors
         )
 
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun AppBarPreview() {
@@ -64,6 +62,7 @@ fun AppBarPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun AppBarPreviewDark() {
