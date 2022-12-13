@@ -1,14 +1,13 @@
 package com.leri.smovbook.ui.smovDetail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
@@ -22,10 +21,12 @@ fun SmovDetailAppBar(
     actions: @Composable RowScope.() -> Unit = {}
 ) {
 
-    val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor =  MaterialTheme.colorScheme.inverseOnSurface,
-        scrolledContainerColor = Color.Transparent
+    val foregroundColors = TopAppBarDefaults.smallTopAppBarColors(
+        containerColor =  MaterialTheme.colorScheme.surface,
+        scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface
     )
+
+
     Box(modifier = Modifier) {
         TopAppBar(
             title = {
@@ -47,7 +48,8 @@ fun SmovDetailAppBar(
                 }
             },
             actions = actions,
-            colors = foregroundColors
+            colors = foregroundColors,
+            scrollBehavior = scrollBehavior
         )
 
     }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -36,7 +37,7 @@ import com.leri.smovbook.ui.player.SmovVideoView
 
 
 //实现图片轮播 暂时还没有理想的方案
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovDetailScreen(
     smov: Smov,
@@ -47,8 +48,6 @@ fun SmovDetailScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
 
     val subTitle = smov.getDefaultSub(serverUrl)
     val url = smov.getVideoUrl(serverUrl)
@@ -84,9 +83,8 @@ fun SmovDetailScreen(
                 scrollBehavior = scrollBehavior,
                 title = smovName,
                 onBack = onBack,
-                modifier = Modifier.padding(contentPadding)
+                modifier = Modifier
             )
-
         }) { innerPadding ->
         Box(
             modifier = Modifier
@@ -98,9 +96,11 @@ fun SmovDetailScreen(
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
                     .verticalScroll(scrollState)
                     .fillMaxSize()
             ) {
+
                 VideoPlayer(smovVideoView = smovVideoView)
                 VideoDetail(smov = smov)
             }

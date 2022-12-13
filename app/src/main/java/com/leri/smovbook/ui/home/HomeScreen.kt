@@ -68,7 +68,6 @@ fun HomeScreen(
             Column(
                 Modifier
                     .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
 
                 HomeScreenWithList(
@@ -81,8 +80,9 @@ fun HomeScreen(
                     scaffoldState = scaffoldState,
                     loadingState = loadingState,
                     serverUrl = serverUrl,
-                    fetchNextSmovPage = fetchNextSmovPage
-                ) { hasData ->
+                    fetchNextSmovPage = fetchNextSmovPage,
+                    scrollBehavior = scrollBehavior
+                    ) { hasData ->
                     SmovList(
                         smov = hasData.smovs,
                         serverUrl = serverUrl,
@@ -90,7 +90,8 @@ fun HomeScreen(
                             .weight(1f)
                             .fillMaxSize(),
                         scrollState = scrollState,
-                        openSmovDetail = openSmovDetail
+                        openSmovDetail = openSmovDetail,
+                        scrollBehavior = scrollBehavior
                     )
                 }
             }
@@ -116,7 +117,7 @@ private fun HomeScreenWithList(
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
+    scrollBehavior: TopAppBarScrollBehavior,
     openBarScann: () -> Unit,
     loadingState: NetworkState,
     serverUrl: String,
@@ -172,13 +173,16 @@ private fun HomeScreenWithList(
         //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
         //Text(text = serverUrl)
 
-        val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
+        //排除装填栏高度
+        //方法1.
+        //val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
+        //方法2.
+        //Modifier.statusBarsPadding()
 
         ChannelNameBar(
             channelName = "SmovBook",
             onNavIconPressed = openDrawer,
             scrollBehavior = scrollBehavior,
-            //modifier = Modifier.statusBarsPadding(),
             modifier = Modifier,
             onRefreshSmovData = onRefreshSmovData,
             onOpenBarScann = openBarScann,
@@ -341,7 +345,7 @@ private fun FullScreenLoading() {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SmovList(
     smov: List<Smov>,
@@ -349,6 +353,7 @@ fun SmovList(
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
     openSmovDetail: (Long, String) -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
@@ -361,6 +366,7 @@ fun SmovList(
             contentPadding = contentPadding,
             modifier = Modifier
                 .testTag("ConversationTestTag")
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize()
                 .align(Alignment.Center)
         ) {
