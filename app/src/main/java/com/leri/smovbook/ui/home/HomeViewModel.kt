@@ -27,7 +27,7 @@ sealed interface HomeUiState {
     data class HasData(
         override val errorMessages: List<ErrorMessage>,
         val smovs: MutableList<Smov>,
-        val selectedSmov: Smov?
+        val selectedSmov: Smov?,
     ) : HomeUiState
 }
 
@@ -53,10 +53,25 @@ data class HomeViewModelState(
         }
 }
 
+data class ServerState(
+    var serverUrl: String = "",
+    var historyUrl: MutableList<String> = mutableListOf(),
+    val changeServerUrl: (String) -> Unit = {},
+) {
+    fun update(state: ServerState) {
+        serverUrl = state.serverUrl
+        historyUrl = state.historyUrl
+    }
+
+    constructor(changeServerUrl: (String) -> Unit) : this("", mutableListOf(), changeServerUrl)
+
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val smovRepository: SmovRepository
+    private val smovRepository: SmovRepository,
 ) : ViewModel() {
 
     private val _detailOpen: MutableState<DrawerValue> = mutableStateOf(DrawerValue.Closed)
@@ -86,11 +101,10 @@ class HomeViewModel @Inject constructor(
 
     }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
 
-    val smovServerUrl: MutableStateFlow<String> = MutableStateFlow("")
-
-    val smovHistoryUrl = smovServerUrl.flatMapLatest {
-        smovRepository.getSmovHistoryUrl()
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+    val serverState: State<ServerState> =
+        mutableStateOf(ServerState {
+            changeServerUrl(it)
+        })
 
     init {
         Timber.d("Injection HomeViewModel")
@@ -103,10 +117,22 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            smovRepository.getSmovServiceUrlAndPort()
-                .map { if (it == ":0") "127.0.0.1:8080" else it }.collectLatest {
-                smovServerUrl.value = it
-            }
+            /* smovRepository.getSmovServiceUrlAndPort()
+                 .map { if (it == ":0") "127.0.0.1:8080" else it }.collectLatest {
+                     smovServerUrl.value = it
+                     serverState.value.serverUrl = it
+                 }*/
+
+            smovRepository.getServerState()
+                .map {
+                    if (it.serverUrl == ":0") ServerState(
+                        "127.0.0.1:8080",
+                        it.historyUrl
+                    ) else it
+                }
+                .collectLatest {
+                    serverState.value.update(it)
+                }
         }
     }
 
@@ -123,7 +149,6 @@ class HomeViewModel @Inject constructor(
     fun changeServerUrl(url: String) {
         //更新url前停止所有请求
         smovRepository.cancelAll()
-        smovServerUrl.value = url
         smovRepository.changeSmovServiceUrl(url)
         refreshData()
     }

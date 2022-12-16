@@ -23,7 +23,7 @@ import com.leri.smovbook.ui.splash.SplashScreen
 fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberAnimatedNavController(),
-    startDestination: String = AppDestinations.HOME_ROUTE
+    startDestination: String = AppDestinations.HOME_ROUTE,
 ) {
 
 
@@ -222,12 +222,12 @@ fun AppNavGraph(
                 backStackEntry.arguments?.getString(AppDestinations.SMOV_DETAIL_ARGUMENT1)
                     ?: return@composable
 
-            val serverUrl by homeViewModel.smovServerUrl.collectAsState()
+            val serverState by homeViewModel.serverState
 
             SmovDetailRouter(
                 smovId,
                 smovName,
-                serverUrl,
+                serverUrl = serverState.serverUrl,
                 hiltViewModel()
             ) { navController.navigateUp() }
 

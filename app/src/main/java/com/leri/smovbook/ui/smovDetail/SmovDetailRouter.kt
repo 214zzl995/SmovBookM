@@ -19,9 +19,7 @@ fun SmovDetailRouter(
     onBack: () -> Unit,
 ) {
 
-    val smov by viewModel.smovFlow.collectAsState(
-        initial = initialSmov
-    )
+    val smov by viewModel.smovFlow.collectAsState(initial = initialSmov)
 
     LaunchedEffect(key1 = smovId) {
         viewModel.fetchSmovDetailsById(smovId)

@@ -22,8 +22,7 @@ fun BackPressHandler(onBackPressed: () -> Unit) {
         }
     }
 
-    val backDispatcher =
-        LocalBackPressedDispatcher.current
+    val backDispatcher = LocalBackPressedDispatcher.current
 
     DisposableEffect(backDispatcher) {
         backDispatcher.addCallback(backCallback)

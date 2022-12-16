@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
+import com.leri.smovbook.ui.home.ServerState
 import com.leri.smovbook.ui.theme.ScanMask
 import com.leri.smovbook.ui.theme.Shapes
 import com.leri.smovbook.ui.theme.SmovBookMTheme
@@ -36,9 +37,7 @@ fun AppDrawer(
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    historyUrl: MutableList<String>,
-    serverUrl: String,
-    changeServerUrl: (String) -> Unit,
+    serverState: ServerState,
 ) {
     Column(modifier = Modifier) {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBarsIgnoringVisibility))
@@ -46,10 +45,10 @@ fun AppDrawer(
         DividerItem()
 
         DrawerItemHeader("当前")
-        SmovUrl(url = serverUrl, modifier = Modifier, changeServerUrl = {})
+        SmovUrl(url = serverState.serverUrl, modifier = Modifier, changeServerUrl = {})
         HistoryUrl(
-            historyUrl = historyUrl,
-            changeServerUrl = changeServerUrl,
+            historyUrl = serverState.historyUrl,
+            changeServerUrl = serverState.changeServerUrl,
             closeDrawer = closeDrawer
         )
     }
@@ -77,7 +76,7 @@ private fun HistoryUrl(
         item {
             DrawerItemHeader("历史")
         }
-        items(historyUrl){
+        items(historyUrl) {
             SmovUrl(
                 url = it,
                 modifier = Modifier.animateItemPlacement(),
@@ -87,7 +86,6 @@ private fun HistoryUrl(
                 }
             )
         }
-
     }
 }
 
@@ -96,7 +94,7 @@ private fun HistoryUrl(
 private fun AddUrl(
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
-    changeServerUrl: (String) -> Unit
+    changeServerUrl: (String) -> Unit,
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -141,7 +139,7 @@ private fun SmovUrl(
     modifier: Modifier = Modifier,
     url: String,
     textDecoration: TextDecoration? = null,
-    changeServerUrl: () -> Unit
+    changeServerUrl: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -202,13 +200,13 @@ fun DrawerPreview() {
                 AppDrawer(
                     "SmovBook",
                     {},
-                    historyUrl = mutableListOf(
-                        "122.22.22.22:145",
-                        "122.22.22.22:145",
-                        "122.22.22.22:145"
-                    ),
-                    changeServerUrl = {},
-                    serverUrl = "127.0.0.1:8000"
+                    serverState = ServerState(
+                        "127.0.0.1:8000", mutableListOf(
+                            "122.22.22.22:145",
+                            "122.22.22.22:145",
+                            "122.22.22.22:145"
+                        )
+                    )
                 )
             }
         }
@@ -225,9 +223,7 @@ fun DrawerPreviewDark() {
                 AppDrawer(
                     "SmovBook",
                     {},
-                    historyUrl = mutableListOf(),
-                    changeServerUrl = {},
-                    serverUrl = "127.0.0.1:8000"
+                    serverState = ServerState("127.0.0.1:8000", mutableListOf())
                 )
             }
         }

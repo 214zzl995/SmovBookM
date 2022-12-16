@@ -8,9 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,18 +22,16 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.components.JumpToTop
-import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isLoading
+import com.leri.smovbook.ui.components.ChannelNameBar
 import com.leri.smovbook.ui.data.testDataHasData
 
-//接下来要实现 可见 ScrollBar 不然数量一多就很麻烦
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -48,11 +43,10 @@ fun HomeScreen(
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     openBarScann: () -> Unit = { },
-    serverUrl: String,
     loadingState: NetworkState,
     fetchNextSmovPage: () -> Unit,
-    changeServerUrl: (String) -> Unit,
     openSmovDetail: (Long, String) -> Unit,
+    serverState: ServerState,
 ) {
 
     val scrollState = rememberLazyListState()
@@ -79,13 +73,13 @@ fun HomeScreen(
                     openBarScann = { changeServerUrlDialogVisible = true },
                     scaffoldState = scaffoldState,
                     loadingState = loadingState,
-                    serverUrl = serverUrl,
+                    serverState = serverState,
                     fetchNextSmovPage = fetchNextSmovPage,
                     scrollBehavior = scrollBehavior
-                    ) { hasData ->
+                ) { hasData ->
                     SmovList(
                         smov = hasData.smovs,
-                        serverUrl = serverUrl,
+                        serverUrl = serverState.serverUrl,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
@@ -101,13 +95,13 @@ fun HomeScreen(
             openBarScann,
             changeServerUrlDialogVisible,
             close = { changeServerUrlDialogVisible = false },
-            changeServerUrl = changeServerUrl
+            changeServerUrl = serverState.changeServerUrl
         )
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenWithList(
     uiState: HomeUiState,
@@ -120,11 +114,11 @@ private fun HomeScreenWithList(
     scrollBehavior: TopAppBarScrollBehavior,
     openBarScann: () -> Unit,
     loadingState: NetworkState,
-    serverUrl: String,
+    serverState: ServerState,
     fetchNextSmovPage: () -> Unit,
     hasPostsContent: @Composable (
-        uiState: HomeUiState.HasData
-    ) -> Unit
+        uiState: HomeUiState.HasData,
+    ) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -159,7 +153,6 @@ private fun HomeScreenWithList(
                                     modifier = Modifier.align(Alignment.BottomEnd)
                                 )
                             }
-
                         } else {
                             Box(contentModifier.fillMaxSize()) {
 
@@ -170,23 +163,16 @@ private fun HomeScreenWithList(
             },
         )
 
-        //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
-        //Text(text = serverUrl)
-
-        //排除装填栏高度
-        //方法1.
-        //val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
-        //方法2.
-        //Modifier.statusBarsPadding()
+        val name by remember { mutableStateOf("SmovBook") }
 
         ChannelNameBar(
-            channelName = "SmovBook",
+            channelName = name,
             onNavIconPressed = openDrawer,
             scrollBehavior = scrollBehavior,
             modifier = Modifier,
             onRefreshSmovData = onRefreshSmovData,
             onOpenBarScann = openBarScann,
-            serverUrl = serverUrl
+            serverState =  serverState,
         )
 
         if (uiState.errorMessages.isNotEmpty()) {
@@ -212,70 +198,11 @@ private fun HomeScreenWithList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChannelNameBar(
-    channelName: String,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    onNavIconPressed: () -> Unit = { },
-    onRefreshSmovData: () -> Unit = { },
-    onOpenBarScann: () -> Unit = { },
-    serverUrl: String
-) {
-    var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
-    if (functionalityNotAvailablePopupShown) {
-        FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
-    }
-
-    SmovAppBar(
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-        onNavIconPressed = onNavIconPressed,
-        title = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = channelName,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = serverUrl,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        actions = {
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .clickable(onClick = {
-                        onOpenBarScann()
-                    })
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(24.dp),
-                contentDescription = stringResource(id = R.string.search)
-            )
-
-            Icon(
-                imageVector = Icons.Outlined.Refresh,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .clickable(onClick = { onRefreshSmovData() })
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(24.dp),
-                contentDescription = stringResource(id = R.string.info)
-            )
-        }
-    )
-}
-
 
 @Composable
 private fun NodataOperate(
     onRefresh: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ExtendedFloatingActionButton(
         onClick = onRefresh,
@@ -293,7 +220,7 @@ private fun NodataOperate(
 private fun MainFloatingActionButton(
     unit: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
 ) {
     ExtendedFloatingActionButton(
         onClick = unit,
@@ -353,7 +280,7 @@ fun SmovList(
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
     openSmovDetail: (Long, String) -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
@@ -436,10 +363,9 @@ fun Screen() {
             uiState = testDataHasData,
             homeListLazyListState = rememberLazyListState(0),
             scaffoldState = rememberScaffoldState(),
-            serverUrl = "127.0.0.1:8080",
+            serverState = ServerState("127.0.0.1:8000", mutableListOf()),
             loadingState = NetworkState.SUCCESS,
             fetchNextSmovPage = { },
-            changeServerUrl = {},
             openSmovDetail = { _, _ -> }
         )
     }
@@ -454,7 +380,7 @@ fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
             channelName = "composers",
-            serverUrl = "127.0.0.1:8080"
+            serverState = ServerState("127.0.0.1:8000",mutableListOf()),
         )
     }
 }

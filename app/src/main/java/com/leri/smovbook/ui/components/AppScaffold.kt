@@ -4,6 +4,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.DrawerValue.Closed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.leri.smovbook.ui.home.ServerState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -11,10 +12,8 @@ fun AppScaffold(
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     currentRoute: String,
-    historyUrl: MutableList<String>,
-    serverUrl: String,
     closeDrawer: () -> Unit,
-    changeServerUrl: (String) -> Unit,
+    serverState: ServerState,
     content: @Composable () -> Unit,
 ) {
     ModalNavigationDrawer(
@@ -24,11 +23,9 @@ fun AppScaffold(
                 AppDrawer(
                     currentRoute = currentRoute,
                     closeDrawer = closeDrawer,
-                    historyUrl = historyUrl,
                     modifier = modifier,
-                    serverUrl = serverUrl,
                     drawerState = drawerState,
-                    changeServerUrl = changeServerUrl
+                    serverState = serverState
                 )
             }
         },

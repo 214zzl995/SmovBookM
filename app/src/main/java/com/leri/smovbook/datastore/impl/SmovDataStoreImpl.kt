@@ -2,18 +2,13 @@ package com.leri.smovbook.datastore.impl
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.emptyPreferences
 import com.leri.smovbook.config.Settings
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.datastore.serializer.settingsDataStore
+import com.leri.smovbook.ui.home.ServerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.internal.toImmutableList
-import timber.log.Timber
-import java.io.IOException
 import java.util.*
 
 
@@ -53,6 +48,11 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
                 settings.historyUrlList
             }.flowOn(Dispatchers.IO)
 
+    override val serviceState: Flow<ServerState>
+        get() = settingsDataStore.data.map { settings ->
+            ServerState(settings.serverUrl + ":" + settings.serverPort, settings.historyUrlList)
+        }.flowOn(Dispatchers.IO)
+
 
     override suspend fun changeServerUrl(url: String) {
         //分隔url 为 base 和 port
@@ -60,14 +60,16 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
         settingsDataStore.updateData { currentSettings ->
             val historyUrl = currentSettings.historyUrlList.toMutableList()
             historyUrl.removeIf { it.equals(url) }
-            val historyCount = if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
+            val historyCount =
+                if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
             if (historyUrl.size == historyCount) {
                 historyUrl.removeAt(0)
             }
             historyUrl.add(url)
 
-            currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port).clearHistoryUrl()
+            currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port)
+                .clearHistoryUrl()
                 .addAllHistoryUrl(historyUrl).build()
         }
     }

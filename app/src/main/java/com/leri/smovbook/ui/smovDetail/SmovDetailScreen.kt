@@ -289,7 +289,6 @@ fun rememberVideoPlayerState(
             }
         },
         init = {
-            //需要对 view做一个基础的初始化 例如作为加载界面打开
             SmovVideoView(
                 context = context, title = title, url = url, subTitle = subTitle
             )
