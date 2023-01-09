@@ -1,6 +1,5 @@
 package com.leri.smovbook.ui.home
 
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -282,6 +281,7 @@ fun SmovList(
     openSmovDetail: (Long, String) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
+
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
     val contentPadding =

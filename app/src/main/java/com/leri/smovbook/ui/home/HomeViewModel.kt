@@ -68,6 +68,11 @@ data class ServerState(
 }
 
 
+/**
+ * 有大量设计不合理的位置 主要是刷新的处理和刚开始的处理
+ * 刷新处理: 应该删除所有数据后 将当前数据重新刷入
+ * 刚开始的处理 不知道为什么没有检测到数据的变动
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -81,11 +86,13 @@ class HomeViewModel @Inject constructor(
 
     private val smovPageState: MutableStateFlow<Int> = MutableStateFlow(0)
 
+    //名称不合理 应该是页面状态 加载 失败 成功等
     private val _smovLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
     val smovLoadingState: State<NetworkState> get() = _smovLoadingState
 
     private val newSmovFlow = smovPageState.flatMapLatest {
         _smovLoadingState.value = NetworkState.LOADING
+
         if (it == -1) {
             flow {
                 listOf<Smov>()
@@ -99,7 +106,7 @@ class HomeViewModel @Inject constructor(
             )
         }
 
-    }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     val serverState: State<ServerState> =
         mutableStateOf(ServerState {
@@ -110,19 +117,11 @@ class HomeViewModel @Inject constructor(
         Timber.d("Injection HomeViewModel")
         viewModelScope.launch(Dispatchers.IO) {
             newSmovFlow.collectLatest {
-                //判断是否为首页 当为首页时 清除所有数据后刷入
-                if (smovPageState.value == 0) smovsState.value.smovs.removeAll { true }
                 smovsState.value.smovs.addAll(it)
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            /* smovRepository.getSmovServiceUrlAndPort()
-                 .map { if (it == ":0") "127.0.0.1:8080" else it }.collectLatest {
-                     smovServerUrl.value = it
-                     serverState.value.serverUrl = it
-                 }*/
-
             smovRepository.getServerState()
                 .map {
                     if (it.serverUrl == ":0") ServerState(
@@ -156,6 +155,7 @@ class HomeViewModel @Inject constructor(
     fun refreshData() {
         if (smovPageState.value == 0) {
             //先更新为-1 因为防抖无法传0 这个防抖会造成 -1 比0更早实现 就会造成空数据
+            smovsState.value.smovs.removeAll { true }
             fetchSmovPageForNum(-1)
         }
         fetchSmovPageForNum(0)
