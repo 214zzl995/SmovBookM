@@ -5,9 +5,6 @@ import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,9 +20,12 @@ import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import android.app.ActivityOptions
+import android.content.ActivityNotFoundException
 import androidx.compose.animation.animateContentSize
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat.startActivity
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.flowlayout.FlowRow
@@ -38,6 +38,7 @@ fun SmovCard(
     openSmovDetail: (Long, String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .padding(15.dp, 0.dp, 15.dp, 0.dp) //21
@@ -57,28 +58,6 @@ fun SmovCard(
                 .padding(0.dp)
                 .clickable {
                     coroutineScope.launch {
-                        val options: ActivityOptions = ActivityOptions.makeBasic()
-
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        val type = "video/${smov.extension}"
-
-                        intent.setPackage("com.mxtech.videoplayer.ad")
-                        intent.putExtra("decode_mode", "4")
-                        intent.putExtra("title", smov.name)
-                        println(type)
-                        val uri: Uri =
-                            Uri.parse("http://$mainUrl/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}")
-                        intent.setDataAndType(uri, type)
-
-                        val title = "打开视频"
-                        val chooser = Intent.createChooser(intent, title)
-
-                        /*try {
-
-                            startActivity(context, intent, options.toBundle())
-                        } catch (e: ActivityNotFoundException) {
-                            // Define what your app should do if no activity can handle the intent.
-                        }*/
 
                         smov.id?.let { openSmovDetail(it.toLong(), smov.name) }
                     }
@@ -91,7 +70,7 @@ fun SmovCard(
                         .defaultMinSize(minHeight = 100.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
-                    model =  "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
+                    model = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
                     contentScale = ContentScale.FillWidth,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
@@ -151,6 +130,35 @@ fun SmovCard(
                         fontSize = 11.sp,
                         textAlign = TextAlign.Left
                     )
+
+                    TextButton(onClick = {
+                        coroutineScope.launch {
+                            val options: ActivityOptions = ActivityOptions.makeBasic()
+
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            val type = "video/${smov.extension}"
+
+                            intent.setPackage("com.mxtech.videoplayer.ad")
+                            intent.putExtra("decode_mode", "4")
+                            intent.putExtra("title", smov.name)
+                            println(type)
+                            val uri: Uri =
+                                Uri.parse("http://$mainUrl/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}")
+                            intent.setDataAndType(uri, type)
+
+                            val title = "打开视频"
+                            val chooser = Intent.createChooser(intent, title)
+
+                            try {
+                                startActivity(context, intent, options.toBundle())
+                            } catch (e: ActivityNotFoundException) {
+                                // Define what your app should do if no activity can handle the intent.
+                            }
+
+                        }
+                    }, contentPadding = PaddingValues(3.dp), modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "MxPlayer")
+                    }
                 }
 
             }
