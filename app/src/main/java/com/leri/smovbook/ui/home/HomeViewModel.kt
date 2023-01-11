@@ -11,6 +11,7 @@ import com.leri.smovbook.repository.SmovRepository
 import com.leri.smovbook.util.ErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -19,16 +20,19 @@ import javax.inject.Inject
 sealed interface HomeUiState {
 
     val errorMessages: List<ErrorMessage>
+    val dataState: Boolean
 
     data class NoData(
-        override val errorMessages: List<ErrorMessage>,
+        override val errorMessages: List<ErrorMessage>, override val dataState: Boolean = false,
     ) : HomeUiState
 
     data class HasData(
         override val errorMessages: List<ErrorMessage>,
+        override val dataState: Boolean = true,
         val smovs: MutableList<Smov>,
         val selectedSmov: Smov?,
     ) : HomeUiState
+
 }
 
 data class HomeViewModelState(
@@ -98,6 +102,7 @@ class HomeViewModel @Inject constructor(
                 listOf<Smov>()
             }
         } else {
+            delay(1000)
             smovRepository.getSmovPagination(
                 pageNum = it,
                 pageSize = 500,

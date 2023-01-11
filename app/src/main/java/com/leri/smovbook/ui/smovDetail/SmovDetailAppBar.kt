@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import com.leri.smovbook.ui.theme.SmovBookMTheme
 fun SmovDetailAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    topAppBarState: TopAppBarState = rememberTopAppBarState(),
     title: String,
     onBack: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
@@ -29,6 +31,7 @@ fun SmovDetailAppBar(
         containerColor = MaterialTheme.colorScheme.surface,
         scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface
     )
+
 
 
     Box(modifier = Modifier) {

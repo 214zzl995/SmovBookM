@@ -1,10 +1,12 @@
 package com.leri.smovbook.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Add
@@ -13,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,24 +82,31 @@ fun ChannelNameBar(
                         //打开地址选择栏
                         serverSelectShow = !serverSelectShow
                     },
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = channelName,
                             style = MaterialTheme.typography.titleMedium
                         )
-                        Text(
-                            text = serverState.serverUrl,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Row(
+                            modifier = Modifier.height(15.dp)
+                        ) {
+                            Text(
+                                text = serverState.serverUrl,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Icon(
+                                modifier = Modifier.fillMaxHeight(),
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = stringResource(id = R.string.server_select),
+                                tint = if (serverSelectShow) Color.Red else Color.Blue
+                            )
+                        }
+
                     }
 
-                    Icon(
-                        modifier = Modifier.height(24.dp),
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = stringResource(id = R.string.server_select)
-                    )
 
                 }
 
@@ -114,6 +124,13 @@ fun ChannelNameBar(
             }
         )
 
+        BackHandler(
+            onBack = {
+                serverSelectShow = !serverSelectShow
+            },
+            enabled = serverSelectShow
+        )
+
         AnimatedVisibility(
             visible = serverSelectShow,
             enter = expandVertically() + fadeIn(),
@@ -122,7 +139,7 @@ fun ChannelNameBar(
             ServerSelect(
                 backgroundColor = if ((scrollBehavior?.state?.overlappedFraction
                         ?: 0f) > 0.01f
-                ) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.inverseOnSurface,
+                ) MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.surface,
                 serverState = serverState
             )
         }
@@ -137,12 +154,31 @@ fun ServerSelect(
     backgroundColor: Color,
     serverState: ServerState,
 ) {
+
     Surface(
         modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor)
+            .fillMaxHeight(0.5f)
+            .fillMaxWidth()
     ) {
-        Text(serverState.serverUrl)
+        Box(modifier = Modifier
+            .fillMaxHeight(0.9f)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
+            .background(backgroundColor)
+
+        ) {
+            Text(serverState.serverUrl)
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun ServerSelectPreview() {
+    SmovBookMTheme(isDarkTheme = false) {
+        ServerSelect(backgroundColor = MaterialTheme.colorScheme.surface,
+            serverState = ServerState("127.0.0.1"))
     }
 }
 

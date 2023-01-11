@@ -44,10 +44,12 @@ fun SmovDetailScreen(
     smovName: String,
     serverUrl: String,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val topAppBarState: TopAppBarState = rememberTopAppBarState()
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(state = topAppBarState)
 
     val subTitle = smov.getDefaultSub(serverUrl)
     val url = smov.getVideoUrl(serverUrl)
@@ -81,6 +83,7 @@ fun SmovDetailScreen(
         topBar = {
             SmovDetailAppBar(
                 scrollBehavior = scrollBehavior,
+                topAppBarState = topAppBarState,
                 title = smovName,
                 onBack = onBack,
                 modifier = Modifier
@@ -261,7 +264,7 @@ private val valueStyle = TextStyle(
 
 @Composable
 fun rememberVideoPlayerState(
-    title: String, url: String, subTitle: String?
+    title: String, url: String, subTitle: String?,
 ): SmovVideoView {
     val context = LocalContext.current
 

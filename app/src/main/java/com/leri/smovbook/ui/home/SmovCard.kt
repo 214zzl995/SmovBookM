@@ -21,8 +21,14 @@ import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
@@ -39,16 +45,20 @@ fun SmovCard(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val visible by remember { mutableStateOf(true) }
+
+
     Box(
         modifier = Modifier
-            .padding(15.dp, 0.dp, 15.dp, 0.dp) //21
+            .padding(15.dp, 0.dp, 15.dp, 0.dp)
             .clip(RoundedCornerShape(8.dp))
     ) {
-        val padding = 6.dp
+        val padding = 8.dp
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = Color.White,
-            shadowElevation = 6.dp,
+            shadowElevation = 5.dp,
             modifier = Modifier
                 .padding(padding)
         ) {
@@ -58,7 +68,6 @@ fun SmovCard(
                 .padding(0.dp)
                 .clickable {
                     coroutineScope.launch {
-
                         smov.id?.let { openSmovDetail(it.toLong(), smov.name) }
                     }
 
@@ -156,13 +165,16 @@ fun SmovCard(
                             }
 
                         }
-                    }, contentPadding = PaddingValues(3.dp), modifier = Modifier.fillMaxWidth()) {
+                    },
+                        contentPadding = PaddingValues(3.dp),
+                        modifier = Modifier.fillMaxWidth()) {
                         Text(text = "MxPlayer")
                     }
                 }
 
             }
         }
+
     }
 }
 

@@ -1,12 +1,17 @@
 package com.leri.smovbook.ui.home
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,14 +22,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.components.JumpToTop
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isLoading
@@ -62,7 +66,6 @@ fun HomeScreen(
                 Modifier
                     .fillMaxSize()
             ) {
-
                 HomeScreenWithList(
                     uiState = uiState,
                     onRefreshSmovData = onRefreshSmovData,
@@ -86,6 +89,7 @@ fun HomeScreen(
                         openSmovDetail = openSmovDetail,
                         scrollBehavior = scrollBehavior
                     )
+
                 }
             }
 
@@ -171,7 +175,7 @@ private fun HomeScreenWithList(
             modifier = Modifier,
             onRefreshSmovData = onRefreshSmovData,
             onOpenBarScann = openBarScann,
-            serverState =  serverState,
+            serverState = serverState,
         )
 
         if (uiState.errorMessages.isNotEmpty()) {
@@ -233,6 +237,7 @@ private fun MainFloatingActionButton(
     ) { Text(text) }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun LoadingContent(
     empty: Boolean,
@@ -241,23 +246,26 @@ private fun LoadingContent(
     onRefresh: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    if (empty) {
-        emptyContent()
-    } else {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(loading),
-            onRefresh = onRefresh,
-            content = content,
-            indicator = { state, trigger ->
-                SwipeRefreshIndicator(
-                    state = state,
-                    refreshTriggerDistance = trigger,
-                    scale = true,
-                    modifier = Modifier.offset(y = 90.dp)
-                )
+
+    val pullRefreshState = rememberPullRefreshState(loading, { onRefresh() })
+
+    Crossfade(targetState = empty) { targetState ->
+        if (targetState) {
+            emptyContent()
+        } else {
+            Box(Modifier/*.pullRefresh(pullRefreshState)*/) {
+                content()
+
+                //下拉刷新没啥用 而且如果要得到一个好用的下拉刷新需要重构大量代码 放弃此功能
+                /*PullRefreshIndicator(loading,
+                    pullRefreshState,
+                    Modifier
+                        .align(Alignment.TopCenter))*/
             }
-        )
+        }
+
     }
+
 }
 
 @Composable
@@ -380,7 +388,7 @@ fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
             channelName = "composers",
-            serverState = ServerState("127.0.0.1:8000",mutableListOf()),
+            serverState = ServerState("127.0.0.1:8000", mutableListOf()),
         )
     }
 }
