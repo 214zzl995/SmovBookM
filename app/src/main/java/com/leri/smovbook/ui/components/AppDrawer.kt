@@ -1,7 +1,5 @@
 package com.leri.smovbook.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,16 +15,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.ui.util.clearFocusOnKeyboardDismiss
 import com.leri.smovbook.ui.home.ServerState
-import com.leri.smovbook.ui.theme.ScanMask
-import com.leri.smovbook.ui.theme.Shapes
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 
@@ -40,7 +34,7 @@ fun AppDrawer(
     serverState: ServerState,
 ) {
     Column(modifier = Modifier) {
-        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBarsIgnoringVisibility))
+       /* Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBarsIgnoringVisibility))
         DrawerHeader()
         DividerItem()
 
@@ -50,7 +44,12 @@ fun AppDrawer(
             historyUrl = serverState.historyUrl,
             changeServerUrl = serverState.changeServerUrl,
             closeDrawer = closeDrawer
-        )
+        )*/
+        DrawerHeader()
+        DividerItem()
+
+        FullScreenLoading()
+
     }
 
 
@@ -134,33 +133,6 @@ private fun AddUrl(
     }
 }
 
-@Composable
-fun SmovUrl(
-    modifier: Modifier = Modifier,
-    url: String,
-    textDecoration: TextDecoration? = null,
-    changeServerUrl: () -> Unit,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 28.dp, vertical = 2.dp)
-            .height(35.dp)
-            .clip(Shapes.small)
-            .background(ScanMask)
-            .clickable { changeServerUrl() },
-        verticalAlignment = CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            url,
-            modifier = Modifier
-        )
-
-    }
-
-
-}
 
 @Composable
 private fun DrawerItemHeader(text: String) {

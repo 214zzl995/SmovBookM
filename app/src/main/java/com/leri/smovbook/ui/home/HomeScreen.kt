@@ -23,16 +23,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.components.JumpToTop
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.models.network.isError
 import com.leri.smovbook.models.network.isLoading
-import com.leri.smovbook.ui.components.ChannelNameBar
+import com.leri.smovbook.models.network.isSuccess
+import com.leri.smovbook.ui.components.*
 import com.leri.smovbook.ui.data.testDataHasData
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,18 +154,19 @@ private fun HomeScreenWithList(
                 when (uiState) {
                     is HomeUiState.HasData -> hasPostsContent(uiState)
                     is HomeUiState.NoData -> {
-                        if (uiState.errorMessages.isEmpty()) {
-                            Box(Modifier.fillMaxSize()) {
-                                NodataOperate(
-                                    onRefresh = onRefreshSmovData,
-                                    modifier = Modifier.align(Alignment.BottomEnd)
-                                )
+                        Box(contentModifier.fillMaxSize()) {
+                            println("当前装填$loadingState")
+                            if (loadingState.isError()) {
+                                WrongRequest()
+                            } else if (loadingState.isSuccess()) {
+                                EmptyData()
                             }
-                        } else {
-                            Box(contentModifier.fillMaxSize()) {
-
-                            }
+                            NodataOperate(
+                                onRefresh = onRefreshSmovData,
+                                modifier = Modifier.align(Alignment.BottomEnd)
+                            )
                         }
+
                     }
                 }
             },
@@ -268,16 +274,6 @@ private fun LoadingContent(
 
 }
 
-@Composable
-private fun FullScreenLoading() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable

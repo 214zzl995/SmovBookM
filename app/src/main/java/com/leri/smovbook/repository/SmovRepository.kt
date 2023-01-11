@@ -31,7 +31,7 @@ class SmovRepository(
     fun getSmovAll() = flow {
         val response = smovService.getAllSmov()
         response.suspendOnSuccess {
-            Timber.d(data.toString())
+            //Timber.d(data.toString())
             emit(data.data)
         }.suspendOnError {
             message()
@@ -43,12 +43,17 @@ class SmovRepository(
         flow {
             val response = smovService.getPaginationSmov(pageNum, pageSize)
             response.suspendOnSuccess {
-                Timber.d(data.toString())
+                //Timber.d(data.toString())
                 emit(data.data.list)
+                success()
             }.onError {
                 error()
-            }.onException { error() }
-        }.onCompletion { success() }.flowOn(Dispatchers.IO)
+            }.onException {
+                error()
+            }
+        }.onCompletion {
+            //success()
+        }.flowOn(Dispatchers.IO)
 
     @WorkerThread
     fun getSmovById(id: Long, success: () -> Unit, error: () -> Unit) = flow {

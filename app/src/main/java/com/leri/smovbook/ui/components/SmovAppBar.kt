@@ -19,20 +19,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.home.ServerState
+import com.leri.smovbook.ui.theme.ScanMask
+import com.leri.smovbook.ui.theme.Shapes
 import com.leri.smovbook.ui.theme.SmovBookMTheme
-import com.leri.smovbook.ui.theme.Teal200
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,8 +51,8 @@ fun ChannelNameBar(
     var serverSelectShow by remember { mutableStateOf(false) }
 
     val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = MaterialTheme.colorScheme.surface,
-        scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface
+        containerColor = if (serverSelectShow) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        scrolledContainerColor = if (serverSelectShow) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.inverseOnSurface
     )
 
     Column(modifier = Modifier) {
@@ -134,7 +132,7 @@ fun ChannelNameBar(
         ) {
             ServerSelect(backgroundColor = if ((scrollBehavior?.state?.overlappedFraction
                     ?: 0f) > 0.01f
-            ) MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.surface,
+            ) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primaryContainer,
                 serverState = serverState,
                 closeServerSelect = { serverSelectShow = !serverSelectShow })
         }
@@ -165,7 +163,6 @@ fun ServerSelect(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
                 .background(backgroundColor)
-                //.shadow(elevation = 5.dp, shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
                 .pointerInput(Unit) {
                     detectTapGestures()
                 }) {
@@ -190,6 +187,35 @@ fun ServerSelect(
             }
         }
     }
+}
+
+@Composable
+fun SmovUrl(
+    modifier: Modifier = Modifier,
+    url: String,
+    textDecoration: TextDecoration? = null,
+    changeServerUrl: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp, vertical = 2.dp)
+            .height(35.dp)
+            .clip(Shapes.small)
+            .background(MaterialTheme.colorScheme.inversePrimary)
+            .clickable { changeServerUrl() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            url,
+            modifier = Modifier,
+            textDecoration = textDecoration
+        )
+
+    }
+
+
 }
 
 @Preview
