@@ -1,4 +1,4 @@
-package com.leri.smovbook.ui
+package com.leri.smovbook.ui.util
 
 import android.view.View
 import androidx.compose.foundation.gestures.detectTapGestures

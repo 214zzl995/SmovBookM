@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
+import com.leri.smovbook.ui.util.clearFocusOnKeyboardDismiss
 import com.leri.smovbook.ui.home.ServerState
 import com.leri.smovbook.ui.theme.ScanMask
 import com.leri.smovbook.ui.theme.Shapes
@@ -135,7 +135,7 @@ private fun AddUrl(
 }
 
 @Composable
-private fun SmovUrl(
+fun SmovUrl(
     modifier: Modifier = Modifier,
     url: String,
     textDecoration: TextDecoration? = null,

@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
+import com.leri.smovbook.ui.util.clearFocusOnKeyboardDismiss
 import com.leri.smovbook.ui.theme.ChangeServerUrlBackground
 
 

@@ -10,6 +10,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.leri.smovbook.ui.home.LocalBackPressedDispatcher
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitleVideoManager
+import com.leri.smovbook.ui.util.autoCloseKeyboard
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
