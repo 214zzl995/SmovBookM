@@ -20,7 +20,7 @@ val DarkBlue20 = Color(0xFF000BA6)
 val DarkBlue30 = Color(0xFF1026D3)
 val DarkBlue40 = Color(0xFF3648EA)
 val DarkBlue80 = Color(0xFFBBC2FF)
-val DarkBlue90 = Color(0xFFDEE0FF)
+val DarkBlue90 = Color(0xFFF7F7FF)
 
 val Yellow10 = Color(0xFF261900)
 val Yellow20 = Color(0xFF402D00)

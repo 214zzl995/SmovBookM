@@ -51,8 +51,8 @@ fun ChannelNameBar(
     var serverSelectShow by remember { mutableStateOf(false) }
 
     val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = if (serverSelectShow) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-        scrolledContainerColor = if (serverSelectShow) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.inverseOnSurface
+        containerColor = if (serverSelectShow) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
+        scrolledContainerColor = if (serverSelectShow) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.inverseOnSurface
     )
 
     Column(modifier = Modifier) {
@@ -132,7 +132,7 @@ fun ChannelNameBar(
         ) {
             ServerSelect(backgroundColor = if ((scrollBehavior?.state?.overlappedFraction
                     ?: 0f) > 0.01f
-            ) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primaryContainer,
+            ) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer,
                 serverState = serverState,
                 closeServerSelect = { serverSelectShow = !serverSelectShow })
         }
