@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.util.clearFocusOnKeyboardDismiss
-import com.leri.smovbook.ui.theme.ChangeServerUrlBackground
+import com.leri.smovbook.ui.theme.AddServerUrlBackground
 
 
 @Composable
@@ -46,7 +46,7 @@ fun ChangeServerUrlDialog(
         visible = visible,
         enter = fadeIn(), exit = fadeOut()
     ) {
-        Surface(color = ChangeServerUrlBackground) {
+        Surface(color = AddServerUrlBackground) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

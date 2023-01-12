@@ -2,6 +2,7 @@ package com.leri.smovbook.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -21,6 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.home.ServerState
-import com.leri.smovbook.ui.theme.ScanMask
+import com.leri.smovbook.ui.theme.ChangeServerUrlBackground
 import com.leri.smovbook.ui.theme.Shapes
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
@@ -51,11 +55,12 @@ fun ChannelNameBar(
     var serverSelectShow by remember { mutableStateOf(false) }
 
     val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = if (serverSelectShow) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
-        scrolledContainerColor = if (serverSelectShow) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.inverseOnSurface
+        containerColor = MaterialTheme.colorScheme.surface,
+        scrolledContainerColor = MaterialTheme.colorScheme.secondaryContainer
     )
 
     Column(modifier = Modifier) {
+
         CenterAlignedTopAppBar(modifier = modifier, actions = {
             Icon(
                 imageVector = Icons.Outlined.Add,
@@ -130,56 +135,97 @@ fun ChannelNameBar(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
-            ServerSelect(backgroundColor = if ((scrollBehavior?.state?.overlappedFraction
-                    ?: 0f) > 0.01f
-            ) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer,
-                serverState = serverState,
-                closeServerSelect = { serverSelectShow = !serverSelectShow })
         }
+        ServerSelect(
+            backgroundColor = if ((scrollBehavior?.state?.overlappedFraction
+                    ?: 0f) > 0.01f
+            ) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
+            serverState = serverState,
+            serverSelectShow = serverSelectShow
+        ) { serverSelectShow = !serverSelectShow }
+
     }
 }
 
+@OptIn(InternalAnimationApi::class)
 @Composable
 fun ServerSelect(
     backgroundColor: Color,
     serverState: ServerState,
-    closeServerSelect: () -> Unit = {},
+    serverSelectShow: Boolean = false,
+    changeServerSelectState: () -> Unit = {},
 ) {
+    val localDensity = LocalDensity.current
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.Transparent,
-    ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .clickable(indication = null, interactionSource = remember {
-                MutableInteractionSource()
-            }) {
-                closeServerSelect()
-            }) {
+    val transition = updateTransition(serverSelectShow, "changeUrlBox")
 
+    val changeBoxBackground by animateColorAsState(
+        targetValue = if (serverSelectShow) ChangeServerUrlBackground else Color.Transparent,
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = 0,
+            easing = LinearOutSlowInEasing
+        ),
+        label = "changeUrlBox"
+    )
+
+    var changeBoxHeightDp by remember {
+        mutableStateOf(0f)
+    }
+
+    println("第一次测量的高度为$changeBoxHeightDp")
+
+    val changeBoxOffset: Float by animateFloatAsState(
+        targetValue = if (serverSelectShow) 0f else changeBoxHeightDp,
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = 0,
+            easing = LinearOutSlowInEasing
+        ),
+        label = "changeUrlBox"
+    )
+
+    if (transition.isSeeking) {
+        Surface(
+            color = Color.Transparent,
+        ) {
             Box(modifier = Modifier
-                .fillMaxHeight(0.55f)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
-                .background(backgroundColor)
-                .pointerInput(Unit) {
-                    detectTapGestures()
+                .fillMaxSize()
+                .background(changeBoxBackground)
+                .clickable(indication = null, interactionSource = remember {
+                    MutableInteractionSource()
                 }) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 15.dp)
-                ) {
+                    changeServerSelectState()
+                }) {
 
-                    LazyColumn {
-                        items(serverState.historyUrl) {
-                            SmovUrl(
-                                url = it,
-                                modifier = Modifier.animateItemPlacement()
-                            ) {
-                                serverState.changeServerUrl(it)
-                                closeServerSelect()
+                Box(modifier = Modifier
+                    .fillMaxHeight(0.55f)
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        changeBoxHeightDp =
+                            with(localDensity) { -coordinates.size.height.toDp().value }
+                    }
+                    .offset(x = 0.dp, y = (changeBoxOffset).dp)
+                    .clip(RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
+                    .background(backgroundColor)
+                    .pointerInput(Unit) {
+                        detectTapGestures()
+                    }) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 15.dp)
+                    ) {
+
+                        LazyColumn {
+                            items(serverState.historyUrl) {
+                                SmovUrl(
+                                    url = it,
+                                    modifier = Modifier.animateItemPlacement()
+                                ) {
+                                    serverState.changeServerUrl(it)
+                                    changeServerSelectState()
+                                }
                             }
                         }
                     }

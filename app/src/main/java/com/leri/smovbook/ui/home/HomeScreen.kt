@@ -147,7 +147,6 @@ private fun HomeScreenWithList(
                     is HomeUiState.HasData -> hasPostsContent(uiState)
                     is HomeUiState.NoData -> {
                         Box(contentModifier.fillMaxSize()) {
-                            println("当前装填$pageState")
                             if (pageState.isError()) {
                                 WrongRequest()
                             } else if (pageState.isSuccess()) {

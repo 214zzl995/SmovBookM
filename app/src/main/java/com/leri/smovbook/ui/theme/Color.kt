@@ -20,7 +20,7 @@ val DarkBlue20 = Color(0xFF000BA6)
 val DarkBlue30 = Color(0xFF1026D3)
 val DarkBlue40 = Color(0xFF3648EA)
 val DarkBlue80 = Color(0xFFBBC2FF)
-val DarkBlue90 = Color(0xFFF7F7FF)
+val DarkBlue90 = Color(0xFFEFEFFF)
 
 val Yellow10 = Color(0xFF261900)
 val Yellow20 = Color(0xFF402D00)
@@ -61,4 +61,7 @@ val ScanIco = Color(0xD0494949)
 
 val ScanText = Color(0xD71B1B1B)
 
-val ChangeServerUrlBackground = Color(0xB5E4E4E4)
+val AddServerUrlBackground = Color(0xB5E4E4E4)
+
+val ChangeServerUrlBackground = Color(0x43000000)
+
