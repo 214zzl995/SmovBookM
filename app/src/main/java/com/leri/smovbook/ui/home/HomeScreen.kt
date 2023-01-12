@@ -9,8 +9,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
@@ -26,12 +24,6 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isError
@@ -51,7 +43,7 @@ fun HomeScreen(
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     openBarScann: () -> Unit = { },
-    loadingState: NetworkState,
+    pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     openSmovDetail: (Long, String) -> Unit,
     serverState: ServerState,
@@ -79,7 +71,7 @@ fun HomeScreen(
                     homeListLazyListState = homeListLazyListState,
                     openBarScann = { changeServerUrlDialogVisible = true },
                     scaffoldState = scaffoldState,
-                    loadingState = loadingState,
+                    pageState = pageState,
                     serverState = serverState,
                     fetchNextSmovPage = fetchNextSmovPage,
                     scrollBehavior = scrollBehavior
@@ -121,7 +113,7 @@ private fun HomeScreenWithList(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
     openBarScann: () -> Unit,
-    loadingState: NetworkState,
+    pageState: NetworkState,
     serverState: ServerState,
     fetchNextSmovPage: () -> Unit,
     hasPostsContent: @Composable (
@@ -133,7 +125,7 @@ private fun HomeScreenWithList(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            if (uiState.errorMessages.isEmpty() && !loadingState.isLoading() && uiState.errorMessages.count() > 100) {
+            if (uiState.errorMessages.isEmpty() && !pageState.isLoading() && uiState.errorMessages.count() > 100) {
                 ExtendedFloatingActionButton(
                     onClick = onRefreshSmovData
                 ) { Text("重载") }
@@ -145,20 +137,20 @@ private fun HomeScreenWithList(
         LoadingContent(
             empty = when (uiState) {
                 is HomeUiState.HasData -> false
-                is HomeUiState.NoData -> loadingState.isLoading()
+                is HomeUiState.NoData -> pageState.isLoading()
             },
             emptyContent = { FullScreenLoading() },
-            loading = loadingState.isLoading(),
+            loading = pageState.isLoading(),
             onRefresh = onRefreshSmovData,
             content = {
                 when (uiState) {
                     is HomeUiState.HasData -> hasPostsContent(uiState)
                     is HomeUiState.NoData -> {
                         Box(contentModifier.fillMaxSize()) {
-                            println("当前装填$loadingState")
-                            if (loadingState.isError()) {
+                            println("当前装填$pageState")
+                            if (pageState.isError()) {
                                 WrongRequest()
-                            } else if (loadingState.isSuccess()) {
+                            } else if (pageState.isSuccess()) {
                                 EmptyData()
                             }
                             NodataOperate(
@@ -368,7 +360,7 @@ fun Screen() {
             homeListLazyListState = rememberLazyListState(0),
             scaffoldState = rememberScaffoldState(),
             serverState = ServerState("127.0.0.1:8000", mutableListOf()),
-            loadingState = NetworkState.SUCCESS,
+            pageState = NetworkState.SUCCESS,
             fetchNextSmovPage = { },
             openSmovDetail = { _, _ -> }
         )

@@ -90,12 +90,11 @@ class HomeViewModel @Inject constructor(
 
     private val smovPageState: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    //名称不合理 应该是页面状态 加载 失败 成功等
-    private val _smovLoadingState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
-    val smovLoadingState: State<NetworkState> get() = _smovLoadingState
+    private val _pageState: MutableState<NetworkState> = mutableStateOf(NetworkState.IDLE)
+    val pageState: State<NetworkState> get() = _pageState
 
     private val newSmovFlow = smovPageState.flatMapLatest {
-        _smovLoadingState.value = NetworkState.LOADING
+        _pageState.value = NetworkState.LOADING
 
         if (it == -1) {
             flow {
@@ -106,8 +105,8 @@ class HomeViewModel @Inject constructor(
             smovRepository.getSmovPagination(
                 pageNum = it,
                 pageSize = 500,
-                success = { _smovLoadingState.value = NetworkState.SUCCESS },
-                error = { _smovLoadingState.value = NetworkState.ERROR }
+                success = { _pageState.value = NetworkState.SUCCESS },
+                error = { _pageState.value = NetworkState.ERROR }
             )
         }
 
@@ -141,7 +140,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchNextSmovPage() {
-        if (smovLoadingState.value != NetworkState.LOADING) {
+        if (pageState.value != NetworkState.LOADING) {
             smovPageState.value++
         }
     }

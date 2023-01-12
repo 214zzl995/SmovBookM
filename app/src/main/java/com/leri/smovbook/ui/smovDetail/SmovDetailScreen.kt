@@ -31,6 +31,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
@@ -44,6 +45,7 @@ fun SmovDetailScreen(
     smovName: String,
     serverUrl: String,
     onBack: () -> Unit,
+    pageState: NetworkState,
     modifier: Modifier = Modifier,
 ) {
 

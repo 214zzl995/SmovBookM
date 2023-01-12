@@ -61,10 +61,11 @@ class SmovRepository(
         response.suspendOnSuccess {
             Timber.d(data.toString())
             emit(data.data)
+            success()
         }.onError {
             error()
         }.onException { error() }
-    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+    }.onCompletion {  }.flowOn(Dispatchers.IO)
 
 
     @WorkerThread

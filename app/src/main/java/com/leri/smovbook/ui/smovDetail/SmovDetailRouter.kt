@@ -21,6 +21,8 @@ fun SmovDetailRouter(
 
     val smov by viewModel.smovFlow.collectAsState(initial = initialSmov)
 
+    val pageState by viewModel.pageState
+
     LaunchedEffect(key1 = smovId) {
         viewModel.fetchSmovDetailsById(smovId)
     }
@@ -29,7 +31,8 @@ fun SmovDetailRouter(
         smov = smov,
         serverUrl = serverUrl,
         smovName = smovName,
-        onBack = onBack
+        onBack = onBack,
+        pageState = pageState
     )
 }
 

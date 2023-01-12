@@ -30,7 +30,7 @@ fun HomeRoute(
 ) {
     val uiState by homeViewModel.smovsState
     val detailOpen by homeViewModel.detailOpen
-    val loadingState by homeViewModel.smovLoadingState
+    val pageState by homeViewModel.pageState
     val serverState by homeViewModel.serverState
 
     HomeRoute(
@@ -41,7 +41,7 @@ fun HomeRoute(
         onRefreshSmovData = { homeViewModel.refreshData() },
         currentRoute = currentRoute,
         detailOpen = detailOpen,
-        loadingState = loadingState,
+        pageState = pageState,
         fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() },
         openSmovDetail = openSmovDetail,
         serverState = serverState
@@ -60,7 +60,7 @@ fun HomeRoute(
     onRefreshSmovData: () -> Unit,
     currentRoute: String,
     detailOpen: DrawerValue,
-    loadingState: NetworkState,
+    pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     openSmovDetail: (Long, String) -> Unit,
     serverState: ServerState,
@@ -145,7 +145,7 @@ fun HomeRoute(
             },
             onRefreshSmovData = onRefreshSmovData,
             openDrawer = { coroutineScope.launch { drawerState.open() } },
-            loadingState = loadingState,
+            pageState = pageState,
             fetchNextSmovPage = fetchNextSmovPage,
             openSmovDetail = openSmovDetail,
             serverState  = serverState
