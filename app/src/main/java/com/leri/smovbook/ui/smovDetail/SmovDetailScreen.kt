@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,6 +33,10 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.models.network.isLoading
+import com.leri.smovbook.ui.components.FullScreenLoading
+import com.leri.smovbook.ui.components.MainPage
+import com.leri.smovbook.ui.components.WrongRequest
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
@@ -98,17 +103,19 @@ fun SmovDetailScreen(
                 .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.TopStart
         ) {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .verticalScroll(scrollState)
-                    .fillMaxSize()
-            ) {
-
-                VideoPlayer(smovVideoView = smovVideoView)
-                VideoDetail(smov = smov)
+            MainPage(pageState) {
+                val scrollState = rememberScrollState()
+                Column(
+                    modifier = Modifier
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                        .verticalScroll(scrollState)
+                        .fillMaxSize()
+                ) {
+                    VideoPlayer(smovVideoView = smovVideoView)
+                    VideoDetail(smov = smov)
+                }
             }
+
         }
     }
 }

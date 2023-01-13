@@ -38,7 +38,7 @@ import androidx.room.Entity
 @Immutable
 @Entity(primaryKeys = [("id")])
 data class Smov(
-    var id: Int? = 0,
+    var id: Int = 0,
     var name: String,
     var title: String,
     var path: String,

@@ -1,17 +1,24 @@
 package com.leri.smovbook.ui.home
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.*
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -24,6 +31,8 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isError
@@ -143,21 +152,24 @@ private fun HomeScreenWithList(
             loading = pageState.isLoading(),
             onRefresh = onRefreshSmovData,
             content = {
-                when (uiState) {
-                    is HomeUiState.HasData -> hasPostsContent(uiState)
-                    is HomeUiState.NoData -> {
-                        Box(contentModifier.fillMaxSize()) {
-                            if (pageState.isError()) {
-                                WrongRequest()
-                            } else if (pageState.isSuccess()) {
-                                EmptyData()
-                            }
-                            NodataOperate(
-                                onRefresh = onRefreshSmovData,
-                                modifier = Modifier.align(Alignment.BottomEnd)
-                            )
-                        }
 
+                Crossfade(targetState = uiState) {
+                    when (it) {
+                        is HomeUiState.HasData -> hasPostsContent(it)
+                        is HomeUiState.NoData -> {
+                            Box(contentModifier.fillMaxSize()) {
+                                if (pageState.isError()) {
+                                    WrongRequest()
+                                } else if (pageState.isSuccess()) {
+                                    EmptyData()
+                                }
+                                NodataOperate(
+                                    onRefresh = onRefreshSmovData,
+                                    modifier = Modifier.align(Alignment.BottomEnd)
+                                )
+                            }
+
+                        }
                     }
                 }
             },
@@ -234,7 +246,6 @@ private fun MainFloatingActionButton(
     ) { Text(text) }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun LoadingContent(
     empty: Boolean,
@@ -244,7 +255,7 @@ private fun LoadingContent(
     content: @Composable () -> Unit,
 ) {
 
-    val pullRefreshState = rememberPullRefreshState(loading, { onRefresh() })
+//    val pullRefreshState = rememberPullRefreshState(loading, { onRefresh() })
 
     Crossfade(targetState = empty) { targetState ->
         if (targetState) {
@@ -281,7 +292,9 @@ fun SmovList(
     //statusBar 会出现高度突然刷新的情况
     val contentPadding =
         WindowInsets.statusBarsIgnoringVisibility.add(WindowInsets(top = 70.dp)).asPaddingValues()
-    Box(modifier = modifier) {
+
+    BoxWithConstraints(modifier = modifier) {
+
         LazyColumn(
             reverseLayout = false,
             state = scrollState,
@@ -290,12 +303,25 @@ fun SmovList(
                 .testTag("ConversationTestTag")
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize()
-                .align(Alignment.Center)
         ) {
             items(smov) { smovItem ->
                 SmovCard(smovItem, serverUrl, openSmovDetail)
             }
         }
+
+        //这个部分的实现需要很多一起 所以先改造LazyColumn部分
+        /*Box(
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.15f)
+                .background(Color.Red).align(Alignment.BottomEnd),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Text(text = "现在不知道咋整 等下看")
+
+        }*/
+
+
         val jumpThreshold = with(LocalDensity.current) {
             JumpToBottomThreshold.toPx()
         }

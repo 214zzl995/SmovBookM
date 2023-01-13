@@ -27,12 +27,10 @@ fun SmovDetailAppBar(
     actions: @Composable RowScope.() -> Unit = {},
 ) {
 
-    val foregroundColors = TopAppBarDefaults.smallTopAppBarColors(
+    val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.surface,
-        scrolledContainerColor = MaterialTheme.colorScheme.inverseOnSurface
+        scrolledContainerColor = MaterialTheme.colorScheme.secondaryContainer
     )
-
-
 
     Box(modifier = Modifier) {
         TopAppBar(

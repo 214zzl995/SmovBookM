@@ -22,9 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -141,57 +138,27 @@ fun ChannelNameBar(
                     ?: 0f) > 0.01f
             ) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
             serverState = serverState,
-            serverSelectShow = serverSelectShow
+            serverSelectVisible = serverSelectShow
         ) { serverSelectShow = !serverSelectShow }
 
     }
 }
 
-@OptIn(InternalAnimationApi::class)
+@OptIn(InternalAnimationApi::class, ExperimentalTransitionApi::class)
 @Composable
 fun ServerSelect(
     backgroundColor: Color,
     serverState: ServerState,
-    serverSelectShow: Boolean = false,
+    serverSelectVisible: Boolean = false,
     changeServerSelectState: () -> Unit = {},
 ) {
-    val localDensity = LocalDensity.current
-
-    val transition = updateTransition(serverSelectShow, "changeUrlBox")
-
-    val changeBoxBackground by animateColorAsState(
-        targetValue = if (serverSelectShow) ChangeServerUrlBackground else Color.Transparent,
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = 0,
-            easing = LinearOutSlowInEasing
-        ),
-        label = "changeUrlBox"
-    )
-
-    var changeBoxHeightDp by remember {
-        mutableStateOf(0f)
-    }
-
-    println("第一次测量的高度为$changeBoxHeightDp")
-
-    val changeBoxOffset: Float by animateFloatAsState(
-        targetValue = if (serverSelectShow) 0f else changeBoxHeightDp,
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = 0,
-            easing = LinearOutSlowInEasing
-        ),
-        label = "changeUrlBox"
-    )
-
-    if (transition.isSeeking) {
+    AnimatedVisibility(visible = serverSelectVisible, enter = fadeIn(), exit = fadeOut()) {
         Surface(
             color = Color.Transparent,
         ) {
             Box(modifier = Modifier
                 .fillMaxSize()
-                .background(changeBoxBackground)
+                .background(ChangeServerUrlBackground)
                 .clickable(indication = null, interactionSource = remember {
                     MutableInteractionSource()
                 }) {
@@ -201,11 +168,7 @@ fun ServerSelect(
                 Box(modifier = Modifier
                     .fillMaxHeight(0.55f)
                     .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        changeBoxHeightDp =
-                            with(localDensity) { -coordinates.size.height.toDp().value }
-                    }
-                    .offset(x = 0.dp, y = (changeBoxOffset).dp)
+                    .animateEnterExit(enter = slideInVertically(), exit = fadeOut()+slideOutVertically())
                     .clip(RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))
                     .background(backgroundColor)
                     .pointerInput(Unit) {
@@ -230,6 +193,41 @@ fun ServerSelect(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(InternalAnimationApi::class, ExperimentalAnimationApi::class)
+@Composable
+private fun <T> Transition<T>.targetEnterExit(
+    visible: (T) -> Boolean,
+    targetState: T,
+): EnterExitState = key(this) {
+
+    if (this.isSeeking) {
+        if (visible(targetState)) {
+            EnterExitState.Visible
+        } else {
+            if (visible(this.currentState)) {
+                EnterExitState.PostExit
+            } else {
+                EnterExitState.PreEnter
+            }
+        }
+    } else {
+        val hasBeenVisible = remember { mutableStateOf(false) }
+        if (visible(currentState)) {
+            hasBeenVisible.value = true
+        }
+        if (visible(targetState)) {
+            EnterExitState.Visible
+        } else {
+            // If never been visible, visible = false means PreEnter, otherwise PostExit
+            if (hasBeenVisible.value) {
+                EnterExitState.PostExit
+            } else {
+                EnterExitState.PreEnter
             }
         }
     }
