@@ -45,6 +45,12 @@
     <string name="speed_4_0">4.0X</string>
     <string name="other_nothing">现在这里什么都没有哦</string>
     <string name="server_select">服务器选择</string>
+    <string name="test_string">测试</string>
+
+    <string name="no_url">播放地址无效</string>
+
+    <string name="total_time"> / %1$s</string>
+    <string name="diff_time">&#160;[%1$s]</string>
 
 
 </resources>

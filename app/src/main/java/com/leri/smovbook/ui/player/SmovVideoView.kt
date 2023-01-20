@@ -1,19 +1,24 @@
 package com.leri.smovbook.ui.player
 
 import android.animation.AnimatorInflater
+import android.animation.ValueAnimator
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
-import android.graphics.*
+import android.graphics.Color
+import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.media.MediaPlayer
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
-import androidx.compose.ui.platform.ComposeView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.core.animation.addListener
 import coil.load
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.text.CueGroup
@@ -24,22 +29,24 @@ import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitlePlayerManager
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitleVideoManager
 import com.leri.smovbook.ui.player.utils.OrientationUtils
 import com.leri.smovbook.ui.smovDetail.getActivity
-import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack
+import com.shuyu.gsyvideoplayer.utils.CommonUtil
 import com.shuyu.gsyvideoplayer.utils.Debuger
-import com.shuyu.gsyvideoplayer.video.NormalGSYVideoPlayer
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer
+import moe.codeest.enviews.ENDownloadView
 import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
+import kotlin.math.abs
 
 
-class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
+open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
     View.OnClickListener, VideoAllCallBack {
 
     private lateinit var mSubtitleView: SubtitleView
     var subTitle: String? = null
-    lateinit var orientationUtils: OrientationUtils
+    private lateinit var orientationUtils: OrientationUtils
 
     private var sTitle: String = ""
     private var sUrl: String = ""
@@ -65,6 +72,21 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     private lateinit var mOtherButton: ViewGroup
 
     private lateinit var mOtherDialog: ViewGroup
+
+    private lateinit var mLottieStart: LottieAnimationView
+
+    private lateinit var valueAnimator: ValueAnimator
+
+    private lateinit var animatorUpdateListener: ValueAnimator.AnimatorUpdateListener
+
+    private lateinit var mDialogBrightnessProgressBar: ProgressBar
+
+    private lateinit var mDialogDiffTime: TextView
+
+    private var mVideoStateBackUp: Int = CURRENT_STATE_NORMAL
+
+    private val mStopOnChangeProcess: Boolean = true
+
 
     fun smovInit(title: String, url: String, subTitle: String?, cover: String) {
         this.sTitle = title
@@ -114,7 +136,7 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
     constructor(context: Context?, title: String, url: String, subTitle: String?) : super(context) {
         this.sTitle = title
@@ -155,40 +177,678 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         mOtherButton = findViewById(R.id.other)
         mOtherDialog = findViewById(R.id.other_dialog)
 
+        mLottieStart = findViewById(R.id.lottie_start)
+
         mDialog.setOnClickListener(this)
         mSpeedButton.setOnClickListener(this)
         mClarityButton.setOnClickListener(this)
         mOtherButton.setOnClickListener(this)
 
+        mLottieStart.setOnClickListener(this)
+
         mBottomContainer.setPadding(5, 0, 20, 0)
 
-        val greeting = findViewById<ComposeView>(R.id.compose_dialog)
-
-        //Compose嵌入View 但是无法控制它是否显示 优先以View完成这个功能
-        greeting.setContent {
-            SmovBookMTheme {
-                ComposeDialog()
-            }
+        valueAnimator = ValueAnimator.ofFloat(1f, 0f)
+        animatorUpdateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+            mLottieStart.progress =
+                animation.animatedValue as Float
         }
+
+
+        /**
+         * 此代码仅做测试 傻逼才这么写
+         * xml就管xml compose就管xml就行
+         *
+        private var changeState: (Int) -> Unit = {}
+
+
+        val composeStart = findViewById<ComposeView>(R.id.compose_start)
+        composeStart.setContent {
+        var state by rememberSaveable { mutableStateOf(mCurrentState) }
+        changeState = {
+        state = it
+        }
+        LaunchedEffect(state) {
+        println("测试当值变更是否会触发")
+        }
+        SmovBookMTheme {
+        ComposeStart(state = mCurrentState)
+        }
+         */
     }
 
     override fun getLayoutId(): Int {
         return R.layout.video_layout_subtitle
     }
 
+
     override fun updateStartImage() {
         if (mStartButton is ImageView) {
             val imageView = mStartButton as ImageView
             when (mCurrentState) {
                 CURRENT_STATE_PLAYING -> {
-                    imageView.setImageResource(R.drawable.video_click_pause_selector_smovbook)
+                    imageView.setImageResource(R.drawable.ic_pause)
                 }
                 CURRENT_STATE_ERROR -> {
-                    imageView.setImageResource(R.drawable.video_click_play_selector_smovbook)
+                    imageView.setImageResource(R.drawable.ic_play)
                 }
                 else -> {
-                    imageView.setImageResource(R.drawable.video_click_play_selector_smovbook)
+                    imageView.setImageResource(R.drawable.ic_play)
                 }
+            }
+        }
+    }
+
+    override fun lockTouchLogic() {
+        if (mLockCurScreen) {
+            mLockScreen.setImageResource(R.drawable.ic_unlock)
+            mLockCurScreen = false
+        } else {
+            mLockScreen.setImageResource(R.drawable.ic_lock)
+            mLockCurScreen = true
+            hideAllWidget()
+        }
+    }
+
+    /**
+     * 显示音量调节dialog 处理数据
+     */
+    override fun showVolumeDialog(deltaY: Float, volumePercent: Int) {
+        if (mVolumeDialog == null) {
+            val localView = LayoutInflater.from(activityContext).inflate(
+                volumeLayoutId, null
+            )
+            if (localView.findViewById<View>(volumeProgressId) is ProgressBar) {
+                mDialogVolumeProgressBar =
+                    localView.findViewById<View>(volumeProgressId) as ProgressBar
+                if (mVolumeProgressDrawable != null && mDialogVolumeProgressBar != null) {
+                    mDialogVolumeProgressBar.progressDrawable = mVolumeProgressDrawable
+                }
+            }
+            mVolumeDialog = Dialog(activityContext, R.style.video_style_dialog_progress)
+            mVolumeDialog.setContentView(localView)
+            mVolumeDialog.window!!.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            mVolumeDialog.window!!.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
+            mVolumeDialog.window!!.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            mVolumeDialog.window!!.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val localLayoutParams = mVolumeDialog.window!!.attributes
+            localLayoutParams.gravity = Gravity.TOP or Gravity.START
+            localLayoutParams.width = width
+            localLayoutParams.height = height
+            val location = IntArray(2)
+            getLocationOnScreen(location)
+            localLayoutParams.x = location[0]
+            localLayoutParams.y = location[1]
+            mVolumeDialog.window!!.attributes = localLayoutParams
+        }
+        if (!mVolumeDialog.isShowing) {
+            mVolumeDialog.show()
+        }
+        if (mDialogVolumeProgressBar != null) {
+            mDialogVolumeProgressBar.progress = volumePercent
+        }
+    }
+
+    /**
+     * 显示亮度调节dialog 处理亮度调节计算后的数据
+     */
+    override fun showBrightnessDialog(percent: Float) {
+        if (mBrightnessDialog == null) {
+            val localView = LayoutInflater.from(activityContext).inflate(
+                brightnessLayoutId, null
+            )
+            if (localView.findViewById<View>(R.id.brightness_progressbar) is ProgressBar) {
+                mDialogBrightnessProgressBar =
+                    localView.findViewById<View>(R.id.brightness_progressbar) as ProgressBar
+            }
+            mBrightnessDialog = Dialog(activityContext, R.style.video_style_dialog_progress)
+            mBrightnessDialog.setContentView(localView)
+            mBrightnessDialog.window!!.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            mBrightnessDialog.window!!.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
+            mBrightnessDialog.window!!.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            mBrightnessDialog.window!!.setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val localLayoutParams = mBrightnessDialog.window!!.attributes
+            localLayoutParams.gravity = Gravity.TOP or Gravity.START
+            localLayoutParams.width = width
+            localLayoutParams.height = height
+            val location = IntArray(2)
+            getLocationOnScreen(location)
+            localLayoutParams.x = location[0]
+            localLayoutParams.y = location[1]
+            mBrightnessDialog.window!!.attributes = localLayoutParams
+        }
+        if (!mBrightnessDialog.isShowing) {
+            mBrightnessDialog.show()
+        }
+
+        mDialogBrightnessProgressBar.progress = (percent * 100).toInt()
+    }
+
+    /**
+     * 亮度调节计算
+     */
+    override fun onBrightnessSlide(percent: Float) {
+        mBrightnessData = (mContext as Activity).window.attributes.screenBrightness
+        if (mBrightnessData <= 0.00f) {
+            mBrightnessData = 0.50f
+        } else if (mBrightnessData < 0.01f) {
+            mBrightnessData = 0.01f
+        }
+        val lpa = (mContext as Activity).window.attributes
+        lpa.screenBrightness = mBrightnessData + percent
+        if (lpa.screenBrightness > 1.0f) {
+            lpa.screenBrightness = 1.0f
+        } else if (lpa.screenBrightness < 0.01f) {
+            lpa.screenBrightness = 0.01f
+        }
+        showBrightnessDialog(lpa.screenBrightness)
+        (mContext as Activity).window.attributes = lpa
+    }
+
+    /**
+     * 计算滑动距离等 调用不同的处理逻辑
+     */
+    override fun touchSurfaceMove(deltaX: Float, deltaY: Float, y: Float) {
+        var ownedDeltaY = deltaY
+        var curWidth = 0
+        var curHeight = 0
+        if (activityContext != null) {
+            curWidth =
+                if (CommonUtil.getCurrentScreenLand(activityContext as Activity)) mScreenHeight else mScreenWidth
+            curHeight =
+                if (CommonUtil.getCurrentScreenLand(activityContext as Activity)) mScreenWidth else mScreenHeight
+        }
+        if (mChangePosition) {
+            val totalTimeDuration = duration
+            //当此反馈调整的时间为 上一次调整后的值
+            val diffTimeMs = deltaX * totalTimeDuration / curWidth / mSeekRatio
+            mSeekTimePosition =
+                (mDownPosition + diffTimeMs).toInt()
+                    .toLong()
+            if (mSeekTimePosition < 0) {
+                mSeekTimePosition = 0
+            }
+            if (mSeekTimePosition > totalTimeDuration) mSeekTimePosition = totalTimeDuration
+            val seekTime = CommonUtil.stringForTime(mSeekTimePosition)
+
+            val totalTime = CommonUtil.stringForTime(totalTimeDuration)
+            val diffTimeNum = "%.1f".format(diffTimeMs / 1000).toDouble()
+            val diffTime: String = if (diffTimeNum >= 0) "+$diffTimeNum" else diffTimeNum.toString()
+            showProgressDialogWithDiffTime(
+                seekTime,
+                diffTime,
+                mSeekTimePosition,
+                totalTime,
+                totalTimeDuration
+            )
+        } else if (mChangeVolume) {
+            ownedDeltaY = -ownedDeltaY
+            val max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val deltaV = (max * ownedDeltaY * 3 / curHeight).toInt()
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume + deltaV, 0)
+            val volumePercent =
+                (mGestureDownVolume * 100 / max + ownedDeltaY * 3 * 100 / curHeight).toInt()
+            showVolumeDialog(-ownedDeltaY, volumePercent)
+        } else if (mBrightness) {
+            //原本是滑动进度绝对值大于mThreshold ， 但是太麻烦 直接改了 还有个bug 当我调整亮度 出来之后 只要软件还开着会 一直拉回去 出了软件才会好 这个效果没有在我退出界面后销毁
+            // 大概是我播放器没销毁的问题
+            if (abs(ownedDeltaY) > 8) {
+                val percent = -ownedDeltaY / curHeight
+                onBrightnessSlide(percent)
+                mDownY = y
+            }
+        }
+    }
+
+    /**
+     * 显示播放进度dialog 处理进度信息
+     */
+    private fun showProgressDialogWithDiffTime(
+        seekTime: String?,
+        diffTime: String?,
+        seekTimePosition: Long,
+        totalTime: String,
+        totalTimeDuration: Long,
+    ) {
+        if (mProgressDialog == null) {
+            val localView = LayoutInflater.from(activityContext).inflate(
+                progressDialogLayoutId, null
+            )
+            if (localView.findViewById<View>(progressDialogProgressId) is ProgressBar) {
+                mDialogProgressBar =
+                    localView.findViewById<View>(progressDialogProgressId) as ProgressBar
+                if (mDialogProgressBarDrawable != null) {
+                    mDialogProgressBar.progressDrawable = mDialogProgressBarDrawable
+                }
+            }
+            if (localView.findViewById<View>(progressDialogCurrentDurationTextId) is TextView) {
+                mDialogSeekTime = localView.findViewById<View>(
+                    progressDialogCurrentDurationTextId
+                ) as TextView
+            }
+            if (localView.findViewById<View>(progressDialogAllDurationTextId) is TextView) {
+                mDialogTotalTime = localView.findViewById<View>(
+                    progressDialogAllDurationTextId
+                ) as TextView
+            }
+            if (localView.findViewById<View>(progressDialogImageId) is ImageView) {
+                mDialogIcon = localView.findViewById<View>(progressDialogImageId) as ImageView
+            }
+            if (localView.findViewById<View>(R.id.tv_diff) is TextView) {
+                mDialogDiffTime = localView.findViewById<View>(R.id.tv_diff) as TextView
+            }
+            mProgressDialog = Dialog(activityContext, R.style.video_style_dialog_progress)
+            mProgressDialog.setContentView(localView)
+            mProgressDialog.window!!.addFlags(Window.FEATURE_ACTION_BAR)
+            mProgressDialog.window!!.addFlags(32)
+            mProgressDialog.window!!.addFlags(16)
+            mProgressDialog.window!!.setLayout(width, height)
+            if (mDialogProgressNormalColor != -11 && mDialogTotalTime != null) {
+                mDialogTotalTime.setTextColor(mDialogProgressNormalColor)
+            }
+            if (mDialogProgressHighLightColor != -11 && mDialogSeekTime != null) {
+                mDialogSeekTime.setTextColor(mDialogProgressHighLightColor)
+            }
+            val localLayoutParams = mProgressDialog.window!!.attributes
+            localLayoutParams.gravity = Gravity.TOP
+            localLayoutParams.width = width
+            localLayoutParams.height = height
+            val location = IntArray(2)
+            getLocationOnScreen(location)
+            localLayoutParams.x = location[0]
+            localLayoutParams.y = location[1]
+            mProgressDialog.window!!.attributes = localLayoutParams
+        }
+        if (!mProgressDialog.isShowing) {
+            mProgressDialog.show()
+        }
+        if (mDialogSeekTime != null) {
+            mDialogSeekTime.text = seekTime
+        }
+        if (mDialogTotalTime != null) {
+            mDialogTotalTime.text =
+                String.format(resources.getString(R.string.total_time), totalTime)
+        }
+        if (totalTimeDuration > 0) if (mDialogProgressBar != null) {
+            mDialogProgressBar.progress = (seekTimePosition * 100 / totalTimeDuration).toInt()
+        }
+        //获取当前进度 和调整后进度 获取调整进度
+        //如何实现当前需求 因为当前的滑动的方法反馈是实时的 所以我需要一个定义在头部的可修改参数 每次点击按钮时 这个值应该要重置 重置的值为按下按钮时的进度
+        //滑动时 diffTime的值为 修改的值加这个值
+        mDialogDiffTime.text =
+            String.format(resources.getString(R.string.diff_time), diffTime)
+    }
+
+    /**
+     * 根据滑动类型更新滑动类型的标记
+     */
+    override fun touchSurfaceMoveFullLogic(absDeltaX: Float, absDeltaY: Float) {
+        var curWidth = 0
+        if (activityContext != null) {
+            curWidth =
+                if (CommonUtil.getCurrentScreenLand(activityContext as Activity)) mScreenHeight else mScreenWidth
+        }
+        if (absDeltaX > mThreshold || absDeltaY > mThreshold) {
+            cancelProgressTimer()
+            if (absDeltaX >= mThreshold) {
+                //防止全屏虚拟按键
+                val screenWidth = CommonUtil.getScreenWidth(context)
+                if (abs(screenWidth - mDownX) > mSeekEndOffset) {
+                    //判断当前是否已经在修改
+                    if (mChangePosition) {
+                        //设置状态为暂停
+                        if ((mCurrentState == CURRENT_STATE_PLAYING || (mCurrentState == CURRENT_STATE_PLAYING_BUFFERING_START && mVideoStateBackUp == CURRENT_STATE_PLAYING)) && mStopOnChangeProcess) onVideoPause()
+                    }
+                    mChangePosition = true
+
+                    //这里更新视频状态为 暂停 在调整结束前隐藏 暂停和播放
+                    //1.是否需要实现进度预览的功能
+                    //2.是否需要将进度体现在进度条上？
+                    //3.需要保存当前的状态 然后在取消时 将状态恢复
+
+                    mDownPosition = currentPositionWhenPlaying
+
+                    mStartButton.visibility = INVISIBLE
+                } else {
+                    mShowVKey = true
+                }
+            } else {
+                val screenHeight = CommonUtil.getScreenHeight(context)
+                val noEnd = abs(screenHeight - mDownY) > mSeekEndOffset
+                if (mFirstTouch) {
+                    mBrightness = mDownX < curWidth * 0.5f && noEnd
+                    mFirstTouch = false
+                }
+                if (!mBrightness) {
+                    mChangeVolume = noEnd
+                    mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                }
+                mShowVKey = !noEnd
+            }
+        }
+    }
+
+    /**
+     * 视频的回调 代表当前状态的变更
+     */
+    override fun onInfo(what: Int, extra: Int) {
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            mVideoStateBackUp = mCurrentState
+            //避免在onPrepared之前就进入了buffering，导致一直loading
+            if (mHadPlay && mCurrentState != CURRENT_STATE_PREPAREING && mCurrentState > 0) setStateAndUi(
+                CURRENT_STATE_PLAYING_BUFFERING_START
+            )
+
+        } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            if (mVideoStateBackUp != -1) {
+                if (mVideoStateBackUp == CURRENT_STATE_PLAYING_BUFFERING_START) {
+                    mVideoStateBackUp = CURRENT_STATE_PLAYING
+                }
+                if (mHadPlay && (mCurrentState != CURRENT_STATE_PREPAREING) && mCurrentState > 0) setStateAndUi(
+                    mVideoStateBackUp
+                )
+                //判断当前是否正在修改进度 如果正在修改进度 不修改这个值
+                if (!mChangePosition) {
+                    mVideoStateBackUp = -1
+                }
+
+            }
+        } else if (what == gsyVideoManager.rotateInfoFlag) {
+            mRotate = extra
+            Debuger.printfLog("Video Rotate Info $extra")
+            if (mTextureView != null) mTextureView.rotation = mRotate.toFloat()
+        }
+    }
+
+    /**
+     * 设置当前的ui显示状态 但是不修改此时的视频显示状态
+     */
+    override fun setStateAndUi(state: Int) {
+        mCurrentState = state
+        if (state == CURRENT_STATE_NORMAL && isCurrentMediaListener || state == CURRENT_STATE_AUTO_COMPLETE || state == CURRENT_STATE_ERROR) {
+            mHadPrepared = false
+        }
+        when (mCurrentState) {
+            CURRENT_STATE_NORMAL -> {
+                if (isCurrentMediaListener) {
+                    Debuger.printfLog("${this.hashCode()}------------------------------ dismiss CURRENT_STATE_NORMAL")
+                    cancelProgressTimer()
+                    gsyVideoManager.releaseMediaPlayer()
+                    releasePauseCover()
+                    mBufferPoint = 0
+                    mSaveChangeViewTIme = 0
+                    if (mAudioManager != null) {
+                        //mAudioManager.abandonAudioFocus(onAudioFocusChangeListener)
+                        val audioFocusRequest =
+                            AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                                .setOnAudioFocusChangeListener(onAudioFocusChangeListener).build()
+                        mAudioManager.abandonAudioFocusRequest(audioFocusRequest)
+                    }
+                }
+                releaseNetWorkState()
+            }
+            CURRENT_STATE_PREPAREING -> resetProgressAndTime()
+            CURRENT_STATE_PLAYING -> if (isCurrentMediaListener) {
+                Debuger.printfLog("${this.hashCode()}------------------------------ CURRENT_STATE_PLAYING")
+                startProgressTimer()
+            }
+            CURRENT_STATE_PAUSE -> {
+                Debuger.printfLog("${this.hashCode()}------------------------------ CURRENT_STATE_PAUSE")
+                startProgressTimer()
+            }
+            CURRENT_STATE_ERROR -> if (isCurrentMediaListener) {
+                gsyVideoManager.releaseMediaPlayer()
+            }
+            CURRENT_STATE_AUTO_COMPLETE -> {
+                Debuger.printfLog("${this.hashCode()}------------------------------ dismiss CURRENT_STATE_AUTO_COMPLETE")
+                cancelProgressTimer()
+                if (mProgressBar != null) {
+                    mProgressBar.progress = 100
+                }
+                if (mCurrentTimeTextView != null && mTotalTimeTextView != null) {
+                    mCurrentTimeTextView.text = mTotalTimeTextView.text
+                }
+                if (mBottomProgressBar != null) {
+                    mBottomProgressBar.progress = 100
+                }
+            }
+        }
+        resolveUIState(state)
+        if (mGsyStateUiListener != null) {
+            mGsyStateUiListener.onStateChanged(state)
+        }
+    }
+
+
+    /**
+     * 获取当前的播放进度
+     */
+    override fun getCurrentPositionWhenPlaying(): Long {
+        var position: Long = 0
+        if (mCurrentState == CURRENT_STATE_PLAYING || mCurrentState == CURRENT_STATE_PAUSE || mCurrentState == CURRENT_STATE_PLAYING_BUFFERING_START) {
+            position = try {
+                gsyVideoManager.currentPosition
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return 0
+            }
+        }
+        return if (position == 0L && mCurrentPosition > 0) {
+            mCurrentPosition
+        } else position
+    }
+
+    /**
+     * 手指 初次接触到屏幕 时触发 相当于初始化
+     */
+    override fun touchSurfaceDown(x: Float, y: Float) {
+        mTouchingProgressBar = true
+        mDownX = x
+        mDownY = y
+        mMoveY = 0f
+        mChangeVolume = false
+        mChangePosition = false
+        mShowVKey = false
+        mBrightness = false
+        mFirstTouch = true
+
+        //记录当前的状态 该值只在移动进度条时存储 当当前状态为正在加载 不修改此值
+        if (mCurrentState != CURRENT_STATE_PLAYING_BUFFERING_START) {
+            mVideoStateBackUp = mCurrentState
+        }
+
+    }
+
+    /**
+     * 手指 离开屏幕处理
+     */
+    override fun touchSurfaceUp() {
+        if (mChangePosition) {
+            val duration = duration
+            val progress = mSeekTimePosition * 100 / if (duration == 0L) 1 else duration
+            if (mBottomProgressBar != null) mBottomProgressBar.progress = progress.toInt()
+        }
+        mTouchingProgressBar = false
+        dismissProgressDialog()
+        dismissVolumeDialog()
+        dismissBrightnessDialog()
+        if (mChangePosition && (mCurrentState == CURRENT_STATE_PLAYING || mCurrentState == CURRENT_STATE_PAUSE || mCurrentState == CURRENT_STATE_PLAYING_BUFFERING_START)) {
+
+            //恢复视频状态
+            if (mVideoStateBackUp == CURRENT_STATE_PLAYING) {
+                videoPlayUnSetUi()
+            } else if (mVideoStateBackUp == CURRENT_STATE_PAUSE) {
+                videoPauseUnSetUi()
+            }
+
+            //将是否正在修改进度改为false
+            mChangePosition = false
+            try {
+                //如果是 m3u8 可能会需要这个
+                //if(mSeekTimePosition == 0) {
+                //    mSeekTimePosition = 1;
+                //}
+                gsyVideoManager.seekTo(mSeekTimePosition)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+            val duration = duration
+            val progress = mSeekTimePosition * 100 / if (duration == 0L) 1 else duration
+            if (mProgressBar != null) {
+                mProgressBar.progress = progress.toInt()
+            }
+            if (mVideoAllCallBack != null && isCurrentMediaListener) {
+                Debuger.printfLog("onTouchScreenSeekPosition")
+                mVideoAllCallBack.onTouchScreenSeekPosition(mOriginUrl, mTitle, this)
+            }
+
+
+        } else if (mBrightness) {
+            if (mVideoAllCallBack != null && isCurrentMediaListener) {
+                Debuger.printfLog("onTouchScreenSeekLight")
+                mVideoAllCallBack.onTouchScreenSeekLight(mOriginUrl, mTitle, this)
+            }
+        } else if (mChangeVolume) {
+            if (mVideoAllCallBack != null && isCurrentMediaListener) {
+                Debuger.printfLog("onTouchScreenSeekVolume")
+                mVideoAllCallBack.onTouchScreenSeekVolume(mOriginUrl, mTitle, this)
+            }
+        }
+    }
+
+    /**
+     * 触摸滑动业务逻辑
+     */
+    override fun onTouch(v: View, event: MotionEvent): Boolean {
+        val id = v.id
+        val x = event.x
+        val y = event.y
+        if (mIfCurrentIsFullscreen && mLockCurScreen && mNeedLockFull) {
+            onClickUiToggle(event)
+            startDismissControlViewTimer()
+            return true
+        }
+        if (id == R.id.fullscreen) {
+            return false
+        }
+        if (id == R.id.surface_container) {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> touchSurfaceDown(x, y)
+                MotionEvent.ACTION_MOVE -> {
+                    val deltaX = x - mDownX
+                    val deltaY = y - mDownY
+                    val absDeltaX = abs(deltaX)
+                    val absDeltaY = abs(deltaY)
+                    if (mIfCurrentIsFullscreen && mIsTouchWigetFull || mIsTouchWiget && !mIfCurrentIsFullscreen) {
+                        if (!mChangePosition && !mChangeVolume && !mBrightness) {
+                            touchSurfaceMoveFullLogic(absDeltaX, absDeltaY)
+                        }
+                    }
+
+                    touchSurfaceMove(deltaX, deltaY, y)
+                }
+                MotionEvent.ACTION_UP -> {
+                    startDismissControlViewTimer()
+                    touchSurfaceUp()
+                    Debuger.printfLog(
+                        "${this.hashCode()}------------------------------ surface_container ACTION_UP"
+                    )
+                    startProgressTimer()
+
+                    //不要和隐藏虚拟按键后，滑出虚拟按键冲突
+                    if (mHideKey && mShowVKey) {
+                        return true
+                    }
+                }
+            }
+            gestureDetector.onTouchEvent(event)
+        } else if (id == R.id.progress) {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    cancelDismissControlViewTimer()
+                    cancelProgressTimer()
+                    var vpdown = parent
+                    while (vpdown != null) {
+                        vpdown.requestDisallowInterceptTouchEvent(true)
+                        vpdown = vpdown.parent
+                    }
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    cancelProgressTimer()
+                    var vpdown = parent
+                    while (vpdown != null) {
+                        vpdown.requestDisallowInterceptTouchEvent(true)
+                        vpdown = vpdown.parent
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    startDismissControlViewTimer()
+                    Debuger.printfLog(
+                        "${this.hashCode()}----------------------------- progress ACTION_UP"
+                    )
+                    startProgressTimer()
+                    var vpup = parent
+                    while (vpup != null) {
+                        vpup.requestDisallowInterceptTouchEvent(false)
+                        vpup = vpup.parent
+                    }
+                    mBrightnessData = -1f
+                }
+            }
+        }
+        return false
+    }
+
+    /**
+     * 获取音量dialog
+     */
+    override fun getVolumeLayoutId(): Int {
+        return R.layout.video_volume_dialog
+    }
+
+    /**
+     * 获取音量进度条对象
+     */
+    override fun getVolumeProgressId(): Int {
+        return R.id.volume_progressbar
+    }
+
+    /**
+     * 获取亮度dialog
+     */
+    override fun getBrightnessLayoutId(): Int {
+        return R.layout.video_brightness_dialog
+    }
+
+    /**
+     * 获取拖动进度dialog对象
+     */
+    override fun getProgressDialogLayoutId(): Int {
+        return R.layout.video_progress_dialog_diff
+    }
+
+
+    override fun changeUiToPreparingShow() {
+        Debuger.printfLog("changeUiToPreparingShow")
+
+        setViewShowState(mTopContainer, INVISIBLE)
+        setViewShowState(mBottomContainer, INVISIBLE)
+        setViewShowState(mStartButton, INVISIBLE)
+        setViewShowState(mLoadingProgressBar, VISIBLE)
+        setViewShowState(mThumbImageViewLayout, INVISIBLE)
+        setViewShowState(mBottomProgressBar, INVISIBLE)
+        setViewShowState(mLockScreen, GONE)
+
+        if (mLoadingProgressBar is ENDownloadView) {
+            val enDownloadView = mLoadingProgressBar as ENDownloadView
+            if (enDownloadView.currentState == ENDownloadView.STATE_PRE) {
+                (mLoadingProgressBar as ENDownloadView).start()
             }
         }
     }
@@ -205,11 +865,10 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
         gsyVideoManager.setListener(this)
         gsyVideoManager.playTag = mPlayTag
         gsyVideoManager.playPosition = mPlayPosition
-        mAudioManager.requestAudioFocus(
-            onAudioFocusChangeListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-        )
+        val audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            .setOnAudioFocusChangeListener(onAudioFocusChangeListener).build()
+        mAudioManager.requestAudioFocus(audioFocusRequest)
+
         try {
             if (mContext is Activity) {
                 (mContext as Activity).window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -260,10 +919,133 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
                 disableDialog(getShowDialog())
                 resolveUIState(CURRENT_STATE_PLAYING)
             }
+            R.id.lottie_start -> {
+                println(mLottieStart.frame)
+                if (mLottieStart.frame > 0) {
+                    playStopLottieView()
+                } else {
+                    playStartLottieView()
+                }
+
+            }
         }
 
         super.onClick(v)
     }
+
+    private fun playStartLottieView() {
+        releaseAnimatorUpdateListener()
+        valueAnimator = ValueAnimator.ofFloat(0f, 1.0f)
+        animatorUpdateListener =
+            ValueAnimator.AnimatorUpdateListener { animation ->
+                mLottieStart.progress = animation.animatedValue as Float
+            }
+        valueAnimator.addUpdateListener(animatorUpdateListener)
+        valueAnimator.start()
+    }
+
+    private fun playStopLottieView() {
+        releaseAnimatorUpdateListener()
+        valueAnimator = ValueAnimator.ofFloat(1f, 0f)
+        animatorUpdateListener = ValueAnimator.AnimatorUpdateListener { animation ->
+            mLottieStart.progress =
+                animation.animatedValue as Float
+        }
+        valueAnimator.addUpdateListener(animatorUpdateListener)
+        valueAnimator.start()
+    }
+
+    private fun releaseAnimatorUpdateListener() {
+        valueAnimator.removeUpdateListener(animatorUpdateListener)
+    }
+
+    private fun videoPauseUnSetUi() {
+        try {
+            onVideoPause()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        if (mVideoAllCallBack != null && isCurrentMediaListener) {
+            if (mIfCurrentIsFullscreen) {
+                Debuger.printfLog("onClickStopFullscreen")
+                mVideoAllCallBack.onClickStopFullscreen(mOriginUrl, mTitle, this)
+            } else {
+                Debuger.printfLog("onClickStop")
+                mVideoAllCallBack.onClickStop(mOriginUrl, mTitle, this)
+            }
+        }
+    }
+
+    private fun videoPause() {
+        try {
+            onVideoPause()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        setStateAndUi(CURRENT_STATE_PAUSE)
+        if (mVideoAllCallBack != null && isCurrentMediaListener) {
+            if (mIfCurrentIsFullscreen) {
+                Debuger.printfLog("onClickStopFullscreen")
+                mVideoAllCallBack.onClickStopFullscreen(mOriginUrl, mTitle, this)
+            } else {
+                Debuger.printfLog("onClickStop")
+                mVideoAllCallBack.onClickStop(mOriginUrl, mTitle, this)
+            }
+        }
+    }
+
+    private fun videoPlayUnSetUi() {
+        if (mVideoAllCallBack != null && isCurrentMediaListener) {
+            if (mIfCurrentIsFullscreen) {
+                Debuger.printfLog("onClickResumeFullscreen")
+                mVideoAllCallBack.onClickResumeFullscreen(mOriginUrl, mTitle, this)
+            } else {
+                Debuger.printfLog("onClickResume")
+                mVideoAllCallBack.onClickResume(mOriginUrl, mTitle, this)
+            }
+        }
+        if (!mHadPlay && !mStartAfterPrepared) {
+            startAfterPrepared()
+        }
+        try {
+            gsyVideoManager.start()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun videoPlay() {
+        videoPlayUnSetUi()
+        setStateAndUi(CURRENT_STATE_PLAYING)
+    }
+
+
+    override fun clickStartIcon() {
+        if (TextUtils.isEmpty(mUrl)) {
+            Debuger.printfError("********" + resources.getString(R.string.no_url))
+            //Toast.makeText(getActivityContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT).show();
+            return
+        }
+        when (mCurrentState) {
+            CURRENT_STATE_NORMAL, CURRENT_STATE_ERROR -> {
+                if (isShowNetConfirm) {
+                    showWifiDialog()
+                    return
+                }
+                startButtonLogic()
+            }
+            CURRENT_STATE_PLAYING -> {
+                videoPause()
+            }
+            CURRENT_STATE_PAUSE -> {
+                videoPlay()
+            }
+            CURRENT_STATE_AUTO_COMPLETE -> {
+                startButtonLogic()
+            }
+        }
+    }
+
 
     /**
      * 显示对话弹出框后 控件一直存在
@@ -308,21 +1090,30 @@ class SmovVideoView : NormalGSYVideoPlayer, Player.Listener,
     override fun startWindowFullscreen(
         context: Context,
         actionBar: Boolean,
-        statusBar: Boolean
+        statusBar: Boolean,
     ): GSYBaseVideoPlayer {
         val gsyBaseVideoPlayer = super.startWindowFullscreen(context, actionBar, statusBar)
         val gsyExoSubTitleVideoView = gsyBaseVideoPlayer as SmovVideoView
 
-        (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager).addTextOutputPlaying(gsyExoSubTitleVideoView)
+        (GSYExoSubTitleVideoManager.instance().player as GSYExoSubTitlePlayerManager).addTextOutputPlaying(
+            gsyExoSubTitleVideoView
+        )
 
         gsyBaseVideoPlayer.setSubtitleViewTextSize(24f)
 
+        gsyBaseVideoPlayer.mLockScreen.visibility = VISIBLE
+
         gsyBaseVideoPlayer.mBottomFunction.visibility = VISIBLE
         gsyBaseVideoPlayer.mBottomContainer.setPadding(20, 0, 10, 0)
+
         return gsyBaseVideoPlayer
     }
 
-    override fun resolveNormalVideoShow(oldF: View, vp: ViewGroup, gsyVideoPlayer: GSYVideoPlayer) {
+    override fun resolveNormalVideoShow(
+        oldF: View,
+        vp: ViewGroup,
+        gsyVideoPlayer: GSYVideoPlayer,
+    ) {
         super.resolveNormalVideoShow(oldF, vp, gsyVideoPlayer)
 
         val gsyExoSubTitleVideoView = gsyVideoPlayer as SmovVideoView
