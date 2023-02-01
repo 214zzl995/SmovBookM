@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -15,10 +16,15 @@ import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var okHttpClient: OkHttpClient
 
     companion object {
         const val splashFadeDurationMillis = 300
@@ -60,7 +66,9 @@ class MainActivity : AppCompatActivity() {
                 CompositionLocalProvider(
                     LocalBackPressedDispatcher provides this.onBackPressedDispatcher
                 ) {
-                    SmovApp(modifier = Modifier.autoCloseKeyboard(decorView))
+                    CompositionLocalProvider(LocalOkHttpClient provides okHttpClient) {
+                        SmovApp(modifier = Modifier.autoCloseKeyboard(decorView))
+                    }
                 }
             }
             return@setKeepOnScreenCondition false
@@ -86,3 +94,5 @@ class MainActivity : AppCompatActivity() {
         GSYExoSubTitleVideoManager.releaseAllVideos()
     }
 }
+
+val LocalOkHttpClient = staticCompositionLocalOf { OkHttpClient.Builder().build() }

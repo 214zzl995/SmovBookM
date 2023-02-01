@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -16,6 +17,7 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.animation.addListener
 import coil.load
 import com.airbnb.lottie.LottieAnimationView
@@ -88,6 +90,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
     private val mStopOnChangeProcess: Boolean = true
 
 
+    @RequiresApi(Build.VERSION_CODES.R)
     fun smovInit(title: String, url: String, subTitle: String?, cover: String) {
         this.sTitle = title
         this.sUrl = url
@@ -132,12 +135,14 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.R)
     constructor(context: Context?) : super(context) {
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
+    @RequiresApi(Build.VERSION_CODES.R)
     constructor(context: Context?, title: String, url: String, subTitle: String?) : super(context) {
         this.sTitle = title
         this.sUrl = url
@@ -892,6 +897,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         setStateAndUi(CURRENT_STATE_PREPAREING)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onClick(v: View) {
         when (v.id) {
             R.id.fullscreen -> {
@@ -1109,6 +1115,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         return gsyBaseVideoPlayer
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun resolveNormalVideoShow(
         oldF: View,
         vp: ViewGroup,
@@ -1155,6 +1162,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onPrepared(url: String, vararg objects: Any) {
         Debuger.printfError("***** onPrepared **** " + objects[0])
         Debuger.printfError("***** onPrepared **** " + objects[1])

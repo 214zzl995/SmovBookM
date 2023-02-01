@@ -1,5 +1,6 @@
 package com.leri.smovbook.di
 
+import coil.util.CoilUtils
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.Api
 import com.leri.smovbook.network.RequestInterceptor
@@ -11,6 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -22,7 +24,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(smovDataStore: SmovDataStore): OkHttpClient {
+        //需要实现完整的HTTP/2 需要实现 ALPN
         return OkHttpClient.Builder()
+            .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
             .addInterceptor(RequestInterceptor(smovDataStore))
             .ignoreAllSSLErrors()
             .build()

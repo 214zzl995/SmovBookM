@@ -26,13 +26,16 @@ import androidx.compose.material3.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.ui.LocalOkHttpClient
 
 @Composable
-fun SmovCard(
+fun SmovCard (
     smov: Smov,
     mainUrl: String,
     openSmovDetail: (Long, String) -> Unit,
@@ -65,6 +68,12 @@ fun SmovCard(
                     }
 
                 }) {
+                val url =
+                    "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg"
+
+                //这里要取巨gb顶部的一个值 我麻了
+                val imageLoader =
+                    ImageLoader.Builder(context).okHttpClient(LocalOkHttpClient.current).build()
 
                 SubcomposeAsyncImage(
                     modifier = Modifier
@@ -72,7 +81,9 @@ fun SmovCard(
                         .defaultMinSize(minHeight = 100.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
-                    model = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
+                    model = ImageRequest
+                        .Builder(LocalContext.current).crossfade(true).data(url).build(),
+                    imageLoader = imageLoader,
                     contentScale = ContentScale.FillWidth,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
