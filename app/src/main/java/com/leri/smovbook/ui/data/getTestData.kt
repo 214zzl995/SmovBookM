@@ -1,8 +1,6 @@
 package com.leri.smovbook.ui.data
 
-import com.leri.smovbook.models.entities.Actor
-import com.leri.smovbook.models.entities.Smov
-import com.leri.smovbook.models.entities.Tag
+import com.leri.smovbook.models.entities.*
 import com.leri.smovbook.ui.home.HomeUiState
 
 val testData = mutableListOf(
@@ -30,7 +28,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -58,7 +59,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -86,7 +90,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -114,7 +121,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -142,7 +152,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -170,7 +183,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -198,7 +214,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -226,7 +245,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -254,7 +276,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -282,7 +307,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -310,7 +338,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     ),
@@ -338,7 +369,10 @@ val testData = mutableListOf(
         listOf(Tag(1, "test")),
         listOf(Actor(1, "test")),
         isch = false,
-        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        ImageFile(
+            "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+            Size(1920, 1080)
+        ),
         "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
         listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
     )
@@ -368,7 +402,10 @@ val testDataSin = Smov(
     listOf(Tag(1, "test"), Tag(2, "test")),
     listOf(Actor(1, "test"), Actor(2, "test")),
     isch = false,
-    "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+    ImageFile(
+        "https://z4a.net/images/2022/04/16/wallhaven-1kq1jg.jpg",
+        Size(1920, 1080)
+    ),
     "https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg",
     listOf("https://pc-index-skin.cdn.bcebos.com/616ca57261c714fceccb1717f6911516.jpg"),
 )

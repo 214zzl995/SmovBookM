@@ -4,10 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.leri.smovbook.models.entities.Actor
-import com.leri.smovbook.models.entities.Smov
-import com.leri.smovbook.models.entities.Tag
-import com.leri.smovbook.ui.data.testDataSin
+import com.leri.smovbook.models.entities.*
 
 
 @Composable
@@ -60,7 +57,10 @@ private val initialSmov = Smov(
     listOf(),
     listOf(),
     isch = false,
-    "",
+    ImageFile(
+        "",
+        Size(0, 0)
+    ),
     "",
     listOf(),
 )

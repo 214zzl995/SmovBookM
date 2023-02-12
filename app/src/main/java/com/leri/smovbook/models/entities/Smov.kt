@@ -61,7 +61,7 @@ data class Smov(
     var tags: List<Tag> = listOf(),
     var actors: List<Actor> = listOf(),
     var isch: Boolean,
-    var thumbs_img: String,
+    var thumbs_img: ImageFile,
     var main_img: String,
     var detail_img: List<String> = listOf(),
     var sub_title: List<String> = listOf()
