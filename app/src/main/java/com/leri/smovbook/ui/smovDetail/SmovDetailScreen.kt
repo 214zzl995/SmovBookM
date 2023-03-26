@@ -2,7 +2,9 @@ package com.leri.smovbook.ui.smovDetail
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
@@ -43,6 +45,7 @@ import com.leri.smovbook.ui.player.SmovVideoView
 
 
 //实现图片轮播 暂时还没有理想的方案
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovDetailScreen(
@@ -201,10 +204,10 @@ fun VideoDetail(smov: Smov) {
             ) {
 
                 NameValueAlone(name = "发行时间", value = smov.release_time)
-                NameValueAlone(name = "制作", value = smov.maker)
-                NameValueAlone(name = "导演", value = smov.director)
-                NameValueAlone(name = "出版社", value = smov.publisher)
-                NameValueAlone(name = "系列", value = smov.serie)
+                NameValueAlone(name = "制作", value = smov.makers.name)
+                NameValueAlone(name = "导演", value = smov.director.name)
+                NameValueAlone(name = "出版社", value = smov.publisher.name)
+                NameValueAlone(name = "系列", value = smov.series.name)
             }
         }
     }
@@ -271,6 +274,7 @@ private val valueStyle = TextStyle(
 )
 
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun rememberVideoPlayerState(
     title: String, url: String, subTitle: String?,
@@ -282,6 +286,7 @@ fun rememberVideoPlayerState(
     return rememberSaveable(context,
         coroutineScope,
         saver = object : Saver<SmovVideoView, SmovVideoState> {
+            @RequiresApi(Build.VERSION_CODES.R)
             override fun restore(value: SmovVideoState): SmovVideoView {
                 return SmovVideoView(
                     context = context,

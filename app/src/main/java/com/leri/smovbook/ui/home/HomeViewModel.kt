@@ -112,18 +112,17 @@ class HomeViewModel @Inject constructor(
 
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
-    val serverState: State<ServerState> =
-        mutableStateOf(ServerState {
-            changeServerUrl(it)
-        })
+    val serverState: State<ServerState> = mutableStateOf(ServerState { changeServerUrl(it) })
 
     init {
         Timber.d("Injection HomeViewModel")
-        viewModelScope.launch(Dispatchers.IO) {
-            newSmovFlow.collectLatest {
-                smovsState.value.smovs.addAll(it)
-            }
-        }
+
+        //Dispatchers.Main：协程在主线程上运行，这个值通常用于更新 UI 或与用户交互。
+        //Dispatchers.IO：协程在 I/O 线程池上运行，这个值通常用于执行网络请求、读写文件等 I/O 操作。
+        //Dispatchers.Default：协程在默认的线程池上运行，这个值通常用于执行 CPU 密集型的计算任务。
+        //Dispatchers.Unconfined：协程在不受限的线程上运行，这个值通常用于测试或调试目的，不应在生产代码中使用。
+
+        //如果在 ViewModel 中执行长时间运行的 IO 操作，最好使用 withContext(Dispatchers.IO) 而不是 viewModelScope.launch(Dispatchers.IO) 来执行这些操作。因为 viewModelScope.launch 返回一个 Job 对象，该对象不会等待执行的操作完成，而是立即返回，因此您需要自己手动控制操作完成后再读取状态。而 withContext 函数可以将 IO 操作包装在一个协程中，并在操作完成后自动返回结果，更加方便。
 
         viewModelScope.launch(Dispatchers.IO) {
             smovRepository.getServerState()
@@ -136,6 +135,12 @@ class HomeViewModel @Inject constructor(
                 .collectLatest {
                     serverState.value.update(it)
                 }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            newSmovFlow.collectLatest {
+                smovsState.value.smovs.addAll(it)
+            }
         }
     }
 

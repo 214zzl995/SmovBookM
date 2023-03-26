@@ -11,8 +11,8 @@ import androidx.room.Entity
  * @param name 名称
  * @param title 标题
  * @param path 路径
- * @param realname 文件名
- * @param len 大小
+ * @param filename 文件名
+ * @param size 大小
  * @param created 创建时间
  * @param modified 修改时间
  * @param extension 后缀名
@@ -40,46 +40,42 @@ import androidx.room.Entity
 data class Smov(
     var id: Int = 0,
     var name: String,
+    var filename: String,
+    var seekname: String,
     var title: String,
     var path: String,
-    var realname: String,
-    var len: Long,
+    var size: Long,
     var created: Long,
     var modified: Long,
     var extension: String,
-    var format: String,
     var release_time: String,
     var duration: Int,
-    var maker: String,
-    var maker_id: Int,
-    var publisher: String,
-    var publisher_id: Int,
-    var serie: String,
-    var serie_id: Int,
-    var director: String,
-    var director_id: Int,
+    var makers: SmovAttr,
+    var publisher: SmovAttr,
+    var series: SmovAttr,
+    var director: SmovAttr,
     var tags: List<Tag> = listOf(),
     var actors: List<Actor> = listOf(),
-    var isch: Boolean,
+    var is_ch_sub: Boolean,
     var thumbs_img: ImageFile,
     var main_img: String,
     var detail_img: List<String> = listOf(),
-    var sub_title: List<String> = listOf()
+    var subtitle: List<String> = listOf()
 ) {
 
     fun getThumbsImg(url: String): String {
-        return "http://$url/smovbook/file/${this.realname}/img/thumbs_${this.name}.jpg"
+        return "http://$url/smovbook/file/${this.filename}/img/thumbs_${this.name}.jpg"
     }
 
     fun getVideoUrl(url: String): String {
-        return "http://$url/smovbook/file/${this.realname}/${this.realname}.${this.extension}"
+        return "http://$url/smovbook/file/${this.filename}/${this.filename}.${this.extension}"
     }
 
     fun getDefaultSub(url: String): String? {
-        return if (this.sub_title.isEmpty()) {
+        return if (this.subtitle.isEmpty()) {
             null
         } else {
-            "http://$url/smovbook/file/${this.realname}/${this.sub_title.get(0)}"
+            "http://$url/smovbook/file/${this.filename}/${this.subtitle.get(0)}"
         }
     }
 

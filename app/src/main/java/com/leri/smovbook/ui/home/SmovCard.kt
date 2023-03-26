@@ -69,7 +69,7 @@ fun SmovCard (
 
                 }) {
                 val url =
-                    "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg"
+                    "http://$mainUrl/smovbook/file/${smov.filename}/img/thumbs_${smov.name}.jpg"
 
                 //这里要取巨gb顶部的一个值 我麻了
                 val imageLoader =
@@ -151,12 +151,12 @@ fun SmovCard (
                                 val intent = Intent(Intent.ACTION_VIEW)
                                 val type = "video/${smov.extension}"
 
-                                intent.setPackage("com.mxtech.videoplayer.ad")
+                                intent.setPackage("com.mxtech.videoplayer.pro")
                                 intent.putExtra("decode_mode", "4")
                                 intent.putExtra("title", smov.name)
                                 println(type)
                                 val uri: Uri =
-                                    Uri.parse("http://$mainUrl/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}")
+                                    Uri.parse("http://$mainUrl/smovbook/file/${smov.filename}/${smov.filename}.${smov.extension}")
                                 intent.setDataAndType(uri, type)
 
                                 val title = "打开视频"

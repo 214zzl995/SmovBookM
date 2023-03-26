@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.google.mlkit.vision.barcode.common.Barcode
 
 @Composable
 fun BarCodeScannScreen(
@@ -44,7 +43,7 @@ fun BarCodeScannScreen(
                     disableScan = { scanEnable = false }
                 ) { result ->
                     if (result.size == 1) {
-                        changeServer(result[0])
+                        changeServer(result[0].replace("http://", ""))
                         navigateUp()
                     } else {
                         scanEnable = false
@@ -61,7 +60,7 @@ fun BarCodeScannScreen(
         enter = fadeIn(), exit = fadeOut()
     ) {
         UrlSelect(barcodes = barcodes, changeServer = {
-            changeServer(it)
+            changeServer(it.replace("http://", ""))
             navigateUp()
         })
     }
