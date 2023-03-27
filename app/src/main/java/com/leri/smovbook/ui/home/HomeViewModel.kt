@@ -112,7 +112,7 @@ class HomeViewModel @Inject constructor(
 
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
-    val serverState: State<ServerState> = mutableStateOf(ServerState { changeServerUrl(it) })
+    val serverState: MutableStateFlow<ServerState> = MutableStateFlow(ServerState { changeServerUrl(it) })
 
     init {
         Timber.d("Injection HomeViewModel")

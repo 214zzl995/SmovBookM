@@ -31,7 +31,7 @@ fun HomeRoute(
     val uiState by homeViewModel.smovsState
     val detailOpen by homeViewModel.detailOpen
     val pageState by homeViewModel.pageState
-    val serverState by homeViewModel.serverState
+    val serverState by homeViewModel.serverState.collectAsState()
 
     HomeRoute(
         scaffoldState = scaffoldState,
