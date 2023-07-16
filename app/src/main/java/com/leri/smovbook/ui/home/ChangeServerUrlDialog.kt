@@ -26,8 +26,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.clearFocusOnKeyboardDismiss
-import com.leri.smovbook.ui.theme.ChangeServerUrlBackground
+import com.leri.smovbook.ui.util.clearFocusOnKeyboardDismiss
+import com.leri.smovbook.ui.theme.AddServerUrlBackground
 
 
 @Composable
@@ -46,7 +46,7 @@ fun ChangeServerUrlDialog(
         visible = visible,
         enter = fadeIn(), exit = fadeOut()
     ) {
-        Surface(color = ChangeServerUrlBackground) {
+        Surface(color = AddServerUrlBackground) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -252,7 +252,7 @@ private fun AddUrlDialogOperate(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun AddUrlInput(
     editInputVisible: Boolean,
@@ -289,7 +289,7 @@ private fun AddUrlInput(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun AddUrlInputNoneCheck(
     editInputVisible: Boolean,

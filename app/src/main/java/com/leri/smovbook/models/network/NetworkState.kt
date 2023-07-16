@@ -30,3 +30,13 @@ fun NetworkState.isLoading(): Boolean {
     return this == NetworkState.LOADING
 }
 
+@Composable
+fun NetworkState.isError(): Boolean {
+    return this == NetworkState.ERROR
+}
+
+@Composable
+fun NetworkState.isSuccess(): Boolean {
+    return this == NetworkState.SUCCESS
+}
+

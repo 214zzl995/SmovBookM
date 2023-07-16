@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leri.smovbook.ui.theme.ChangeServerUrlBackground
+import com.leri.smovbook.ui.theme.AddServerUrlBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,7 +17,7 @@ fun UrlSelect(
     barcodes: List<String>,
     changeServer: (String) -> Unit,
 ) {
-    Surface(color = ChangeServerUrlBackground) {
+    Surface(color = AddServerUrlBackground) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

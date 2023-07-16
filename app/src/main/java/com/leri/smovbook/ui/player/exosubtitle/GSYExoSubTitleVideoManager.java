@@ -87,7 +87,7 @@ public class GSYExoSubTitleVideoManager extends GSYVideoBaseManager {
     @SuppressWarnings("ResourceType")
     public static boolean backFromWindowFull(Context context) {
         boolean backFrom = false;
-        ViewGroup vp = (ViewGroup) (CommonUtil.scanForActivity(context)).findViewById(Window.ID_ANDROID_CONTENT);
+        ViewGroup vp = (CommonUtil.scanForActivity(context)).findViewById(Window.ID_ANDROID_CONTENT);
         View oldF = vp.findViewById(FULLSCREEN_ID);
         if (oldF != null) {
             backFrom = true;

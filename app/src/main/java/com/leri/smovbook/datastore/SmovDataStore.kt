@@ -1,5 +1,6 @@
 package com.leri.smovbook.datastore
 
+import com.leri.smovbook.ui.home.ServerState
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Singleton
 
@@ -13,6 +14,8 @@ interface SmovDataStore {
     val serverPort: Flow<Int>
 
     val historyUrl: Flow<MutableList<String>>
+
+    val serviceState:Flow<ServerState>
 
     suspend fun changeServerUrl(url: String)
 

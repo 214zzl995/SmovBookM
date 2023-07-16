@@ -5,12 +5,9 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,13 +26,13 @@ fun HomeRoute(
     homeViewModel: HomeViewModel,
     openBarScann: () -> Unit,
     currentRoute: String,
-    openSmovDetail: (Long,String) -> Unit,
+    openSmovDetail: (Long, String) -> Unit,
 ) {
     val uiState by homeViewModel.smovsState
     val detailOpen by homeViewModel.detailOpen
-    val serverUrl by homeViewModel.smovServerUrl.collectAsState()
-    val historyUrl by homeViewModel.smovHistoryUrl.collectAsState(initial = mutableListOf())
-    val loadingState by homeViewModel.smovLoadingState
+    val pageState by homeViewModel.pageState
+    val serverState by homeViewModel.serverState.collectAsState()
+
     HomeRoute(
         scaffoldState = scaffoldState,
         uiState = uiState.toUiState(),
@@ -44,12 +41,10 @@ fun HomeRoute(
         onRefreshSmovData = { homeViewModel.refreshData() },
         currentRoute = currentRoute,
         detailOpen = detailOpen,
-        serverUrl = serverUrl,
-        historyUrl = historyUrl,
-        loadingState = loadingState,
+        pageState = pageState,
         fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() },
-        changeServerUrl = { homeViewModel.changeServerUrl(it) },
-        openSmovDetail = openSmovDetail
+        openSmovDetail = openSmovDetail,
+        serverState = serverState
     )
 
 }
@@ -65,12 +60,10 @@ fun HomeRoute(
     onRefreshSmovData: () -> Unit,
     currentRoute: String,
     detailOpen: DrawerValue,
-    serverUrl: String,
-    historyUrl: MutableList<String>,
-    loadingState: NetworkState,
+    pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
-    changeServerUrl: (String) -> Unit,
-    openSmovDetail: (Long,String) -> Unit,
+    openSmovDetail: (Long, String) -> Unit,
+    serverState: ServerState,
 ) {
 
     val context = LocalContext.current
@@ -123,12 +116,10 @@ fun HomeRoute(
         drawerState = drawerState,
         currentRoute = currentRoute,
         closeDrawer = { coroutineScope.launch { drawerState.close() } },
-        historyUrl = historyUrl,
-        serverUrl = serverUrl,
         modifier = Modifier
             .statusBarsPadding()
             .navigationBarsPadding(),
-        changeServerUrl = changeServerUrl
+        serverState = serverState
     ) {
         HomeScreen(
             modifier = Modifier
@@ -154,11 +145,10 @@ fun HomeRoute(
             },
             onRefreshSmovData = onRefreshSmovData,
             openDrawer = { coroutineScope.launch { drawerState.open() } },
-            serverUrl = serverUrl,
-            loadingState = loadingState,
+            pageState = pageState,
             fetchNextSmovPage = fetchNextSmovPage,
-            changeServerUrl = changeServerUrl,
-            openSmovDetail = openSmovDetail
+            openSmovDetail = openSmovDetail,
+            serverState  = serverState
         )
     }
 
@@ -173,7 +163,7 @@ private enum class HomeScreenType {
 @Composable
 private fun getHomeScreenType(
     uiState: HomeUiState,
-    detailOpen: DrawerValue
+    detailOpen: DrawerValue,
 ): HomeScreenType =
     when (uiState) {
         is HomeUiState.HasData -> {

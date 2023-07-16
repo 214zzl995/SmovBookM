@@ -1,18 +1,24 @@
 package com.leri.smovbook.ui.home
 
-import androidx.compose.foundation.*
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.*
 import androidx.compose.material.Divider
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -21,22 +27,20 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
-import com.leri.smovbook.ui.components.JumpToTop
-import com.leri.smovbook.ui.components.SmovAppBar
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.models.network.isError
 import com.leri.smovbook.models.network.isLoading
+import com.leri.smovbook.models.network.isSuccess
+import com.leri.smovbook.ui.components.*
 import com.leri.smovbook.ui.data.testDataHasData
 
-//接下来要实现 可见 ScrollBar 不然数量一多就很麻烦
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -48,15 +52,14 @@ fun HomeScreen(
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     openBarScann: () -> Unit = { },
-    serverUrl: String,
-    loadingState: NetworkState,
+    pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
-    changeServerUrl: (String) -> Unit,
     openSmovDetail: (Long, String) -> Unit,
+    serverState: ServerState,
 ) {
 
     val scrollState = rememberLazyListState()
-    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var changeServerUrlDialogVisible by remember { mutableStateOf(false) }
 
@@ -68,9 +71,7 @@ fun HomeScreen(
             Column(
                 Modifier
                     .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-
                 HomeScreenWithList(
                     uiState = uiState,
                     onRefreshSmovData = onRefreshSmovData,
@@ -79,19 +80,22 @@ fun HomeScreen(
                     homeListLazyListState = homeListLazyListState,
                     openBarScann = { changeServerUrlDialogVisible = true },
                     scaffoldState = scaffoldState,
-                    loadingState = loadingState,
-                    serverUrl = serverUrl,
-                    fetchNextSmovPage = fetchNextSmovPage
+                    pageState = pageState,
+                    serverState = serverState,
+                    fetchNextSmovPage = fetchNextSmovPage,
+                    scrollBehavior = scrollBehavior
                 ) { hasData ->
                     SmovList(
                         smov = hasData.smovs,
-                        serverUrl = serverUrl,
+                        serverUrl = serverState.serverUrl,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
                         scrollState = scrollState,
-                        openSmovDetail = openSmovDetail
+                        openSmovDetail = openSmovDetail,
+                        scrollBehavior = scrollBehavior
                     )
+
                 }
             }
 
@@ -100,13 +104,13 @@ fun HomeScreen(
             openBarScann,
             changeServerUrlDialogVisible,
             close = { changeServerUrlDialogVisible = false },
-            changeServerUrl = changeServerUrl
+            changeServerUrl = serverState.changeServerUrl
         )
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenWithList(
     uiState: HomeUiState,
@@ -116,21 +120,21 @@ private fun HomeScreenWithList(
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
+    scrollBehavior: TopAppBarScrollBehavior,
     openBarScann: () -> Unit,
-    loadingState: NetworkState,
-    serverUrl: String,
+    pageState: NetworkState,
+    serverState: ServerState,
     fetchNextSmovPage: () -> Unit,
     hasPostsContent: @Composable (
-        uiState: HomeUiState.HasData
-    ) -> Unit
+        uiState: HomeUiState.HasData,
+    ) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            if (uiState.errorMessages.isEmpty() && !loadingState.isLoading() && uiState.errorMessages.count() > 100) {
+            if (uiState.errorMessages.isEmpty() && !pageState.isLoading() && uiState.errorMessages.count() > 100) {
                 ExtendedFloatingActionButton(
                     onClick = onRefreshSmovData
                 ) { Text("重载") }
@@ -142,50 +146,46 @@ private fun HomeScreenWithList(
         LoadingContent(
             empty = when (uiState) {
                 is HomeUiState.HasData -> false
-                is HomeUiState.NoData -> loadingState.isLoading()
+                is HomeUiState.NoData -> pageState.isLoading()
             },
             emptyContent = { FullScreenLoading() },
-            loading = loadingState.isLoading(),
+            loading = pageState.isLoading(),
             onRefresh = onRefreshSmovData,
             content = {
-                when (uiState) {
-                    is HomeUiState.HasData -> hasPostsContent(uiState)
-                    is HomeUiState.NoData -> {
-                        if (uiState.errorMessages.isEmpty()) {
-                            Box(Modifier.fillMaxSize()) {
+
+                Crossfade(targetState = uiState) {
+                    when (it) {
+                        is HomeUiState.HasData -> hasPostsContent(it)
+                        is HomeUiState.NoData -> {
+                            Box(contentModifier.fillMaxSize()) {
+                                if (pageState.isError()) {
+                                    WrongRequest()
+                                } else if (pageState.isSuccess()) {
+                                    EmptyData()
+                                }
                                 NodataOperate(
                                     onRefresh = onRefreshSmovData,
                                     modifier = Modifier.align(Alignment.BottomEnd)
                                 )
                             }
 
-                        } else {
-                            Box(contentModifier.fillMaxSize()) {
-
-                            }
                         }
                     }
                 }
             },
         )
 
-        //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
-        Text(text = serverUrl)
+        val name by remember { mutableStateOf("SmovBook") }
 
-        val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
         ChannelNameBar(
-            channelName = "SmovBook",
+            channelName = name,
             onNavIconPressed = openDrawer,
             scrollBehavior = scrollBehavior,
-            //modifier = Modifier.statusBarsPadding(),
-            modifier = Modifier.padding(contentPadding),
+            modifier = Modifier,
             onRefreshSmovData = onRefreshSmovData,
             onOpenBarScann = openBarScann,
-            serverUrl = serverUrl
+            serverState = serverState,
         )
-
-        //这个text为了避免头部url没有重组 因为showTopAppBar 固定值 影响了页面更新重组
-        //Text(text = serverUrl)
 
         if (uiState.errorMessages.isNotEmpty()) {
 
@@ -210,69 +210,11 @@ private fun HomeScreenWithList(
     }
 }
 
-@Composable
-fun ChannelNameBar(
-    channelName: String,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    onNavIconPressed: () -> Unit = { },
-    onRefreshSmovData: () -> Unit = { },
-    onOpenBarScann: () -> Unit = { },
-    serverUrl: String
-) {
-    var functionalityNotAvailablePopupShown by remember { mutableStateOf(false) }
-    if (functionalityNotAvailablePopupShown) {
-        FunctionalityNotAvailablePopup { functionalityNotAvailablePopupShown = false }
-    }
-
-    SmovAppBar(
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-        onNavIconPressed = onNavIconPressed,
-        title = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = channelName,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = serverUrl,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        actions = {
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .clickable(onClick = {
-                        onOpenBarScann()
-                    })
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(24.dp),
-                contentDescription = stringResource(id = R.string.search)
-            )
-
-            Icon(
-                imageVector = Icons.Outlined.Refresh,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .clickable(onClick = { onRefreshSmovData() })
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(24.dp),
-                contentDescription = stringResource(id = R.string.info)
-            )
-        }
-    )
-}
-
 
 @Composable
 private fun NodataOperate(
     onRefresh: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ExtendedFloatingActionButton(
         onClick = onRefresh,
@@ -290,7 +232,7 @@ private fun NodataOperate(
 private fun MainFloatingActionButton(
     unit: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
 ) {
     ExtendedFloatingActionButton(
         onClick = unit,
@@ -312,37 +254,30 @@ private fun LoadingContent(
     onRefresh: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    if (empty) {
-        emptyContent()
-    } else {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(loading),
-            onRefresh = onRefresh,
-            content = content,
-            indicator = { state, trigger ->
-                SwipeRefreshIndicator(
-                    state = state,
-                    refreshTriggerDistance = trigger,
-                    scale = true,
-                    modifier = Modifier.offset(y = 90.dp)
-                )
+
+//    val pullRefreshState = rememberPullRefreshState(loading, { onRefresh() })
+
+    Crossfade(targetState = empty) { targetState ->
+        if (targetState) {
+            emptyContent()
+        } else {
+            Box(Modifier/*.pullRefresh(pullRefreshState)*/) {
+                content()
+
+                //下拉刷新没啥用 而且如果要得到一个好用的下拉刷新需要重构大量代码 放弃此功能
+                /*PullRefreshIndicator(loading,
+                    pullRefreshState,
+                    Modifier
+                        .align(Alignment.TopCenter))*/
             }
-        )
+        }
+
     }
+
 }
 
-@Composable
-private fun FullScreenLoading() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SmovList(
     smov: List<Smov>,
@@ -350,25 +285,43 @@ fun SmovList(
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
     openSmovDetail: (Long, String) -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
+
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
     val contentPadding =
         WindowInsets.statusBarsIgnoringVisibility.add(WindowInsets(top = 70.dp)).asPaddingValues()
-    Box(modifier = modifier) {
+
+    BoxWithConstraints(modifier = modifier) {
+
         LazyColumn(
             reverseLayout = false,
             state = scrollState,
             contentPadding = contentPadding,
             modifier = Modifier
                 .testTag("ConversationTestTag")
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize()
-                .align(Alignment.Center)
         ) {
             items(smov) { smovItem ->
                 SmovCard(smovItem, serverUrl, openSmovDetail)
             }
         }
+
+        //这个部分的实现需要很多一起 所以先改造LazyColumn部分
+        /*Box(
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.15f)
+                .background(Color.Red).align(Alignment.BottomEnd),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Text(text = "现在不知道咋整 等下看")
+
+        }*/
+
+
         val jumpThreshold = with(LocalDensity.current) {
             JumpToBottomThreshold.toPx()
         }
@@ -431,10 +384,9 @@ fun Screen() {
             uiState = testDataHasData,
             homeListLazyListState = rememberLazyListState(0),
             scaffoldState = rememberScaffoldState(),
-            serverUrl = "127.0.0.1:8080",
-            loadingState = NetworkState.SUCCESS,
+            serverState = ServerState("127.0.0.1:8000", mutableListOf()),
+            pageState = NetworkState.SUCCESS,
             fetchNextSmovPage = { },
-            changeServerUrl = {},
             openSmovDetail = { _, _ -> }
         )
     }
@@ -442,13 +394,14 @@ fun Screen() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
             channelName = "composers",
-            serverUrl = "127.0.0.1:8080"
+            serverState = ServerState("127.0.0.1:8000", mutableListOf()),
         )
     }
 }

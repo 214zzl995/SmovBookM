@@ -10,6 +10,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.provider.Settings
 import android.view.Surface
+import androidx.annotation.RequiresApi
 import com.shuyu.gsyvideoplayer.utils.Debuger
 import java.lang.IllegalStateException
 import java.lang.ref.WeakReference
@@ -18,6 +19,7 @@ import java.lang.ref.WeakReference
  * 处理屏幕旋转的的逻辑
  * Created by leri on 2022/09/23.
  */
+@RequiresApi(Build.VERSION_CODES.R)
 class OrientationUtils @JvmOverloads constructor(
     activity: Activity,
     gsyVideoPlayer: GSYBaseVideoPlayer?,
@@ -151,9 +153,10 @@ class OrientationUtils @JvmOverloads constructor(
         mOrientationEventListener.enable()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun initGravity(activity: Activity) {
         if (isLand == LAND_TYPE_NULL) {
-            when (activity.windowManager.defaultDisplay.rotation) {
+            when (activity.display!!.rotation) {
                 Surface.ROTATION_0 -> {
                     // 竖向为正方向。 如：手机、小米平板
                     isLand = LAND_TYPE_NULL

@@ -26,31 +26,37 @@ import androidx.compose.material3.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.ui.LocalOkHttpClient
 
 @Composable
-fun SmovCard(
+fun SmovCard (
     smov: Smov,
     mainUrl: String,
     openSmovDetail: (Long, String) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val visible by remember { mutableStateOf(true) }
+
+
     Box(
         modifier = Modifier
-            .padding(15.dp, 0.dp, 15.dp, 0.dp) //21
+            .padding(15.dp, 0.dp, 15.dp, 0.dp)
             .clip(RoundedCornerShape(8.dp))
     ) {
-        val padding = 6.dp
+        val padding = 8.dp
         Surface(
             shape = RoundedCornerShape(8.dp),
             color = Color.White,
-            shadowElevation = 6.dp,
-            modifier = Modifier
-                .padding(padding)
+            shadowElevation = 5.dp,
+            modifier = Modifier.padding(padding)
         ) {
             //不定高会出现 页面图片消失 块突然从大到小 而且高度变低 回到顶部变快
             Row(modifier = Modifier
@@ -58,11 +64,16 @@ fun SmovCard(
                 .padding(0.dp)
                 .clickable {
                     coroutineScope.launch {
-
-                        smov.id?.let { openSmovDetail(it.toLong(), smov.name) }
+                        openSmovDetail(smov.id.toLong(), smov.name)
                     }
 
                 }) {
+                val url =
+                    "http://$mainUrl/smovbook/file/${smov.filename}/img/thumbs_${smov.name}.jpg"
+
+                //这里要取巨gb顶部的一个值 我麻了
+                val imageLoader =
+                    ImageLoader.Builder(context).okHttpClient(LocalOkHttpClient.current).build()
 
                 SubcomposeAsyncImage(
                     modifier = Modifier
@@ -70,7 +81,9 @@ fun SmovCard(
                         .defaultMinSize(minHeight = 100.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
-                    model = "http://$mainUrl/smovbook/file/${smov.realname}/img/thumbs_${smov.name}.jpg",
+                    model = ImageRequest
+                        .Builder(LocalContext.current).crossfade(true).data(url).build(),
+                    imageLoader = imageLoader,
                     contentScale = ContentScale.FillWidth,
                     loading = {
                         Box(modifier = Modifier.matchParentSize()) {
@@ -82,8 +95,7 @@ fun SmovCard(
                     error = {
                         Box(modifier = Modifier.matchParentSize()) {
                             AsyncImage(
-                                model = R.drawable.ic_error,
-                                contentDescription = null
+                                model = R.drawable.ic_error, contentDescription = null
                             )
                         }
                     },
@@ -131,38 +143,41 @@ fun SmovCard(
                         textAlign = TextAlign.Left
                     )
 
-                    TextButton(onClick = {
-                        coroutineScope.launch {
-                            val options: ActivityOptions = ActivityOptions.makeBasic()
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                val options: ActivityOptions = ActivityOptions.makeBasic()
 
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            val type = "video/${smov.extension}"
+                                val intent = Intent(Intent.ACTION_VIEW)
+                                val type = "video/${smov.extension}"
 
-                            intent.setPackage("com.mxtech.videoplayer.ad")
-                            intent.putExtra("decode_mode", "4")
-                            intent.putExtra("title", smov.name)
-                            println(type)
-                            val uri: Uri =
-                                Uri.parse("http://$mainUrl/smovbook/file/${smov.realname}/${smov.realname}.${smov.extension}")
-                            intent.setDataAndType(uri, type)
+                                intent.setPackage("com.mxtech.videoplayer.pro")
+                                intent.putExtra("decode_mode", "4")
+                                intent.putExtra("title", smov.name)
+                                println(type)
+                                val uri: Uri =
+                                    Uri.parse("http://$mainUrl/smovbook/file/${smov.filename}/${smov.filename}.${smov.extension}")
+                                intent.setDataAndType(uri, type)
 
-                            val title = "打开视频"
-                            val chooser = Intent.createChooser(intent, title)
+                                val title = "打开视频"
+                                val chooser = Intent.createChooser(intent, title)
 
-                            try {
-                                startActivity(context, intent, options.toBundle())
-                            } catch (e: ActivityNotFoundException) {
-                                // Define what your app should do if no activity can handle the intent.
+                                try {
+                                    startActivity(context, intent, options.toBundle())
+                                } catch (e: ActivityNotFoundException) {
+                                    // Define what your app should do if no activity can handle the intent.
+                                }
+
                             }
-
-                        }
-                    }, contentPadding = PaddingValues(3.dp), modifier = Modifier.fillMaxWidth()) {
+                        }, contentPadding = PaddingValues(3.dp), modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(text = "MxPlayer")
                     }
                 }
 
             }
         }
+
     }
 }
 
@@ -173,11 +188,7 @@ fun SmovItemPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                SmovCard(
-                    smov = testDataSin,
-                    mainUrl = "127.0.0.1",
-                    openSmovDetail = { _, _ -> }
-                )
+                SmovCard(smov = testDataSin, mainUrl = "127.0.0.1", openSmovDetail = { _, _ -> })
             }
         }
     }

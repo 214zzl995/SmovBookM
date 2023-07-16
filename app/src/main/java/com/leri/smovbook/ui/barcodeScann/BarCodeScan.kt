@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.*
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.*
 
@@ -27,7 +29,7 @@ fun BarCodeScanTitle(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
+        /*Icon(
             painter = painterResource(id = R.drawable.ic_baseline_qr_code_scanner_24),
             tint = ScanIco,
             modifier = Modifier
@@ -42,7 +44,20 @@ fun BarCodeScanTitle(modifier: Modifier = Modifier) {
             fontSize = 17.sp,
             fontWeight = FontWeight.W600,
             modifier = Modifier.padding(top = 20.dp)
+        )*/
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.qr_code))
+        val progress by animateLottieCompositionAsState(
+            composition = composition,
+            iterations = LottieConstants.IterateForever
         )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        ) {
+            LottieAnimation(composition = composition, progress = { progress })
+        }
     }
 
 }

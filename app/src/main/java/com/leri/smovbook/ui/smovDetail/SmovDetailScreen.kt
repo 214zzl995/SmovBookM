@@ -2,8 +2,11 @@ package com.leri.smovbook.ui.smovDetail
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -30,25 +34,32 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
+import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.models.network.isLoading
+import com.leri.smovbook.ui.components.FullScreenLoading
+import com.leri.smovbook.ui.components.MainPage
+import com.leri.smovbook.ui.components.WrongRequest
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
 
 
 //实现图片轮播 暂时还没有理想的方案
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@RequiresApi(Build.VERSION_CODES.R)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovDetailScreen(
     smov: Smov,
     smovName: String,
     serverUrl: String,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    pageState: NetworkState,
+    modifier: Modifier = Modifier,
 ) {
 
-    val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() }
+    val topAppBarState: TopAppBarState = rememberTopAppBarState()
 
-    val contentPadding = WindowInsets.statusBarsIgnoringVisibility.asPaddingValues()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(state = topAppBarState)
 
     val subTitle = smov.getDefaultSub(serverUrl)
     val url = smov.getVideoUrl(serverUrl)
@@ -82,25 +93,32 @@ fun SmovDetailScreen(
         topBar = {
             SmovDetailAppBar(
                 scrollBehavior = scrollBehavior,
+                topAppBarState = topAppBarState,
                 title = smovName,
                 onBack = onBack,
-                modifier = Modifier.padding(contentPadding)
+                modifier = Modifier
             )
-
         }) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize().background(MaterialTheme.colorScheme.background),
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.TopStart
         ) {
-            val scrollState = rememberScrollState()
-            Column(modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxSize()) {
-                VideoPlayer(smovVideoView = smovVideoView)
-                VideoDetail(smov = smov)
+            MainPage(pageState) {
+                val scrollState = rememberScrollState()
+                Column(
+                    modifier = Modifier
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                        .verticalScroll(scrollState)
+                        .fillMaxSize()
+                ) {
+                    VideoPlayer(smovVideoView = smovVideoView)
+                    VideoDetail(smov = smov)
+                }
             }
+
         }
     }
 }
@@ -186,10 +204,10 @@ fun VideoDetail(smov: Smov) {
             ) {
 
                 NameValueAlone(name = "发行时间", value = smov.release_time)
-                NameValueAlone(name = "制作", value = smov.maker)
-                NameValueAlone(name = "导演", value = smov.director)
-                NameValueAlone(name = "出版社", value = smov.publisher)
-                NameValueAlone(name = "系列", value = smov.serie)
+                NameValueAlone(name = "制作", value = smov.makers.name)
+                NameValueAlone(name = "导演", value = smov.director.name)
+                NameValueAlone(name = "出版社", value = smov.publisher.name)
+                NameValueAlone(name = "系列", value = smov.series.name)
             }
         }
     }
@@ -256,9 +274,10 @@ private val valueStyle = TextStyle(
 )
 
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun rememberVideoPlayerState(
-    title: String, url: String, subTitle: String?
+    title: String, url: String, subTitle: String?,
 ): SmovVideoView {
     val context = LocalContext.current
 
@@ -267,6 +286,7 @@ fun rememberVideoPlayerState(
     return rememberSaveable(context,
         coroutineScope,
         saver = object : Saver<SmovVideoView, SmovVideoState> {
+            @RequiresApi(Build.VERSION_CODES.R)
             override fun restore(value: SmovVideoState): SmovVideoView {
                 return SmovVideoView(
                     context = context,
@@ -286,7 +306,6 @@ fun rememberVideoPlayerState(
             }
         },
         init = {
-            //需要对 view做一个基础的初始化 例如作为加载界面打开
             SmovVideoView(
                 context = context, title = title, url = url, subTitle = subTitle
             )

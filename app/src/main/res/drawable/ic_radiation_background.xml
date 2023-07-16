@@ -18,8 +18,8 @@
                     android:angle="0"
                     android:type="radial"
                     android:endColor="#00FFFFFF"
-                    android:startColor="#28FFFFFF"
-                    android:gradientRadius="95" />
+                    android:startColor="#1DFFF0F0"
+                    android:gradientRadius="50" />
 
         </shape>
 

@@ -41,7 +41,7 @@ internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : In
             originalUrl.newBuilder().build()
         }
 
-        println("拦截器url$url")
+        println("正在请求url：$url")
 
         //动态设置url
         val requestBuilder = originalRequest.newBuilder().url(url).tag("request")

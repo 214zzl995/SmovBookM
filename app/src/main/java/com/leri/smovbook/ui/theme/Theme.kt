@@ -40,6 +40,7 @@ private val SmovBookDarkColorScheme = darkColorScheme(
     outline = BlueGrey60
 )
 
+
 private val SmovBookLightColorScheme = lightColorScheme(
     primary = Blue40,
     onPrimary = Color.White,
@@ -74,7 +75,7 @@ private val SmovBookLightColorScheme = lightColorScheme(
 fun SmovBookMTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     isDynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val dynamicColor = isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val myColorScheme = when {

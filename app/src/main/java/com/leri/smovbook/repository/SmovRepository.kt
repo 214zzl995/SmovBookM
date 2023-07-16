@@ -20,7 +20,7 @@ import timber.log.Timber
 class SmovRepository(
     private val smovService: SmovService,
     private val smovDataStore: SmovDataStore,
-    private val dispatcher: Dispatcher
+    private val dispatcher: Dispatcher,
 ) : Repository {
 
     init {
@@ -31,7 +31,7 @@ class SmovRepository(
     fun getSmovAll() = flow {
         val response = smovService.getAllSmov()
         response.suspendOnSuccess {
-            Timber.d(data.toString())
+            //Timber.d(data.toString())
             emit(data.data)
         }.suspendOnError {
             message()
@@ -39,26 +39,33 @@ class SmovRepository(
     }.flowOn(Dispatchers.IO)
 
     @WorkerThread
-    fun getSmovPagination(pageNum: Int, pageSize: Int, success: () -> Unit, error: () -> Unit) = flow {
-        val response = smovService.getPaginationSmov(pageNum, pageSize)
-        response.suspendOnSuccess {
-            Timber.d(data.toString())
-            emit(data.data.list)
-        }.onError {
-            error()
-        }.onException { error() }
-    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+    fun getSmovPagination(pageNum: Int, pageSize: Int, success: () -> Unit, error: () -> Unit) =
+        flow {
+            val response = smovService.getPaginationSmov(pageNum, pageSize)
+            response.suspendOnSuccess {
+                //Timber.d(data.toString())
+                emit(data.data.list)
+                success()
+            }.onError {
+                error()
+            }.onException {
+                error()
+            }
+        }.onCompletion {
+            //success()
+        }.flowOn(Dispatchers.IO)
 
     @WorkerThread
-    fun getSmovById(id: Long , success: () -> Unit, error: () -> Unit) = flow {
+    fun getSmovById(id: Long, success: () -> Unit, error: () -> Unit) = flow {
         val response = smovService.getSmovById(id)
         response.suspendOnSuccess {
             Timber.d(data.toString())
             emit(data.data)
+            success()
         }.onError {
             error()
         }.onException { error() }
-    }.onCompletion { success() }.flowOn(Dispatchers.IO)
+    }.onCompletion {  }.flowOn(Dispatchers.IO)
 
 
     @WorkerThread
@@ -66,6 +73,9 @@ class SmovRepository(
 
     @WorkerThread
     fun getSmovServiceUrlAndPort() = smovDataStore.serverUrlAndPort
+
+    @WorkerThread
+    fun getServerState() = smovDataStore.serviceState
 
     @WorkerThread
     fun getSmovHistoryUrl() = smovDataStore.historyUrl
