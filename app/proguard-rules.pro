@@ -80,6 +80,10 @@
     <fields>;
 }
 -keep class com.leri.smovbook.config.** {*;}
+-keep class com.leri.smovbook.models.** {*;}
+-keep class com.leri.smovbook.util.** {*;}
+-keep class com.leri.smovbook.models.entities.** {*;}
+
 # 保留Serializable 序列化的类不被混淆
 -keepclassmembers class * implements java.io.Serializable {
    static final long serialVersionUID;
@@ -107,8 +111,6 @@
 -keep class com.easemob.** {*;}
 -keep class org.jivesoftware.** {*;}
 -keep class org.apache.** {*;}
--keep class com.leri.smovbook.models.** {*;}
--keep class com.leri.smovbook.models.entities.** {*;}
 -dontwarn  com.easemob.**
 #另外，demo中发送表情的时候使用到反射，需要keep SmileUtils
 
