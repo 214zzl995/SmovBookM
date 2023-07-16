@@ -18,7 +18,7 @@ fun MainPage(
     pageState: NetworkState,
     content: @Composable () -> Unit,
 ) {
-    Crossfade(targetState = pageState, label = "") { screen ->
+    Crossfade(targetState = pageState) { screen ->
         when (screen) {
             NetworkState.LOADING -> {
                 FullScreenLoading()

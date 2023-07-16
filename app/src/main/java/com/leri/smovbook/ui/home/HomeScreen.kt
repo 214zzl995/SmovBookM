@@ -148,7 +148,7 @@ private fun HomeScreenWithList(
              loading = pageState.isLoading(),
              onRefresh = onRefreshSmovData,
              content = {
-                 Crossfade(targetState = uiState, label = "") {
+                 Crossfade(targetState = uiState) {
                      when (it) {
                          is HomeUiState.HasData -> hasPostsContent(it)
                          is HomeUiState.NoData -> {
@@ -248,7 +248,7 @@ private fun RefreshContent(
     onRefresh: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Crossfade(targetState = empty, label = "") { targetState ->
+    Crossfade(targetState = empty) { targetState ->
         if (targetState) {
             emptyContent()
         } else {
