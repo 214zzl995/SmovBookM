@@ -1,8 +1,6 @@
 package com.leri.smovbook.ui.home
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -10,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.Divider
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,8 +28,6 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isError
@@ -143,37 +138,37 @@ private fun HomeScreenWithList(
     )
     { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
-        LoadingContent(
-            empty = when (uiState) {
-                is HomeUiState.HasData -> false
-                is HomeUiState.NoData -> pageState.isLoading()
-            },
-            emptyContent = { FullScreenLoading() },
-            loading = pageState.isLoading(),
-            onRefresh = onRefreshSmovData,
-            content = {
 
-                Crossfade(targetState = uiState) {
-                    when (it) {
-                        is HomeUiState.HasData -> hasPostsContent(it)
-                        is HomeUiState.NoData -> {
-                            Box(contentModifier.fillMaxSize()) {
-                                if (pageState.isError()) {
-                                    WrongRequest()
-                                } else if (pageState.isSuccess()) {
-                                    EmptyData()
-                                }
-                                NodataOperate(
-                                    onRefresh = onRefreshSmovData,
-                                    modifier = Modifier.align(Alignment.BottomEnd)
-                                )
-                            }
+         RefreshContent(
+             empty = when (uiState) {
+                 is HomeUiState.HasData -> false
+                 is HomeUiState.NoData -> pageState.isLoading()
+             },
+             emptyContent = { FullScreenLoading() },
+             loading = pageState.isLoading(),
+             onRefresh = onRefreshSmovData,
+             content = {
+                 Crossfade(targetState = uiState, label = "") {
+                     when (it) {
+                         is HomeUiState.HasData -> hasPostsContent(it)
+                         is HomeUiState.NoData -> {
+                             Box(contentModifier.fillMaxSize()) {
+                                 if (pageState.isError()) {
+                                     WrongRequest()
+                                 } else if (pageState.isSuccess()) {
+                                     EmptyData()
+                                 }
+                                 NodataOperate(
+                                     onRefresh = onRefreshSmovData,
+                                     modifier = Modifier.align(Alignment.BottomEnd)
+                                 )
+                             }
 
-                        }
-                    }
-                }
-            },
-        )
+                         }
+                     }
+                 }
+             },
+         )
 
         val name by remember { mutableStateOf("SmovBook") }
 
@@ -209,7 +204,6 @@ private fun HomeScreenWithList(
 
     }
 }
-
 
 @Composable
 private fun NodataOperate(
@@ -247,28 +241,19 @@ private fun MainFloatingActionButton(
 }
 
 @Composable
-private fun LoadingContent(
+private fun RefreshContent(
     empty: Boolean,
     emptyContent: @Composable () -> Unit,
     loading: Boolean,
     onRefresh: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-
-//    val pullRefreshState = rememberPullRefreshState(loading, { onRefresh() })
-
-    Crossfade(targetState = empty) { targetState ->
+    Crossfade(targetState = empty, label = "") { targetState ->
         if (targetState) {
             emptyContent()
         } else {
-            Box(Modifier/*.pullRefresh(pullRefreshState)*/) {
+            Box(Modifier) {
                 content()
-
-                //下拉刷新没啥用 而且如果要得到一个好用的下拉刷新需要重构大量代码 放弃此功能
-                /*PullRefreshIndicator(loading,
-                    pullRefreshState,
-                    Modifier
-                        .align(Alignment.TopCenter))*/
             }
         }
 

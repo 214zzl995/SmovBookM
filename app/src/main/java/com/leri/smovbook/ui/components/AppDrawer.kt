@@ -45,10 +45,20 @@ fun AppDrawer(
             changeServerUrl = serverState.changeServerUrl,
             closeDrawer = closeDrawer
         )*/
+
+
         DrawerHeader()
         DividerItem()
 
-        FullScreenLoading()
+        var code by remember { mutableStateOf("") }
+
+        Text(text = code)
+
+        Button(onClick = {  }) {
+            Text(text = "SecurityGet")
+        }
+
+//        FullScreenLoading()
 
     }
 

@@ -101,7 +101,7 @@ class HomeViewModel @Inject constructor(
                 listOf<Smov>()
             }
         } else {
-            delay(1000)
+            delay(500)
             smovRepository.getSmovPagination(
                 pageNum = it,
                 pageSize = 500,

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
     repositories {
         google()
@@ -42,7 +44,7 @@ subprojects {
         }
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    tasks.withType(KotlinCompile).configureEach {
         kotlinOptions {
             allWarningsAsErrors = project.hasProperty("warningsAsErrors") ? project.warningsAsErrors : false
             freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
@@ -60,10 +62,12 @@ subprojects {
         }
     }
 
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        /*输出其他错误 */
-        /*options.compilerArgs += "-Xlint:deprecation"*/
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.encoding = "UTF-8"
+            /*输出其他错误 */
+            /*options.compilerArgs += "-Xlint:deprecation"*/
+        }
     }
 
 }

@@ -23,6 +23,7 @@ import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import androidx.compose.animation.animateContentSize
 import androidx.compose.material3.*
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
@@ -44,7 +45,6 @@ fun SmovCard (
     val context = LocalContext.current
 
     val visible by remember { mutableStateOf(true) }
-
 
     Box(
         modifier = Modifier
@@ -74,10 +74,10 @@ fun SmovCard (
                 //这里要取巨gb顶部的一个值 我麻了
                 val imageLoader =
                     ImageLoader.Builder(context).okHttpClient(LocalOkHttpClient.current).build()
-
                 SubcomposeAsyncImage(
                     modifier = Modifier
                         .fillMaxWidth(0.7F)
+                        .aspectRatio(smov.thumbs_img.size.width.toFloat() / smov.thumbs_img.size.height)
                         .defaultMinSize(minHeight = 100.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
