@@ -36,7 +36,7 @@ import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.LocalOkHttpClient
 
 @Composable
-fun SmovCard (
+fun SmovCard(
     smov: Smov,
     mainUrl: String,
     openSmovDetail: (Long, String) -> Unit,

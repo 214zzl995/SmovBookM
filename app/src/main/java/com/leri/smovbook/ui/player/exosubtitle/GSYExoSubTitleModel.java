@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui.player.exosubtitle;
 
-import com.google.android.exoplayer2.Player;
+import androidx.media3.common.Player;
+
 import com.shuyu.gsyvideoplayer.model.GSYModel;
 
 import java.io.File;

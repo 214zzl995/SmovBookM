@@ -8,10 +8,10 @@ import android.os.Message;
 import android.view.Surface;
 
 import androidx.annotation.Nullable;
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.SeekParameters;
+import androidx.media3.exoplayer.video.PlaceholderSurface;
 
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SeekParameters;
-import com.google.android.exoplayer2.video.PlaceholderSurface;
 import com.shuyu.gsyvideoplayer.cache.ICacheManager;
 import com.shuyu.gsyvideoplayer.model.VideoOptionModel;
 import com.shuyu.gsyvideoplayer.player.BasePlayerManager;
@@ -56,7 +56,7 @@ public class GSYExoSubTitlePlayerManager extends BasePlayerManager {
         try {
             mediaPlayer.setLooping(gsyModel.isLooping());
             if (gsyModel.getSubTitle() != null) {
-                mediaPlayer.setSubTitile(gsyModel.getSubTitle());
+                mediaPlayer.setSubTitle(gsyModel.getSubTitle());
             }
             mediaPlayer.setPreview(gsyModel.getMapHeadData() != null && gsyModel.getMapHeadData().size() > 0);
             if (gsyModel.isCache() && cacheManager != null) {
@@ -260,13 +260,13 @@ public class GSYExoSubTitlePlayerManager extends BasePlayerManager {
     }
 
     public void addTextOutputPlaying(Player.Listener textOutput) {
-        if(mediaPlayer != null) {
+        if (mediaPlayer != null) {
             mediaPlayer.addTextOutputPlaying(textOutput);
         }
     }
 
     public void removeTextOutput(Player.Listener textOutput) {
-        if(mediaPlayer != null) {
+        if (mediaPlayer != null) {
             mediaPlayer.removeTextOutput(textOutput);
         }
     }

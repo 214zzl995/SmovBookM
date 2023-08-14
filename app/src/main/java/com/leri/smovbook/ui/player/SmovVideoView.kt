@@ -13,19 +13,26 @@ import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.animation.addListener
+import androidx.media3.common.Player
+import androidx.media3.common.text.CueGroup
+import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.ui.CaptionStyleCompat
+import androidx.media3.ui.SubtitleView
 import coil.load
 import com.airbnb.lottie.LottieAnimationView
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SeekParameters
-import com.google.android.exoplayer2.text.CueGroup
-import com.google.android.exoplayer2.ui.CaptionStyleCompat
-import com.google.android.exoplayer2.ui.SubtitleView
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitlePlayerManager
 import com.leri.smovbook.ui.player.exosubtitle.GSYExoSubTitleVideoManager
@@ -53,6 +60,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
     private var sTitle: String = ""
     private var sUrl: String = ""
     private var sCover: String = ""
+    private var sProgressBarStartCurrentPosition: Long = 0
 
     val title: String get() = sTitle
     val url: String get() = sUrl
@@ -118,7 +126,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
             .setShowFullAnimation(false)
             .setNeedLockFull(true)
             .setUrl(sUrl)
-            .setSeekRatio(2.5f)
+            .setSeekRatio(8f)
             .setCacheWithPlay(false)
             .setVideoAllCallBack(this)
             .setVideoTitle(sTitle).setLockClickListener { _, lock ->
@@ -234,9 +242,11 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                 CURRENT_STATE_PLAYING -> {
                     imageView.setImageResource(R.drawable.ic_pause)
                 }
+
                 CURRENT_STATE_ERROR -> {
                     imageView.setImageResource(R.drawable.ic_play)
                 }
+
                 else -> {
                     imageView.setImageResource(R.drawable.ic_play)
                 }
@@ -383,8 +393,18 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
             val seekTime = CommonUtil.stringForTime(mSeekTimePosition)
 
             val totalTime = CommonUtil.stringForTime(totalTimeDuration)
-            val diffTimeNum = "%.1f".format(diffTimeMs / 1000).toDouble()
-            val diffTime: String = if (diffTimeNum >= 0) "+$diffTimeNum" else diffTimeNum.toString()
+
+            val diffTimeNum = abs(diffTimeMs / 1000)
+            val second = "%.1f".format(diffTimeNum.rem(60)).toDouble().toString()
+            val minute = (diffTimeNum / 60).toInt().toString()
+            val flag = if (diffTimeMs > 0) "+" else "-"
+            val diffTime = "$flag$minute:$second"
+
+            //同步更新 进度条左端的字符串
+            if (mCurrentTimeTextView != null) {
+                mCurrentTimeTextView.text = seekTime
+            }
+
             showProgressDialogWithDiffTime(
                 seekTime,
                 diffTime,
@@ -499,6 +519,9 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
             curWidth =
                 if (CommonUtil.getCurrentScreenLand(activityContext as Activity)) mScreenHeight else mScreenWidth
         }
+
+        //判断当前是否显示菜单 当显示菜单时 不处理滑动事件
+
         if (absDeltaX > mThreshold || absDeltaY > mThreshold) {
             cancelProgressTimer()
             if (absDeltaX >= mThreshold) {
@@ -598,18 +621,22 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                 }
                 releaseNetWorkState()
             }
+
             CURRENT_STATE_PREPAREING -> resetProgressAndTime()
             CURRENT_STATE_PLAYING -> if (isCurrentMediaListener) {
                 Debuger.printfLog("${this.hashCode()}------------------------------ CURRENT_STATE_PLAYING")
                 startProgressTimer()
             }
+
             CURRENT_STATE_PAUSE -> {
                 Debuger.printfLog("${this.hashCode()}------------------------------ CURRENT_STATE_PAUSE")
                 startProgressTimer()
             }
+
             CURRENT_STATE_ERROR -> if (isCurrentMediaListener) {
                 gsyVideoManager.releaseMediaPlayer()
             }
+
             CURRENT_STATE_AUTO_COMPLETE -> {
                 Debuger.printfLog("${this.hashCode()}------------------------------ dismiss CURRENT_STATE_AUTO_COMPLETE")
                 cancelProgressTimer()
@@ -650,7 +677,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
     }
 
     /**
-     * 手指 初次接触到屏幕 时触发 相当于初始化
+     * 单击主界面
      */
     override fun touchSurfaceDown(x: Float, y: Float) {
         mTouchingProgressBar = true
@@ -699,6 +726,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                 //if(mSeekTimePosition == 0) {
                 //    mSeekTimePosition = 1;
                 //}
+
                 gsyVideoManager.seekTo(mSeekTimePosition)
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -750,6 +778,13 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                     val deltaY = y - mDownY
                     val absDeltaX = abs(deltaX)
                     val absDeltaY = abs(deltaY)
+
+                    //判断 xy 的位置是否为屏幕顶部的 5/1
+                    //如果是 且所有标记为false 则不处理此次滑动事件
+                    if (y < mScreenHeight / 7 && !mChangePosition && !mChangeVolume && !mBrightness) {
+                        return false
+                    }
+
                     if (mIfCurrentIsFullscreen && mIsTouchWigetFull || mIsTouchWiget && !mIfCurrentIsFullscreen) {
                         if (!mChangePosition && !mChangeVolume && !mBrightness) {
                             touchSurfaceMoveFullLogic(absDeltaX, absDeltaY)
@@ -758,6 +793,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
 
                     touchSurfaceMove(deltaX, deltaY, y)
                 }
+
                 MotionEvent.ACTION_UP -> {
                     startDismissControlViewTimer()
                     touchSurfaceUp()
@@ -765,6 +801,11 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                         "${this.hashCode()}------------------------------ surface_container ACTION_UP"
                     )
                     startProgressTimer()
+
+                    //手指抬起后 将所有标记置为false 防止出现上一次判断影响到这一次的
+                    mChangePosition = false
+                    mChangeVolume = false
+                    mBrightness = false
 
                     //不要和隐藏虚拟按键后，滑出虚拟按键冲突
                     if (mHideKey && mShowVKey) {
@@ -778,20 +819,62 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                 MotionEvent.ACTION_DOWN -> {
                     cancelDismissControlViewTimer()
                     cancelProgressTimer()
-                    var vpdown = parent
-                    while (vpdown != null) {
-                        vpdown.requestDisallowInterceptTouchEvent(true)
-                        vpdown = vpdown.parent
+                    var vpDown = parent
+                    while (vpDown != null) {
+                        vpDown.requestDisallowInterceptTouchEvent(true)
+                        vpDown = vpDown.parent
                     }
+                    sProgressBarStartCurrentPosition = currentPositionWhenPlaying
                 }
+
+                //移动进度条 显示 dialog
                 MotionEvent.ACTION_MOVE -> {
                     cancelProgressTimer()
-                    var vpdown = parent
-                    while (vpdown != null) {
-                        vpdown.requestDisallowInterceptTouchEvent(true)
-                        vpdown = vpdown.parent
+                    var vpDown = parent
+                    while (vpDown != null) {
+                        vpDown.requestDisallowInterceptTouchEvent(true)
+                        vpDown = vpDown.parent
                     }
+
+                    //总时间
+                    val totalTimeDuration = duration
+                    val totalTime = CommonUtil.stringForTime(totalTimeDuration)
+                    //结束时间
+                    val endPosition: Long = mProgressBar.progress * duration / 100
+                    //结束时间字符串
+                    val seekTime =
+                        CommonUtil.stringForTime(mProgressBar.progress * duration / 100)
+
+                    //同步更新 进度条左端的字符串
+                    if (mCurrentTimeTextView != null) {
+                        mCurrentTimeTextView.text = seekTime
+                    }
+
+                    //仅在全屏生效
+                    if (mIfCurrentIsFullscreen) {
+                        //开始结束区间时间
+                        val diffTimeMs = endPosition - sProgressBarStartCurrentPosition
+                        val diffTimeNum = abs(diffTimeMs / 1000)
+                        val second1 = diffTimeNum.rem(60)
+                        val second = "%.1f".format(second1.toDouble())
+                        val minute = (diffTimeNum / 60).toInt().toString()
+                        val flag = if (diffTimeMs > 0) "+" else "-"
+                        val diffTime = "$flag$minute:$second"
+
+                        mSeekTimePosition = (sProgressBarStartCurrentPosition + diffTimeMs)
+
+                        showProgressDialogWithDiffTime(
+                            seekTime,
+                            diffTime,
+                            mSeekTimePosition,
+                            totalTime,
+                            totalTimeDuration
+                        )
+
+                    }
+
                 }
+
                 MotionEvent.ACTION_UP -> {
                     startDismissControlViewTimer()
                     Debuger.printfLog(
@@ -804,10 +887,49 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                         vpup = vpup.parent
                     }
                     mBrightnessData = -1f
+
+                    if (mProgressDialog != null) {
+                        if (mProgressDialog.isShowing) {
+                            mProgressDialog.dismiss()
+                        }
+                    }
+
+
                 }
             }
         }
         return false
+    }
+
+    override fun touchDoubleUp(e: MotionEvent) {
+        if (!mHadPlay) {
+            return
+        }
+        //双击事件处理 分三个区域 中心区域为 暂停 左右区域为后退5秒前进5秒
+        val curWidth =
+            if (CommonUtil.getCurrentScreenLand(context as Activity)) mScreenHeight else mScreenWidth
+
+
+        //判断当前点击位置
+        if (e.x > curWidth * 2 / 3) {
+            //阻止菜单等界面的显示
+            //前进10秒
+            startDismissControlViewTimer()
+            if (mCurrentState == CURRENT_STATE_PLAYING || mCurrentState == CURRENT_STATE_PAUSE) {
+                seekTo(currentPositionWhenPlaying + 10000)
+            }
+
+        } else if (e.x < curWidth / 3) {
+            //阻止菜单等界面的显示
+            startDismissControlViewTimer()
+            //后退10秒
+            if (mCurrentState == CURRENT_STATE_PLAYING || mCurrentState == CURRENT_STATE_PAUSE) {
+                seekTo(currentPositionWhenPlaying - 10000)
+            }
+        } else {
+            //暂停
+            clickStartIcon()
+        }
     }
 
     /**
@@ -908,23 +1030,28 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                 orientationUtils.resolveByClick()
                 startWindowFullscreen(context, actionBar = true, statusBar = true)
             }
+
             R.id.clarity -> {
                 showDialog(mClarityDialog)
                 //查看 GSYVideoControlView 1097行 1026行 829行 需要添加状态 设置页出现 重写 resolveUIState
                 resolveUIState(CURRENT_STATE_PAUSE)
             }
+
             R.id.other -> {
                 showDialog(mOtherDialog)
                 resolveUIState(CURRENT_STATE_PAUSE)
             }
+
             R.id.speed -> {
                 showDialog(mSpeedDialog)
                 resolveUIState(CURRENT_STATE_PAUSE)
             }
+
             R.id.dialog -> {
                 disableDialog(getShowDialog())
                 resolveUIState(CURRENT_STATE_PLAYING)
             }
+
             R.id.lottie_start -> {
                 println(mLottieStart.frame)
                 if (mLottieStart.frame > 0) {
@@ -1040,12 +1167,15 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                 }
                 startButtonLogic()
             }
+
             CURRENT_STATE_PLAYING -> {
                 videoPause()
             }
+
             CURRENT_STATE_PAUSE -> {
                 videoPlay()
             }
+
             CURRENT_STATE_AUTO_COMPLETE -> {
                 startButtonLogic()
             }
@@ -1176,6 +1306,18 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
             )
             Debuger.printfError("***** setSeekParameter **** ")
         }
+    }
+
+    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        super.onProgressChanged(seekBar, progress, fromUser)
+    }
+
+    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+        super.onStartTrackingTouch(seekBar)
+    }
+
+    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+        super.onStopTrackingTouch(seekBar)
     }
 
     override fun onClickStartIcon(url: String?, vararg objects: Any?) {

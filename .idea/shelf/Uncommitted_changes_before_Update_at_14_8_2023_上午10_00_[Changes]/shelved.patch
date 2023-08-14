@@ -1,24 +1,3 @@
-Index: .idea/deploymentTargetDropDown.xml
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/.idea/deploymentTargetDropDown.xml b/.idea/deploymentTargetDropDown.xml
-new file mode 100644
---- /dev/null	(date 1689518843786)
-+++ b/.idea/deploymentTargetDropDown.xml	(date 1689518843786)
-@@ -0,0 +1,10 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<project version="4">
-+  <component name="deploymentTargetDropDown">
-+    <value>
-+      <entry key="app">
-+        <State />
-+      </entry>
-+    </value>
-+  </component>
-+</project>
-\ No newline at end of file
 Index: .idea/gradle.xml
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
@@ -27,8 +6,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/.idea/gradle.xml b/.idea/gradle.xml
---- a/.idea/gradle.xml	(revision c1db92115cbe4fb74847b1cc9e1281d60162cf39)
-+++ b/.idea/gradle.xml	(date 1689518843797)
+--- a/.idea/gradle.xml	(revision b53a82af37a5308372a70184d3cb3b73a25ce496)
++++ b/.idea/gradle.xml	(date 1691978293739)
 @@ -4,8 +4,6 @@
    <component name="GradleSettings">
      <option name="linkedExternalProjectsSettings">
