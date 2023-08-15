@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.FunctionalityNotAvailablePopup
 import com.leri.smovbook.ui.home.ServerState
@@ -151,6 +152,7 @@ fun ServerSelect(
     AnimatedVisibility(visible = serverSelectVisible, enter = fadeIn(), exit = fadeOut()) {
         Surface(
             color = Color.Transparent,
+            modifier = Modifier.zIndex(9999f)
         ) {
             Box(modifier = Modifier
                 .fillMaxSize()

@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -67,8 +69,13 @@ fun AppNavGraph(
                 AppDestinations.HOME_ROUTE,
             )
             //当当前的路由不存在于 items 中时 动画收缩底部导航栏高度为0
-            if (items.contains(currentRoute))
-            NavigationBar {
+            val height = if (items.contains(currentRoute)) 80.dp else 0.dp
+
+            NavigationBar(
+                modifier = Modifier
+                    .height(height)
+                    .animateContentSize()
+            ) {
                 val currentDestination = navBackStackEntry?.destination
                 items.forEach { screen ->
                     NavigationBarItem(
