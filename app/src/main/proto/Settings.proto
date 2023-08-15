@@ -7,6 +7,7 @@ message Settings {
   string server_url = 1;
   int32 server_port = 2;
   int32 history_count = 4;
+  string third_party_player = 5;
   repeated string history_url = 3;
 
 }

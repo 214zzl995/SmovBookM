@@ -6,8 +6,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,11 +33,16 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isError
 import com.leri.smovbook.models.network.isLoading
 import com.leri.smovbook.models.network.isSuccess
+import com.leri.smovbook.ui.AppDestinations
 import com.leri.smovbook.ui.components.*
 import com.leri.smovbook.ui.data.testDataHasData
 
@@ -46,7 +56,8 @@ fun HomeScreen(
     onRefreshSmovData: () -> Unit = { },
     homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
-    openBarScann: () -> Unit = { },
+    onOpenBarScann: () -> Unit = { },
+    onOpenSettings: () -> Unit = { },
     pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     openSmovDetail: (Long, String) -> Unit,
@@ -73,12 +84,13 @@ fun HomeScreen(
                     onErrorDismiss = onErrorDismiss,
                     openDrawer = openDrawer,
                     homeListLazyListState = homeListLazyListState,
-                    openBarScann = { changeServerUrlDialogVisible = true },
+                    onOpenBarScann = { changeServerUrlDialogVisible = true },
                     scaffoldState = scaffoldState,
                     pageState = pageState,
                     serverState = serverState,
                     fetchNextSmovPage = fetchNextSmovPage,
-                    scrollBehavior = scrollBehavior
+                    scrollBehavior = scrollBehavior,
+                    onOpenSettings = onOpenSettings,
                 ) { hasData ->
                     SmovList(
                         smov = hasData.smovs,
@@ -96,13 +108,20 @@ fun HomeScreen(
 
         }
         ChangeServerUrlDialog(
-            openBarScann,
+            onOpenBarScann,
             changeServerUrlDialogVisible,
             close = { changeServerUrlDialogVisible = false },
             changeServerUrl = serverState.changeServerUrl
         )
 
     }
+
+
+
+
+
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,7 +135,8 @@ private fun HomeScreenWithList(
     scaffoldState: ScaffoldState,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
-    openBarScann: () -> Unit,
+    onOpenBarScann: () -> Unit,
+    onOpenSettings: () -> Unit,
     pageState: NetworkState,
     serverState: ServerState,
     fetchNextSmovPage: () -> Unit,
@@ -124,10 +144,10 @@ private fun HomeScreenWithList(
         uiState: HomeUiState.HasData,
     ) -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         floatingActionButton = {
             if (uiState.errorMessages.isEmpty() && !pageState.isLoading() && uiState.errorMessages.count() > 100) {
                 ExtendedFloatingActionButton(
@@ -139,36 +159,36 @@ private fun HomeScreenWithList(
     { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
 
-         RefreshContent(
-             empty = when (uiState) {
-                 is HomeUiState.HasData -> false
-                 is HomeUiState.NoData -> pageState.isLoading()
-             },
-             emptyContent = { FullScreenLoading() },
-             loading = pageState.isLoading(),
-             onRefresh = onRefreshSmovData,
-             content = {
-                 Crossfade(targetState = uiState) {
-                     when (it) {
-                         is HomeUiState.HasData -> hasPostsContent(it)
-                         is HomeUiState.NoData -> {
-                             Box(contentModifier.fillMaxSize()) {
-                                 if (pageState.isError()) {
-                                     WrongRequest()
-                                 } else if (pageState.isSuccess()) {
-                                     EmptyData()
-                                 }
-                                 NodataOperate(
-                                     onRefresh = onRefreshSmovData,
-                                     modifier = Modifier.align(Alignment.BottomEnd)
-                                 )
-                             }
+        RefreshContent(
+            empty = when (uiState) {
+                is HomeUiState.HasData -> false
+                is HomeUiState.NoData -> pageState.isLoading()
+            },
+            emptyContent = { FullScreenLoading() },
+            loading = pageState.isLoading(),
+            onRefresh = onRefreshSmovData,
+            content = {
+                Crossfade(targetState = uiState, label = "") {
+                    when (it) {
+                        is HomeUiState.HasData -> hasPostsContent(it)
+                        is HomeUiState.NoData -> {
+                            Box(contentModifier.fillMaxSize()) {
+                                if (pageState.isError()) {
+                                    WrongRequest()
+                                } else if (pageState.isSuccess()) {
+                                    EmptyData()
+                                }
+                                NodataOperate(
+                                    onRefresh = onRefreshSmovData,
+                                    modifier = Modifier.align(Alignment.BottomEnd)
+                                )
+                            }
 
-                         }
-                     }
-                 }
-             },
-         )
+                        }
+                    }
+                }
+            },
+        )
 
         val name by remember { mutableStateOf("SmovBook") }
 
@@ -178,7 +198,8 @@ private fun HomeScreenWithList(
             scrollBehavior = scrollBehavior,
             modifier = Modifier,
             onRefreshSmovData = onRefreshSmovData,
-            onOpenBarScann = openBarScann,
+            onOpenBarScann = onOpenBarScann,
+            onOpenSettings = onOpenSettings,
             serverState = serverState,
         )
 
@@ -191,7 +212,7 @@ private fun HomeScreenWithList(
             val onErrorDismissState by rememberUpdatedState(onErrorDismiss)
 
             LaunchedEffect(errorMessageText, retryMessageText, scaffoldState) {
-                val snackbarResult = snackbarHostState.showSnackbar(
+                val snackbarResult = snackBarHostState.showSnackbar(
                     message = errorMessageText,
                     actionLabel = retryMessageText
                 )
@@ -248,7 +269,7 @@ private fun RefreshContent(
     onRefresh: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Crossfade(targetState = empty) { targetState ->
+    Crossfade(targetState = empty, label = "") { targetState ->
         if (targetState) {
             emptyContent()
         } else {

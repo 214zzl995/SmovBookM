@@ -5,7 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.rememberNavController
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -20,7 +20,7 @@ fun SmovApp(
             systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = darkIcons)
         }
 
-        val navController = rememberAnimatedNavController()
+        val navController = rememberNavController()
 
         Row(
             modifier

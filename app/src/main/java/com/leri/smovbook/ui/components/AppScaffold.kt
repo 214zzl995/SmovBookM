@@ -18,6 +18,7 @@ fun AppScaffold(
 ) {
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = false,
         drawerContent = {
             ModalDrawerSheet {
                 AppDrawer(

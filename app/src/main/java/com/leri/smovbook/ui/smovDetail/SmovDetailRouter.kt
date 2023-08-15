@@ -7,9 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.leri.smovbook.models.entities.*
-
-
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun SmovDetailRouter(
     smovId: Long,

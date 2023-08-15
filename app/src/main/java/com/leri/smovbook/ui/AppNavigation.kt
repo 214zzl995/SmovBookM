@@ -9,6 +9,7 @@ object AppDestinations {
     const val BARCODE_ROUTE = "barcode_screen"
     const val SPLASH_SCREEN = "splash_screen"
     const val SMOV_DETAIL = "smov_detail"
+    const val SETTINGS = "settings"
 
     const val SMOV_DETAIL_ARGUMENT0 = "smov_id"
     const val SMOV_DETAIL_ARGUMENT1 = "smov_name"
@@ -28,6 +29,15 @@ class AppNavigationActions(navController: NavHostController) {
     }
     val navigateToBarCode: () -> Unit = {
         navController.navigate(AppDestinations.BARCODE_ROUTE) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+    val navigateToSettings: () -> Unit = {
+        navController.navigate(AppDestinations.SETTINGS) {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }

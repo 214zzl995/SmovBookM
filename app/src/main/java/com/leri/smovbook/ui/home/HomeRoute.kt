@@ -15,6 +15,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.leri.smovbook.models.network.NetworkState
+import com.leri.smovbook.ui.AppNavigationActions
 import com.leri.smovbook.ui.components.AppScaffold
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
@@ -24,7 +25,7 @@ import kotlin.system.exitProcess
 fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     homeViewModel: HomeViewModel,
-    openBarScann: () -> Unit,
+    navigationActions: AppNavigationActions,
     currentRoute: String,
     openSmovDetail: (Long, String) -> Unit,
 ) {
@@ -37,10 +38,10 @@ fun HomeRoute(
         scaffoldState = scaffoldState,
         uiState = uiState.toUiState(),
         onErrorDismiss = { homeViewModel.errorShown(it) },
-        openBarScann = openBarScann,
+        navigationActions = navigationActions,
         onRefreshSmovData = { homeViewModel.refreshData() },
         currentRoute = currentRoute,
-        detailOpen = detailOpen,
+        onDetailOpen = detailOpen,
         pageState = pageState,
         fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() },
         openSmovDetail = openSmovDetail,
@@ -56,10 +57,10 @@ fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     onErrorDismiss: (Long) -> Unit,
     uiState: HomeUiState,
-    openBarScann: () -> Unit,
+    navigationActions: AppNavigationActions,
     onRefreshSmovData: () -> Unit,
     currentRoute: String,
-    detailOpen: DrawerValue,
+    onDetailOpen: DrawerValue,
     pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     openSmovDetail: (Long, String) -> Unit,
@@ -68,7 +69,7 @@ fun HomeRoute(
 
     val context = LocalContext.current
 
-    val drawerState = rememberDrawerState(initialValue = detailOpen)
+    val drawerState = rememberDrawerState(initialValue = onDetailOpen)
 
     var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
     val coroutineScope = rememberCoroutineScope()
@@ -79,13 +80,13 @@ fun HomeRoute(
             permission = Manifest.permission.CAMERA,
             onPermissionResult = {
                 if (it) {
-                    openBarScann()
+                    navigationActions.navigateToBarCode()
                 } else {
                     return@rememberPermissionState
                 }
             })
 
-    val homeScreenType = getHomeScreenType(uiState, detailOpen)
+    val homeScreenType = getHomeScreenType(uiState, onDetailOpen)
 
     BackHandler(
         onBack = {
@@ -132,10 +133,10 @@ fun HomeRoute(
             uiState = uiState,
             homeListLazyListState = homeListLazyListState,
             scaffoldState = scaffoldState,
-            openBarScann = {
+            onOpenBarScann = {
                 when (cameraPermissionState.status) {
                     PermissionStatus.Granted -> {
-                        openBarScann()
+                        navigationActions.navigateToBarCode()
                     }
 
                     is PermissionStatus.Denied -> {
@@ -143,12 +144,15 @@ fun HomeRoute(
                     }
                 }
             },
+            onOpenSettings = {
+                navigationActions.navigateToSettings()
+            },
             onRefreshSmovData = onRefreshSmovData,
             openDrawer = { coroutineScope.launch { drawerState.open() } },
             pageState = pageState,
             fetchNextSmovPage = fetchNextSmovPage,
             openSmovDetail = openSmovDetail,
-            serverState  = serverState
+            serverState = serverState
         )
     }
 

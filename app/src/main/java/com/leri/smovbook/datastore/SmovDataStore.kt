@@ -15,7 +15,9 @@ interface SmovDataStore {
 
     val historyUrl: Flow<MutableList<String>>
 
-    val serviceState:Flow<ServerState>
+    val serviceState: Flow<ServerState>
+
+    val thirdPartyPlayer: Flow<String>
 
     suspend fun changeServerUrl(url: String)
 

@@ -27,7 +27,6 @@ class SmovDetailViewModel @Inject constructor(
 
     val smovFlow = smovIdSharedFlow.flatMapLatest {
         _pageState.value = NetworkState.LOADING
-        delay(500)
         smovRepository.getSmovById(it,
             success = { _pageState.value = NetworkState.SUCCESS },
             error = { _pageState.value = NetworkState.ERROR }

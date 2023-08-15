@@ -52,6 +52,11 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
             ServerState(settings.serverUrl + ":" + settings.serverPort, settings.historyUrlList)
         }.flowOn(Dispatchers.IO)
 
+    override val thirdPartyPlayer: Flow<String>
+        get() = settingsDataStore.data.map { settings ->
+            settings.thirdPartyPlayer
+        }.flowOn(Dispatchers.IO)
+
 
     override suspend fun changeServerUrl(url: String) {
         //分隔url 为 base 和 port
