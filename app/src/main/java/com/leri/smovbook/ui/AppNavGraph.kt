@@ -15,12 +15,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -43,7 +41,7 @@ import com.leri.smovbook.ui.splash.SplashScreen
 fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = AppDestinations.HOME_ROUTE,
+    startDestination: String = AppDestinations.HOME_SCREEN.getRouteWithArguments(),
 ) {
 
 
@@ -54,10 +52,11 @@ fun AppNavGraph(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    val currentRoute = navBackStackEntry?.destination?.route ?: AppDestinations.HOME_ROUTE
+    val currentRoute =
+        navBackStackEntry?.destination?.route ?: AppDestinations.HOME_SCREEN.getRouteWithArguments()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             Box(
                 modifier = Modifier.height(0.dp),
@@ -65,24 +64,24 @@ fun AppNavGraph(
         },
         bottomBar = {
             val items = listOf(
-                AppDestinations.SETTINGS,
-                AppDestinations.HOME_ROUTE,
+                AppDestinations.HOME_SCREEN,
+                AppDestinations.SETTINGS_SCREEN,
             )
-            //当当前的路由不存在于 items 中时 动画收缩底部导航栏高度为0
-            val height = if (items.contains(currentRoute)) 80.dp else 0.dp
 
             NavigationBar(
                 modifier = Modifier
-                    .height(height)
                     .animateContentSize()
             ) {
                 val currentDestination = navBackStackEntry?.destination
                 items.forEach { screen ->
+                    screen.icon!!
                     NavigationBarItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-                        label = { Text(screen) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen } == true,
-                        onClick = {}
+                        icon = { Icon(screen.icon, contentDescription = screen.destination) },
+                        label = { Text(screen.destination) },
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        onClick = {
+                            navController.navigate(screen.getRouteWithArguments())
+                        }
                     )
                 }
             }
@@ -95,10 +94,10 @@ fun AppNavGraph(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(
-                AppDestinations.SPLASH_SCREEN,
+                AppDestinations.SPLASH_SCREEN.getRouteWithArguments(),
                 enterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Start,
                                 animationSpec = tween(500)
@@ -109,7 +108,7 @@ fun AppNavGraph(
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Start,
                                 animationSpec = tween(500)
@@ -120,7 +119,7 @@ fun AppNavGraph(
                 },
                 popEnterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -131,7 +130,7 @@ fun AppNavGraph(
                 },
                 popExitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -146,7 +145,7 @@ fun AppNavGraph(
                 }
             }
             composable(
-                AppDestinations.HOME_ROUTE,
+                AppDestinations.HOME_SCREEN.getRouteWithArguments(),
                 enterTransition = {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Left,
@@ -179,10 +178,10 @@ fun AppNavGraph(
                     openSmovDetail = navigationActions.navigateToSmovDetail
                 )
             }
-            composable(AppDestinations.BARCODE_ROUTE,
+            composable(AppDestinations.BARCODE_SCREEN.getRouteWithArguments(),
                 enterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
                                 animationSpec = tween(500)
@@ -193,7 +192,7 @@ fun AppNavGraph(
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
                                 animationSpec = tween(500)
@@ -204,7 +203,7 @@ fun AppNavGraph(
                 },
                 popEnterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -215,7 +214,7 @@ fun AppNavGraph(
                 },
                 popExitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -231,10 +230,10 @@ fun AppNavGraph(
                     }
                 )
             }
-            composable(AppDestinations.SETTINGS,
+            composable(AppDestinations.SETTINGS_SCREEN.getRouteWithArguments(),
                 enterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
                                 animationSpec = tween(500)
@@ -245,7 +244,7 @@ fun AppNavGraph(
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
                                 animationSpec = tween(500)
@@ -256,7 +255,7 @@ fun AppNavGraph(
                 },
                 popEnterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -267,7 +266,7 @@ fun AppNavGraph(
                 },
                 popExitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -281,14 +280,16 @@ fun AppNavGraph(
                 )
             }
             composable(
-                route = AppDestinations.SMOV_DETAIL_WITH_ARGUMENT,
-                arguments = listOf(
-                    navArgument(AppDestinations.SMOV_DETAIL_ARGUMENT0) { type = NavType.LongType },
-                    navArgument(AppDestinations.SMOV_DETAIL_ARGUMENT1) { defaultValue = "SmovBook" }
-                ),
+                route = AppDestinations.SMOV_DETAIL_SCREEN.getRouteWithArguments(),
+                arguments =
+                AppDestinations.SMOV_DETAIL_SCREEN.arguments.map {
+                    navArgument(it.first, builder = it.second)
+                } + AppDestinations.SMOV_DETAIL_SCREEN.path.map {
+                    navArgument(it.first, builder = it.second)
+                },
                 enterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
                                 animationSpec = tween(500)
@@ -299,7 +300,7 @@ fun AppNavGraph(
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Left,
                                 animationSpec = tween(500)
@@ -310,7 +311,7 @@ fun AppNavGraph(
                 },
                 popEnterTransition = {
                     when (initialState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -321,7 +322,7 @@ fun AppNavGraph(
                 },
                 popExitTransition = {
                     when (targetState.destination.route) {
-                        AppDestinations.HOME_ROUTE ->
+                        AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
                             slideOutOfContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = tween(500)
@@ -332,10 +333,10 @@ fun AppNavGraph(
                 }) { backStackEntry ->
 
                 val smovId =
-                    backStackEntry.arguments?.getLong(AppDestinations.SMOV_DETAIL_ARGUMENT0)
+                    backStackEntry.arguments?.getLong("smov_id")
                         ?: return@composable
                 val smovName =
-                    backStackEntry.arguments?.getString(AppDestinations.SMOV_DETAIL_ARGUMENT1)
+                    backStackEntry.arguments?.getString("smov_name")
                         ?: return@composable
 
                 val serverState by homeViewModel.serverState.collectAsState()
@@ -354,7 +355,7 @@ fun AppNavGraph(
 
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        var selectedItem by remember { mutableStateOf(0) }
+        var selectedItem by remember { mutableIntStateOf(0) }
         val items = listOf("Songs", "Artists", "Playlists")
 
         NavigationBar {

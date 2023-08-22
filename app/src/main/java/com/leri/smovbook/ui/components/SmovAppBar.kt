@@ -63,15 +63,6 @@ fun ChannelNameBar(
 
         CenterAlignedTopAppBar(modifier = modifier, actions = {
             Icon(
-                imageVector = Icons.Outlined.Settings,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .clickable(onClick = { onOpenSettings() })
-                    .padding(horizontal = 12.dp, vertical = 16.dp)
-                    .height(24.dp),
-                contentDescription = stringResource(id = R.string.info)
-            )
-            Icon(
                 imageVector = Icons.Outlined.Refresh,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
