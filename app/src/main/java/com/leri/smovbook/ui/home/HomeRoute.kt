@@ -113,6 +113,41 @@ fun HomeRoute(
     )
 
     val homeListLazyListState = rememberLazyListState()
+
+    return HomeScreen(
+        modifier = Modifier
+            .windowInsetsPadding(
+                WindowInsets
+                    .navigationBars
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            ),
+        onErrorDismiss = onErrorDismiss,
+        uiState = uiState,
+        homeListLazyListState = homeListLazyListState,
+        scaffoldState = scaffoldState,
+        onOpenBarScann = {
+            when (cameraPermissionState.status) {
+                PermissionStatus.Granted -> {
+                    navigationActions.navigateToBarCode()
+                }
+
+                is PermissionStatus.Denied -> {
+                    cameraPermissionState.launchPermissionRequest()
+                }
+            }
+        },
+        onOpenSettings = {
+            navigationActions.navigateToSettings()
+        },
+        onRefreshSmovData = onRefreshSmovData,
+        openDrawer = { coroutineScope.launch { drawerState.open() } },
+        pageState = pageState,
+        fetchNextSmovPage = fetchNextSmovPage,
+        openSmovDetail = openSmovDetail,
+        serverState = serverState
+    )
+
+    /* 侧边抽屉
     AppScaffold(
         drawerState = drawerState,
         currentRoute = currentRoute,
@@ -122,39 +157,8 @@ fun HomeRoute(
             .navigationBarsPadding(),
         serverState = serverState
     ) {
-        HomeScreen(
-            modifier = Modifier
-                .windowInsetsPadding(
-                    WindowInsets
-                        .navigationBars
-                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                ),
-            onErrorDismiss = onErrorDismiss,
-            uiState = uiState,
-            homeListLazyListState = homeListLazyListState,
-            scaffoldState = scaffoldState,
-            onOpenBarScann = {
-                when (cameraPermissionState.status) {
-                    PermissionStatus.Granted -> {
-                        navigationActions.navigateToBarCode()
-                    }
 
-                    is PermissionStatus.Denied -> {
-                        cameraPermissionState.launchPermissionRequest()
-                    }
-                }
-            },
-            onOpenSettings = {
-                navigationActions.navigateToSettings()
-            },
-            onRefreshSmovData = onRefreshSmovData,
-            openDrawer = { coroutineScope.launch { drawerState.open() } },
-            pageState = pageState,
-            fetchNextSmovPage = fetchNextSmovPage,
-            openSmovDetail = openSmovDetail,
-            serverState = serverState
-        )
-    }
+    }*/
 
 }
 

@@ -40,12 +40,7 @@ fun SettingsScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* doSomething() */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBackIosNew,
-                            contentDescription = "Localized description"
-                        )
-                    }
+
                 },
                 actions = {},
                 scrollBehavior = scrollBehavior

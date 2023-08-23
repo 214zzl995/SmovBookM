@@ -59,10 +59,11 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
 
 
     override suspend fun changeServerUrl(url: String) {
+
         //分隔url 为 base 和 port
         val httpUrl = "http://$url".toHttpUrl()
         settingsDataStore.updateData { currentSettings ->
-            val historyUrl = currentSettings.historyUrlList.toMutableList()
+            /*val historyUrl = currentSettings.historyUrlList.toMutableList()
             historyUrl.removeIf { it.equals(url) }
             val historyCount =
                 if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
@@ -74,7 +75,10 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
 
             currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port)
                 .clearHistoryUrl()
-                .addAllHistoryUrl(historyUrl).build()
+                .addAllHistoryUrl(historyUrl).build()*/
+
+            //只修改 地址 不重新排序
+            currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port).build()
         }
     }
 

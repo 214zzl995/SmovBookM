@@ -162,7 +162,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-swiperefresh:$versions.accompanist"
     implementation "com.google.accompanist:accompanist-permissions:$versions.accompanist"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$versions.accompanist"
-    implementation "com.google.mlkit:barcode-scanning:17.0.2"
+    implementation "com.google.mlkit:barcode-scanning:17.2.0"
 
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "androidx.datastore:datastore-core:1.0.0"

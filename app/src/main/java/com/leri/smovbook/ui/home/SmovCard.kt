@@ -31,6 +31,8 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import coil.size.Precision
+import coil.size.Scale
 import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.LocalOkHttpClient
@@ -82,7 +84,10 @@ fun SmovCard(
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
                     model = ImageRequest
-                        .Builder(LocalContext.current).crossfade(true).data(url).build(),
+                        .Builder(LocalContext.current).crossfade(true).data(url)
+                        .scale(Scale.FILL)
+                        .precision(Precision.EXACT)
+                        .build(),
                     imageLoader = imageLoader,
                     contentScale = ContentScale.FillWidth,
                     loading = {

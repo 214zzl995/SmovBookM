@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInclusive
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -58,11 +59,12 @@ object AppDestinations {
     val SMOV_DETAIL_SCREEN = Route(
         "smov_detail_screen",
         "详情",
-        listOf("smov_name" to { defaultValue = "SmovBook" ; type = NavType.StringType }),
+        listOf("smov_name" to { defaultValue = "SmovBook"; type = NavType.StringType }),
         listOf("smov_id" to { type = NavType.LongType }),
     )
     val SETTINGS_SCREEN = Route("settings_screen", "设置", icon = Icons.Filled.Settings)
-    val SERVICE_SWITCH_SCREEN = Route("service_switch_screen", "服务")
+    val SERVICE_SWITCH_SCREEN =
+        Route("service_switch_screen", "服务", icon = Icons.Filled.AllInclusive)
 }
 
 class AppNavigationActions(navController: NavHostController) {
