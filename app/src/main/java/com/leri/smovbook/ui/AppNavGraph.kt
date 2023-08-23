@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,14 +31,11 @@ import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.home.HomeRoute
 import com.leri.smovbook.ui.home.HomeViewModel
 import com.leri.smovbook.ui.serviceSwitch.ServiceSwitchRoute
-import com.leri.smovbook.ui.serviceSwitch.ServiceSwitchScreen
 import com.leri.smovbook.ui.setting.SettingsRoute
 import com.leri.smovbook.ui.smovDetail.SmovDetailRouter
 import com.leri.smovbook.ui.splash.SplashScreen
 import kotlinx.coroutines.launch
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavGraph(
     modifier: Modifier = Modifier,
@@ -58,16 +54,6 @@ fun AppNavGraph(
     val currentRoute =
         navBackStackEntry?.destination?.route ?: AppDestinations.HOME_SCREEN.getRouteWithArguments()
 
-    val items = listOf(
-        AppDestinations.HOME_SCREEN,
-        AppDestinations.SETTINGS_SCREEN,
-    )
-
-    val showBottomBar = navController
-        .currentBackStackEntryAsState().value?.destination?.route in items.map { it.route }
-
-
-    //如何处理动画在 https://google.github.io/accompanist/navigation-animation/
     NavHost(
         navController,
         startDestination = startDestination,
@@ -150,14 +136,8 @@ fun AppNavGraph(
                 )
             },
         ) {
-//            HomeRoute(
-//                homeViewModel = homeViewModel,
-//                navigationActions = navigationActions,
-//                currentRoute = currentRoute,
-//                openSmovDetail = navigationActions.navigateToSmovDetail
-//            )
 
-            HomePage(
+            NavigationHomePage(
                 homeViewModel = homeViewModel,
                 navigationActions = navigationActions,
                 currentRoute = currentRoute,
@@ -345,7 +325,7 @@ fun AppNavGraph(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(
+fun NavigationHomePage(
     homeViewModel: HomeViewModel,
     navigationActions: AppNavigationActions,
     currentRoute: String,
@@ -355,7 +335,12 @@ fun HomePage(
 ) {
 
     val coroutineScope = rememberCoroutineScope()
-
+    val serviceSwitch = @Composable {
+        ServiceSwitchRoute(
+            homeViewModel = homeViewModel,
+            navigationActions = navigationActions,
+        )
+    }
     val home = @Composable {
         HomeRoute(
             homeViewModel = homeViewModel,
@@ -370,13 +355,8 @@ fun HomePage(
         )
     }
 
-    val serviceSwitch = @Composable {
-        ServiceSwitchRoute(
-            homeViewModel = homeViewModel,
-            navigateUp = { navController.navigateUp() },
-            navigationActions = navigationActions,
-        )
-    }
+    //是侦测不到 State 内部的变动的 所以不会重组 问题来了 是否应该把这个部分 单独做viewmodel
+    val serverState by homeViewModel.serverUrl
 
     val screens = listOf(
         AppDestinations.HOME_SCREEN to home,
@@ -386,12 +366,15 @@ fun HomePage(
     val pagerState = rememberPagerState(pageCount = {
         screens.size
     }, initialPage = 0)
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             Box(
-                modifier = Modifier.height(0.dp),
-            )
+                modifier = Modifier.height(20.dp),
+            ){
+                Text(text = serverState)
+            }
         },
         bottomBar = {
             NavigationBar(

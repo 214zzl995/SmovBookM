@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui.serviceSwitch
 
 import android.Manifest
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -15,9 +16,9 @@ import com.leri.smovbook.ui.home.HomeViewModel
 fun ServiceSwitchRoute(
     homeViewModel: HomeViewModel,
     navigationActions: AppNavigationActions,
-    navigateUp: () -> Unit,
 ) {
     val serverState by homeViewModel.serverState.collectAsState()
+
     val cameraPermissionState =
         rememberPermissionState(
             permission = Manifest.permission.CAMERA,
