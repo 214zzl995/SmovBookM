@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.util.clearFocusOnKeyboardDismiss
-import com.leri.smovbook.ui.theme.AddServerUrlBackground
 
 
 @Composable
@@ -46,7 +45,7 @@ fun ChangeServerUrlDialog(
         visible = visible,
         enter = fadeIn(), exit = fadeOut()
     ) {
-        Surface(color = AddServerUrlBackground) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -153,7 +152,7 @@ private fun AddUrlDialogOperateButtonTwo(
     }
     val localDensity = LocalDensity.current
     val cancelOffset by animateDpAsState(
-        targetValue = if (editInputVisible) 0.dp else -height
+        targetValue = if (editInputVisible) 0.dp else -height, label = ""
     )
 
     Row(

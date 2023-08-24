@@ -23,7 +23,6 @@ import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import androidx.compose.animation.animateContentSize
 import androidx.compose.material3.*
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
@@ -41,12 +40,10 @@ import com.leri.smovbook.ui.LocalOkHttpClient
 fun SmovCard(
     smov: Smov,
     mainUrl: String,
-    openSmovDetail: (Long, String) -> Unit,
+    openSmovDetail: (Long, String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    val visible by remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
@@ -71,7 +68,7 @@ fun SmovCard(
 
                 }) {
                 val url =
-                    "http://$mainUrl/smovbook/file/${smov.filename}/img/thumbs_${smov.name}.jpg"
+                    "http://127.0.0.1/smovbook/file/${smov.filename}/img/thumbs_${smov.name}.jpg"
 
                 //这里要取巨gb顶部的一个值 我麻了
                 val imageLoader =
