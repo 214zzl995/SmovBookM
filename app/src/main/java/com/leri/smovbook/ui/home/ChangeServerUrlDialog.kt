@@ -34,7 +34,7 @@ fun ChangeServerUrlDialog(
     openBarScann: () -> Unit,
     visible: Boolean,
     close: () -> Unit,
-    changeServerUrl: (String) -> Unit
+    changeServerUrl: (String) -> Unit,
 ) {
     var editInputVisible by remember { mutableStateOf(false) }
     var url by rememberSaveable { mutableStateOf("") }
@@ -81,10 +81,8 @@ fun ChangeServerUrlDialog(
                             url = url,
                             changeServerUrl = changeServerUrl
                         )
-
                     }
                 }
-
             }
         }
     }
@@ -94,7 +92,7 @@ fun ChangeServerUrlDialog(
 private fun AddUrlFloatingActionButton(
     hide: Boolean,
     openBarScann: () -> Unit,
-    openEditInput: () -> Unit
+    openEditInput: () -> Unit,
 ) {
     AnimatedVisibility(
         visible = !hide,
@@ -145,7 +143,7 @@ private fun AddUrlFloatingActionButton(
 private fun AddUrlDialogOperateButtonTwo(
     editInputVisible: Boolean,
     close: () -> Unit,
-    closeEditInput: () -> Unit
+    closeEditInput: () -> Unit,
 ) {
     var height by remember {
         mutableStateOf(0.dp)
@@ -203,7 +201,7 @@ private fun AddUrlDialogOperate(
     close: () -> Unit,
     closeEditInput: () -> Unit,
     changeServerUrl: (String) -> Unit,
-    url: String
+    url: String,
 ) {
 
     Row(
@@ -256,7 +254,7 @@ private fun AddUrlDialogOperate(
 private fun AddUrlInput(
     editInputVisible: Boolean,
     changeUrlInComposable: (String) -> Unit,
-    url: String
+    url: String,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     AnimatedVisibility(
@@ -292,7 +290,7 @@ private fun AddUrlInput(
 @Composable
 private fun AddUrlInputNoneCheck(
     editInputVisible: Boolean,
-    changeServerUrl: (String) -> Unit
+    changeServerUrl: (String) -> Unit,
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current

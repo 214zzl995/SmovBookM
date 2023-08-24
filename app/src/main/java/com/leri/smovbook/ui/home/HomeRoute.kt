@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.ui.AppNavigationActions
 import com.leri.smovbook.viewModel.HomeUiState
