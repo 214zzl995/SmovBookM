@@ -1,4 +1,4 @@
-package com.leri.smovbook.ui.home
+package com.leri.smovbook.viewModel
 
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,26 +57,7 @@ data class HomeViewModelState(
         }
 }
 
-data class ServerState(
-    var serverUrl: String = "",
-    var historyUrl: MutableList<String> = mutableListOf(),
-    val changeServerUrl: (String) -> Unit = {},
-) {
-    fun update(state: ServerState) {
-        serverUrl = state.serverUrl
-        historyUrl = state.historyUrl
-    }
 
-    constructor(changeServerUrl: (String) -> Unit) : this("", mutableListOf(), changeServerUrl)
-
-}
-
-
-/**
- * 有大量设计不合理的位置 主要是刷新的处理和刚开始的处理
- * 刷新处理: 应该删除所有数据后 将当前数据重新刷入
- * 刚开始的处理 不知道为什么没有检测到数据的变动
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -114,9 +95,6 @@ class HomeViewModel @Inject constructor(
 
     }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
-    val serverState: MutableStateFlow<ServerState> =
-        MutableStateFlow(ServerState { changeServerUrl(it) })
-
     init {
         Timber.d("Injection HomeViewModel")
 
@@ -128,20 +106,6 @@ class HomeViewModel @Inject constructor(
         //如果在 ViewModel 中执行长时间运行的 IO 操作，最好使用 withContext(Dispatchers.IO) 而不是 viewModelScope.launch(Dispatchers.IO) 来执行这些操作。
         //因为 viewModelScope.launch 返回一个 Job 对象，该对象不会等待执行的操作完成，而是立即返回，因此您需要自己手动控制操作完成后再读取状态。
         //而 withContext 函数可以将 IO 操作包装在一个协程中，并在操作完成后自动返回结果，更加方便。
-
-        viewModelScope.launch(Dispatchers.IO) {
-            smovRepository.getServerState()
-                .map {
-                    if (it.serverUrl == ":0") ServerState(
-                        "127.0.0.1:8080",
-                        it.historyUrl
-                    ) else it
-                }
-                .collectLatest {
-                    serverState.value.update(it)
-                    serverUrl.value = it.serverUrl
-                }
-        }
 
         viewModelScope.launch(Dispatchers.IO) {
             newSmovFlow.collectLatest {
@@ -160,16 +124,8 @@ class HomeViewModel @Inject constructor(
         smovPageState.value = page_num
     }
 
-    fun changeServerUrl(url: String) {
-        //更新url前停止所有请求
-        smovRepository.cancelAll()
-        smovRepository.changeSmovServiceUrl(url)
-        refreshData()
-    }
-
     fun refreshData() {
         if (smovPageState.value == 0) {
-            //先更新为-1 因为防抖无法传0 这个防抖会造成 -1 比0更早实现 就会造成空数据
             smovsState.value.smovs.removeAll { true }
             fetchSmovPageForNum(-1)
         }

@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import com.leri.smovbook.config.Settings
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.datastore.serializer.settingsDataStore
-import com.leri.smovbook.ui.home.ServerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -47,11 +46,6 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
                 settings.historyUrlList
             }.flowOn(Dispatchers.IO)
 
-    override val serviceState: Flow<ServerState>
-        get() = settingsDataStore.data.map { settings ->
-            ServerState(settings.serverUrl + ":" + settings.serverPort, settings.historyUrlList)
-        }.flowOn(Dispatchers.IO)
-
     override val thirdPartyPlayer: Flow<String>
         get() = settingsDataStore.data.map { settings ->
             settings.thirdPartyPlayer
@@ -59,26 +53,17 @@ class SmovDataStoreImpl(context: Context) : SmovDataStore {
 
 
     override suspend fun changeServerUrl(url: String) {
-
-        //分隔url 为 base 和 port
         val httpUrl = "http://$url".toHttpUrl()
         settingsDataStore.updateData { currentSettings ->
-            /*val historyUrl = currentSettings.historyUrlList.toMutableList()
-            historyUrl.removeIf { it.equals(url) }
-            val historyCount =
-                if (currentSettings.historyCount == 0) 10 else currentSettings.historyCount
 
-            if (historyUrl.size == historyCount) {
-                historyUrl.removeAt(0)
+            val historyUrl = currentSettings.historyUrlList.toMutableList()
+            //判断当前url 是否已经存在
+            if (!historyUrl.contains(url)) {
+                historyUrl.add(url)
             }
-            historyUrl.add(url)
 
             currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port)
-                .clearHistoryUrl()
-                .addAllHistoryUrl(historyUrl).build()*/
-
-            //只修改 地址 不重新排序
-            currentSettings.toBuilder().setServerUrl(httpUrl.host).setServerPort(httpUrl.port).build()
+                .clearHistoryUrl().addAllHistoryUrl(historyUrl).build()
         }
     }
 

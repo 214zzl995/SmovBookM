@@ -1,10 +1,8 @@
 package com.leri.smovbook.ui.home
 
-import android.Manifest
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
@@ -12,11 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.ui.AppNavigationActions
-import com.leri.smovbook.ui.components.AppScaffold
+import com.leri.smovbook.viewModel.HomeUiState
+import com.leri.smovbook.viewModel.HomeViewModel
+import com.leri.smovbook.viewModel.ServiceViewModel
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
@@ -25,14 +23,14 @@ import kotlin.system.exitProcess
 fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     homeViewModel: HomeViewModel,
+    serviceViewModel: ServiceViewModel,
     navigationActions: AppNavigationActions,
-    currentRoute: String,
     openSmovDetail: (Long, String) -> Unit,
 ) {
     val uiState by homeViewModel.smovsState
     val detailOpen by homeViewModel.detailOpen
     val pageState by homeViewModel.pageState
-    val serverState by homeViewModel.serverState.collectAsState()
+    val serviceUrl by serviceViewModel.serverUrl
 
     HomeRoute(
         scaffoldState = scaffoldState,
@@ -40,18 +38,17 @@ fun HomeRoute(
         onErrorDismiss = { homeViewModel.errorShown(it) },
         navigationActions = navigationActions,
         onRefreshSmovData = { homeViewModel.refreshData() },
-        currentRoute = currentRoute,
         onDetailOpen = detailOpen,
         pageState = pageState,
         fetchNextSmovPage = { homeViewModel.fetchNextSmovPage() },
         openSmovDetail = openSmovDetail,
-        serverState = serverState
+        serviceUrl = serviceUrl,
     )
 
 }
 
 
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeRoute(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
@@ -59,32 +56,20 @@ fun HomeRoute(
     uiState: HomeUiState,
     navigationActions: AppNavigationActions,
     onRefreshSmovData: () -> Unit,
-    currentRoute: String,
     onDetailOpen: DrawerValue,
     pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     openSmovDetail: (Long, String) -> Unit,
-    serverState: ServerState,
+    serviceUrl: String,
 ) {
 
     val context = LocalContext.current
 
     val drawerState = rememberDrawerState(initialValue = onDetailOpen)
 
-    var backTime by remember { mutableStateOf(System.currentTimeMillis() - 20000) }
+    var backTime by remember { mutableLongStateOf(System.currentTimeMillis() - 20000) }
     val coroutineScope = rememberCoroutineScope()
 
-
-    val cameraPermissionState =
-        rememberPermissionState(
-            permission = Manifest.permission.CAMERA,
-            onPermissionResult = {
-                if (it) {
-                    navigationActions.navigateToBarCode()
-                } else {
-                    return@rememberPermissionState
-                }
-            })
 
     val homeScreenType = getHomeScreenType(uiState, onDetailOpen)
 
@@ -112,8 +97,6 @@ fun HomeRoute(
         enabled = homeScreenType == HomeScreenType.Feed && drawerState.isClosed
     )
 
-    val homeListLazyListState = rememberLazyListState()
-
     return HomeScreen(
         modifier = Modifier
             .windowInsetsPadding(
@@ -123,42 +106,13 @@ fun HomeRoute(
             ),
         onErrorDismiss = onErrorDismiss,
         uiState = uiState,
-        homeListLazyListState = homeListLazyListState,
         scaffoldState = scaffoldState,
-        onOpenBarScann = {
-            when (cameraPermissionState.status) {
-                PermissionStatus.Granted -> {
-                    navigationActions.navigateToBarCode()
-                }
-
-                is PermissionStatus.Denied -> {
-                    cameraPermissionState.launchPermissionRequest()
-                }
-            }
-        },
-        onOpenSettings = {
-            navigationActions.navigateToSettings()
-        },
         onRefreshSmovData = onRefreshSmovData,
-        openDrawer = { coroutineScope.launch { drawerState.open() } },
         pageState = pageState,
         fetchNextSmovPage = fetchNextSmovPage,
         openSmovDetail = openSmovDetail,
-        serverState = serverState
+        serviceUrl = serviceUrl,
     )
-
-    /* 侧边抽屉
-    AppScaffold(
-        drawerState = drawerState,
-        currentRoute = currentRoute,
-        closeDrawer = { coroutineScope.launch { drawerState.close() } },
-        modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding(),
-        serverState = serverState
-    ) {
-
-    }*/
 
 }
 

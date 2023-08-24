@@ -2,6 +2,7 @@ package com.leri.smovbook.di
 
 import com.leri.smovbook.datastore.SmovDataStore
 import com.leri.smovbook.network.service.SmovService
+import com.leri.smovbook.repository.ServiceRepository
 import com.leri.smovbook.repository.SmovRepository
 import dagger.Module
 import dagger.Provides
@@ -21,11 +22,20 @@ object RepositoryModule {
 
     @Provides
     @ViewModelScoped
-    fun provideTvRepository(
+    fun provideSmovRepository(
         smovService: SmovService,
-        smovDataStore: SmovDataStore,
-        okhHttpClient: OkHttpClient
     ): SmovRepository {
-        return SmovRepository(smovService, smovDataStore,okhHttpClient.dispatcher)
+        return SmovRepository(smovService)
     }
+
+    @Provides
+    @ViewModelScoped
+    fun provideServiceRepository(
+        smovDataStore: SmovDataStore,
+        okhHttpClient: OkHttpClient,
+    ): ServiceRepository {
+        return ServiceRepository(smovDataStore,okhHttpClient.dispatcher)
+    }
+
+
 }

@@ -29,11 +29,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.leri.smovbook.ui.barcodeScann.BarCodeScannRoute
 import com.leri.smovbook.ui.home.HomeRoute
-import com.leri.smovbook.ui.home.HomeViewModel
+import com.leri.smovbook.viewModel.HomeViewModel
 import com.leri.smovbook.ui.serviceSwitch.ServiceSwitchRoute
 import com.leri.smovbook.ui.setting.SettingsRoute
 import com.leri.smovbook.ui.smovDetail.SmovDetailRouter
 import com.leri.smovbook.ui.splash.SplashScreen
+import com.leri.smovbook.viewModel.ServiceViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -45,14 +46,12 @@ fun AppNavGraph(
 
 
     val homeViewModel: HomeViewModel = hiltViewModel()
+    val serviceViewModel: ServiceViewModel = hiltViewModel()
     val navigationActions = remember(navController) {
         AppNavigationActions(navController)
     }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    val currentRoute =
-        navBackStackEntry?.destination?.route ?: AppDestinations.HOME_SCREEN.getRouteWithArguments()
 
     NavHost(
         navController,
@@ -139,8 +138,8 @@ fun AppNavGraph(
 
             NavigationHomePage(
                 homeViewModel = homeViewModel,
+                serviceViewModel = serviceViewModel,
                 navigationActions = navigationActions,
-                currentRoute = currentRoute,
                 navController = navController,
                 modifier = modifier,
                 navBackStackEntry = navBackStackEntry
@@ -194,7 +193,7 @@ fun AppNavGraph(
             BarCodeScannRoute(
                 navigateUp = { navController.navigateUp() },
                 changeServer = {
-                    homeViewModel.changeServerUrl(it)
+                    serviceViewModel.changeServiceUrl(it)
                 }
             )
         }
@@ -307,12 +306,12 @@ fun AppNavGraph(
                 backStackEntry.arguments?.getString("smov_name")
                     ?: return@composable
 
-            val serverState by homeViewModel.serverState.collectAsState()
+            val serverUrl by serviceViewModel.serverUrl
 
             SmovDetailRouter(
                 smovId,
                 smovName,
-                serverUrl = serverState.serverUrl,
+                serverUrl,
                 hiltViewModel()
             ) { navController.navigateUp() }
 
@@ -327,8 +326,8 @@ fun AppNavGraph(
 @Composable
 fun NavigationHomePage(
     homeViewModel: HomeViewModel,
+    serviceViewModel: ServiceViewModel,
     navigationActions: AppNavigationActions,
-    currentRoute: String,
     navController: NavController,
     modifier: Modifier = Modifier,
     navBackStackEntry: NavBackStackEntry? = null,
@@ -337,15 +336,15 @@ fun NavigationHomePage(
     val coroutineScope = rememberCoroutineScope()
     val serviceSwitch = @Composable {
         ServiceSwitchRoute(
-            homeViewModel = homeViewModel,
+            serviceViewModel = serviceViewModel,
             navigationActions = navigationActions,
         )
     }
     val home = @Composable {
         HomeRoute(
             homeViewModel = homeViewModel,
+            serviceViewModel = serviceViewModel,
             navigationActions = navigationActions,
-            currentRoute = currentRoute,
             openSmovDetail = navigationActions.navigateToSmovDetail
         )
     }
@@ -371,7 +370,7 @@ fun NavigationHomePage(
         modifier = modifier.fillMaxSize(),
         topBar = {
             Box(
-                modifier = Modifier.height(20.dp),
+                modifier = Modifier.height(0.dp),
             ){
                 Text(text = serverState)
             }

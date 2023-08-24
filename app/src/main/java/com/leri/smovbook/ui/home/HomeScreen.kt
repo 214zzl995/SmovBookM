@@ -1,17 +1,17 @@
 package com.leri.smovbook.ui.home
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
@@ -33,41 +33,30 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.text.style.TextOverflow
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isError
 import com.leri.smovbook.models.network.isLoading
 import com.leri.smovbook.models.network.isSuccess
-import com.leri.smovbook.ui.AppDestinations
 import com.leri.smovbook.ui.components.*
 import com.leri.smovbook.ui.data.testDataHasData
+import com.leri.smovbook.viewModel.HomeUiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    openDrawer: () -> Unit = { },
     onErrorDismiss: (Long) -> Unit,
     uiState: HomeUiState,
     onRefreshSmovData: () -> Unit = { },
-    homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
-    onOpenBarScann: () -> Unit = { },
-    onOpenSettings: () -> Unit = { },
     pageState: NetworkState,
     fetchNextSmovPage: () -> Unit,
     openSmovDetail: (Long, String) -> Unit,
-    serverState: ServerState,
+    serviceUrl: String,
 ) {
 
     val scrollState = rememberLazyListState()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    var changeServerUrlDialogVisible by remember { mutableStateOf(false) }
 
     Surface(modifier = modifier) {
         Box(
@@ -82,44 +71,27 @@ fun HomeScreen(
                     uiState = uiState,
                     onRefreshSmovData = onRefreshSmovData,
                     onErrorDismiss = onErrorDismiss,
-                    openDrawer = openDrawer,
-                    homeListLazyListState = homeListLazyListState,
-                    onOpenBarScann = { changeServerUrlDialogVisible = true },
                     scaffoldState = scaffoldState,
                     pageState = pageState,
-                    serverState = serverState,
+                    serviceUrl = serviceUrl,
                     fetchNextSmovPage = fetchNextSmovPage,
-                    scrollBehavior = scrollBehavior,
-                    onOpenSettings = onOpenSettings,
                 ) { hasData ->
                     SmovList(
                         smov = hasData.smovs,
-                        serverUrl = serverState.serverUrl,
+                        serviceUrl = serviceUrl,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxSize(),
                         scrollState = scrollState,
-                        openSmovDetail = openSmovDetail,
-                        scrollBehavior = scrollBehavior
+                        openSmovDetail = openSmovDetail
                     )
 
                 }
             }
 
         }
-        ChangeServerUrlDialog(
-            onOpenBarScann,
-            changeServerUrlDialogVisible,
-            close = { changeServerUrlDialogVisible = false },
-            changeServerUrl = serverState.changeServerUrl
-        )
 
     }
-
-
-
-
-
 
 
 }
@@ -130,23 +102,54 @@ private fun HomeScreenWithList(
     uiState: HomeUiState,
     onErrorDismiss: (Long) -> Unit,
     onRefreshSmovData: () -> Unit,
-    openDrawer: () -> Unit,
-    homeListLazyListState: LazyListState,
     scaffoldState: ScaffoldState,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior,
-    onOpenBarScann: () -> Unit,
-    onOpenSettings: () -> Unit,
     pageState: NetworkState,
-    serverState: ServerState,
+    serviceUrl: String,
     fetchNextSmovPage: () -> Unit,
     hasPostsContent: @Composable (
         uiState: HomeUiState.HasData,
     ) -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            MediumTopAppBar(
+                title = {
+                    Text(
+                        "首页",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                navigationIcon = {
+                    Row (modifier = Modifier.padding(start = 10.dp)) {
+                        Icon(
+                            modifier = Modifier.height(24.dp),
+                            imageVector = Icons.Outlined.Home,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = stringResource(id = R.string.info)
+                        )
+                    }
+
+                },
+                actions = {
+                    Icon(
+                        imageVector = Icons.Outlined.Refresh,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .clickable(onClick = { onRefreshSmovData() })
+                            .padding(horizontal = 12.dp, vertical = 16.dp)
+                            .height(24.dp),
+                        contentDescription = stringResource(id = R.string.info)
+                    )
+                },
+                scrollBehavior = scrollBehavior
+            )
+        },
         snackbarHost = { SnackbarHost(snackBarHostState) },
         floatingActionButton = {
             if (uiState.errorMessages.isEmpty() && !pageState.isLoading() && uiState.errorMessages.count() > 100) {
@@ -159,6 +162,7 @@ private fun HomeScreenWithList(
     { innerPadding ->
         val contentModifier = Modifier.padding(innerPadding)
 
+        //这个部分很乱 接下来的改造重点
         RefreshContent(
             empty = when (uiState) {
                 is HomeUiState.HasData -> false
@@ -170,7 +174,11 @@ private fun HomeScreenWithList(
             content = {
                 Crossfade(targetState = uiState, label = "") {
                     when (it) {
-                        is HomeUiState.HasData -> hasPostsContent(it)
+                        is HomeUiState.HasData -> Box(contentModifier.fillMaxSize()) {
+                            hasPostsContent(
+                                it
+                            )
+                        }
                         is HomeUiState.NoData -> {
                             Box(contentModifier.fillMaxSize()) {
                                 if (pageState.isError()) {
@@ -188,19 +196,6 @@ private fun HomeScreenWithList(
                     }
                 }
             },
-        )
-
-        val name by remember { mutableStateOf("SmovBook") }
-
-        ChannelNameBar(
-            channelName = name,
-            onNavIconPressed = openDrawer,
-            scrollBehavior = scrollBehavior,
-            modifier = Modifier,
-            onRefreshSmovData = onRefreshSmovData,
-            onOpenBarScann = onOpenBarScann,
-            onOpenSettings = onOpenSettings,
-            serverState = serverState,
         )
 
         if (uiState.errorMessages.isNotEmpty()) {
@@ -244,24 +239,6 @@ private fun NodataOperate(
 }
 
 @Composable
-private fun MainFloatingActionButton(
-    unit: () -> Unit,
-    modifier: Modifier = Modifier,
-    text: String,
-) {
-    ExtendedFloatingActionButton(
-        onClick = unit,
-        modifier = modifier
-            .padding(16.dp)
-            .navigationBarsPadding()
-            .offset(x = 0.dp, y = (-32).dp)
-            .height(48.dp),
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.primary,
-    ) { Text(text) }
-}
-
-@Composable
 private fun RefreshContent(
     empty: Boolean,
     emptyContent: @Composable () -> Unit,
@@ -283,49 +260,32 @@ private fun RefreshContent(
 }
 
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SmovList(
     smov: List<Smov>,
-    serverUrl: String,
+    serviceUrl: String,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
     openSmovDetail: (Long, String) -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior,
 ) {
 
     val scope = rememberCoroutineScope()
     //statusBar 会出现高度突然刷新的情况
-    val contentPadding =
-        WindowInsets.statusBarsIgnoringVisibility.add(WindowInsets(top = 70.dp)).asPaddingValues()
 
     BoxWithConstraints(modifier = modifier) {
 
         LazyColumn(
             reverseLayout = false,
             state = scrollState,
-            contentPadding = contentPadding,
             modifier = Modifier
                 .testTag("ConversationTestTag")
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize()
         ) {
             items(smov) { smovItem ->
-                SmovCard(smovItem, serverUrl, openSmovDetail)
+                SmovCard(smovItem, serviceUrl, openSmovDetail)
             }
         }
-
-        //这个部分的实现需要很多一起 所以先改造LazyColumn部分
-        /*Box(
-            Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.15f)
-                .background(Color.Red).align(Alignment.BottomEnd),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            Text(text = "现在不知道咋整 等下看")
-
-        }*/
 
 
         val jumpThreshold = with(LocalDensity.current) {
@@ -388,9 +348,8 @@ fun Screen() {
         HomeScreen(
             onErrorDismiss = {},
             uiState = testDataHasData,
-            homeListLazyListState = rememberLazyListState(0),
             scaffoldState = rememberScaffoldState(),
-            serverState = ServerState("127.0.0.1:8000", mutableListOf()),
+            serviceUrl = "127.0.0.1",
             pageState = NetworkState.SUCCESS,
             fetchNextSmovPage = { },
             openSmovDetail = { _, _ -> }
@@ -406,8 +365,7 @@ fun Screen() {
 fun ChannelBarPrev() {
     SmovBookMTheme {
         ChannelNameBar(
-            channelName = "composers",
-            serverState = ServerState("127.0.0.1:8000", mutableListOf()),
+            serviceUrl = "127.0.0.1"
         )
     }
 }

@@ -1,23 +1,22 @@
 package com.leri.smovbook.ui.serviceSwitch
 
 import android.Manifest
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.leri.smovbook.ui.AppNavigationActions
-import com.leri.smovbook.ui.home.HomeViewModel
+import com.leri.smovbook.viewModel.ServiceViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ServiceSwitchRoute(
-    homeViewModel: HomeViewModel,
+    serviceViewModel: ServiceViewModel,
     navigationActions: AppNavigationActions,
 ) {
-    val serverState by homeViewModel.serverState.collectAsState()
+    val serviceUrl by serviceViewModel.serverUrl
+    val historyUrl by serviceViewModel.historyUrl
 
     val cameraPermissionState =
         rememberPermissionState(
@@ -30,7 +29,9 @@ fun ServiceSwitchRoute(
                 }
             })
     ServiceSwitchScreen(
-        serverState = serverState,
+        serviceUrl = serviceUrl,
+        historyUrl = historyUrl,
+        changeServiceUrl = { serviceViewModel.changeServiceUrl(it) },
         openBarScann = {
             when (cameraPermissionState.status) {
                 PermissionStatus.Granted -> {

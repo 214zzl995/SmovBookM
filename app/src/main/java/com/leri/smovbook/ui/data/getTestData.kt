@@ -1,7 +1,7 @@
 package com.leri.smovbook.ui.data
 
 import com.leri.smovbook.models.entities.*
-import com.leri.smovbook.ui.home.HomeUiState
+import com.leri.smovbook.viewModel.HomeUiState
 
 val testData = mutableListOf(
     Smov(

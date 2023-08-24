@@ -19,8 +19,6 @@ import timber.log.Timber
  */
 class SmovRepository(
     private val smovService: SmovService,
-    private val smovDataStore: SmovDataStore,
-    private val dispatcher: Dispatcher,
 ) : Repository {
 
     init {
@@ -67,25 +65,5 @@ class SmovRepository(
         }.onException { error() }
     }.onCompletion {  }.flowOn(Dispatchers.IO)
 
-
-    @WorkerThread
-    fun getSmovServiceUrl() = smovDataStore.serverUrl
-
-    @WorkerThread
-    fun getSmovServiceUrlAndPort() = smovDataStore.serverUrlAndPort
-
-    @WorkerThread
-    fun getServerState() = smovDataStore.serviceState
-
-    @WorkerThread
-    fun getSmovHistoryUrl() = smovDataStore.historyUrl
-
-    @WorkerThread
-    fun changeSmovServiceUrl(url: String) = runBlocking {
-        smovDataStore.changeServerUrl(url)
-    }
-
-    @WorkerThread
-    fun cancelAll() = run { dispatcher.cancelAll() }
 
 }

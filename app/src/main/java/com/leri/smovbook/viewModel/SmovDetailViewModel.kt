@@ -1,4 +1,4 @@
-package com.leri.smovbook.ui.smovDetail
+package com.leri.smovbook.viewModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

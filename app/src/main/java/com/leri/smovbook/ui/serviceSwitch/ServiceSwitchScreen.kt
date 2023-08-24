@@ -1,11 +1,5 @@
 package com.leri.smovbook.ui.serviceSwitch
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,18 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.outlined.AllInclusive
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,18 +34,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.size.Size
 import com.leri.smovbook.R
-import com.leri.smovbook.ui.components.ServerSelect
-import com.leri.smovbook.ui.home.ServerState
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceSwitchScreen(
     modifier: Modifier = Modifier,
-    serverState: ServerState,
+    serviceUrl: String,
+    historyUrl: List<String>,
     openBarScann: () -> Unit,
+    changeServiceUrl: (String) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -68,11 +57,18 @@ fun ServiceSwitchScreen(
                     Text(
                         "服务",
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 },
                 navigationIcon = {
-
+                    Row (modifier = Modifier.padding(start = 13.dp)) {
+                        Icon(
+                            modifier = Modifier.height(24.dp),
+                            imageVector = Icons.Outlined.AllInclusive,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = stringResource(id = R.string.info)
+                        )
+                    }
                 },
                 actions = {},
                 scrollBehavior = scrollBehavior
@@ -84,19 +80,16 @@ fun ServiceSwitchScreen(
                 contentPadding = innerPadding,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                item {
-                    Text(text = serverState.serverUrl)
-                }
-                items(count = serverState.historyUrl.size) {
+                items(count = historyUrl.size) {
                     Url(
-                        url = serverState.historyUrl[it],
-                        check = serverState.serverUrl == checkPortJoin(serverState.historyUrl[it]),
+                        url = historyUrl[it],
+                        check = serviceUrl == checkPortJoin(historyUrl[it]),
                         modifier = Modifier.clickable(
                             indication = null,
                             interactionSource = remember {
                                 MutableInteractionSource()
                             }) {
-                            serverState.changeServerUrl(serverState.historyUrl[it])
+                            changeServiceUrl(historyUrl[it])
                         },
                     )
                 }
