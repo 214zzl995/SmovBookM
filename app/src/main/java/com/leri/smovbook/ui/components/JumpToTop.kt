@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.leri.smovbook.ui.theme.SmovBookMTheme
 
 //回到顶部是
 private enum class Visibility {
@@ -55,7 +56,9 @@ fun JumpToTop(
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowDownward,
-                modifier = Modifier.height(24.dp).rotate(180f),
+                modifier = Modifier
+                    .height(24.dp)
+                    .rotate(180f),
                 contentDescription = null
             )
         }
@@ -65,5 +68,8 @@ fun JumpToTop(
 @Preview
 @Composable
 fun JumpToBottomPreview() {
-    JumpToTop(enabled = true, onClicked = {})
+    SmovBookMTheme {
+        JumpToTop(enabled = true, onClicked = {})
+    }
+
 }

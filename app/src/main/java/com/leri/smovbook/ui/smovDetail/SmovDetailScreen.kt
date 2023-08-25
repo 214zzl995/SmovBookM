@@ -6,8 +6,8 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -35,16 +35,14 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
-import com.leri.smovbook.models.network.isLoading
-import com.leri.smovbook.ui.components.FullScreenLoading
 import com.leri.smovbook.ui.components.MainPage
-import com.leri.smovbook.ui.components.WrongRequest
 import com.leri.smovbook.ui.data.testDataSin
 import com.leri.smovbook.ui.player.SmovVideoState
 import com.leri.smovbook.ui.player.SmovVideoView
 
 
 //实现图片轮播 暂时还没有理想的方案
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovDetailScreen(
@@ -56,9 +54,7 @@ fun SmovDetailScreen(
     modifier: Modifier = Modifier,
 ) {
 
-    val topAppBarState: TopAppBarState = rememberTopAppBarState()
-
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(state = topAppBarState)
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val subTitle = smov.getDefaultSub(serverUrl)
     val url = smov.getVideoUrl(serverUrl)
@@ -88,11 +84,10 @@ fun SmovDetailScreen(
         .fillMaxSize()
         .windowInsetsPadding(
             WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-        ),
+        ).nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SmovDetailAppBar(
                 scrollBehavior = scrollBehavior,
-                topAppBarState = topAppBarState,
                 title = smovName,
                 onBack = onBack,
                 modifier = Modifier
@@ -141,7 +136,7 @@ fun VideoDetail(smov: Smov) {
     ) {
         Surface(
             shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.inversePrimary,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp, top = 15.dp)
                 .fillMaxWidth()
@@ -157,7 +152,7 @@ fun VideoDetail(smov: Smov) {
 
         Surface(
             shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth()
@@ -174,7 +169,7 @@ fun VideoDetail(smov: Smov) {
 
         Surface(
             shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth()
@@ -191,7 +186,7 @@ fun VideoDetail(smov: Smov) {
 
         Surface(
             shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.inverseOnSurface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp, bottom = 20.dp)
                 .fillMaxWidth()

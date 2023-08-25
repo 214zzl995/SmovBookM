@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leri.smovbook.repository.ServiceRepository
+import com.leri.smovbook.repository.ServicesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ServiceViewModel @Inject constructor(
-    private val serviceRepository: ServiceRepository,
+    private val serviceRepository: ServicesRepository,
 ) : ViewModel() {
 
     private val _serverUrl: MutableState<String> = mutableStateOf("")

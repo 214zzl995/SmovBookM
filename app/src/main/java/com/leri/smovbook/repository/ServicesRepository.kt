@@ -1,13 +1,13 @@
 package com.leri.smovbook.repository
 
 import androidx.annotation.WorkerThread
-import com.leri.smovbook.datastore.SmovDataStore
+import com.leri.smovbook.datastore.ServicesDataStore
 import kotlinx.coroutines.runBlocking
 import okhttp3.Dispatcher
 import timber.log.Timber
 
-class ServiceRepository(
-    private val smovDataStore: SmovDataStore,
+class ServicesRepository(
+    private val servicesDataStore: ServicesDataStore,
     private val dispatcher: Dispatcher,
 ) : Repository {
 
@@ -16,17 +16,17 @@ class ServiceRepository(
     }
 
     @WorkerThread
-    fun getSmovServiceUrl() = smovDataStore.serverUrl
+    fun getSmovServiceUrl() = servicesDataStore.serverUrl
 
     @WorkerThread
-    fun getSmovServiceUrlAndPort() = smovDataStore.serverUrlAndPort
+    fun getSmovServiceUrlAndPort() = servicesDataStore.serverUrlAndPort
 
     @WorkerThread
-    fun getSmovHistoryUrl() = smovDataStore.historyUrl
+    fun getSmovHistoryUrl() = servicesDataStore.historyUrl
 
     @WorkerThread
     fun changeSmovServiceUrl(url: String) = runBlocking {
         dispatcher.cancelAll()
-        smovDataStore.changeServerUrl(url)
+        servicesDataStore.changeServerUrl(url)
     }
 }

@@ -2,8 +2,10 @@ package com.leri.smovbook.di
 
 
 import android.content.Context
-import com.leri.smovbook.datastore.SmovDataStore
-import com.leri.smovbook.datastore.impl.SmovDataStoreImpl
+import com.leri.smovbook.datastore.ServicesDataStore
+import com.leri.smovbook.datastore.SettingsDataStore
+import com.leri.smovbook.datastore.impl.ServicesDataStoreImpl
+import com.leri.smovbook.datastore.impl.SettingsDataStoreImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +19,14 @@ object PersistenceModule {
 
     @Provides
     @Singleton
-    fun provideTheSmovDataStore(@ApplicationContext context: Context): SmovDataStore {
-        return SmovDataStoreImpl(context)
+    fun provideTheServicesDataStore(@ApplicationContext context: Context): ServicesDataStore {
+        return ServicesDataStoreImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTheSettingsDataStore(@ApplicationContext context: Context): SettingsDataStore {
+        return SettingsDataStoreImpl(context)
     }
 
 

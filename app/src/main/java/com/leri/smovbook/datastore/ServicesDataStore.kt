@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Singleton
 
 @Singleton
-interface SmovDataStore {
+interface ServicesDataStore {
 
     val serverUrl: Flow<String>
 
@@ -13,8 +13,6 @@ interface SmovDataStore {
     val serverPort: Flow<Int>
 
     val historyUrl: Flow<MutableList<String>>
-
-    val thirdPartyPlayer: Flow<String>
 
     suspend fun changeServerUrl(url: String)
 

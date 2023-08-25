@@ -28,7 +28,7 @@ data class Route(
         return if (arguments.isEmpty()) {
             routeOut
         } else {
-            val args = arguments.joinToString(separator = "&") { "${it.first}={${it.second}}" }
+            val args = arguments.joinToString(separator = "&") { "${it.first}={${it.first}}" }
             "$routeOut?$args"
         }
     }
@@ -53,18 +53,19 @@ data class Route(
 }
 
 object AppDestinations {
-    val HOME_SCREEN = Route("home_screen", "首页", icon = Icons.Filled.Home)
-    val BARCODE_SCREEN = Route("barcode_screen", "扫码")
-    val SPLASH_SCREEN = Route("splash_screen", "闪屏")
-    val SMOV_DETAIL_SCREEN = Route(
-        "smov_detail_screen",
-        "详情",
-        listOf("smov_name" to { defaultValue = "SmovBook"; type = NavType.StringType }),
-        listOf("smov_id" to { type = NavType.LongType }),
-    )
-    val SETTINGS_SCREEN = Route("settings_screen", "设置", icon = Icons.Filled.Settings)
+    val INDEX_SCREEN = Route("index", "首页")
+    val HOME_SCREEN = Route("home", "首页", icon = Icons.Filled.Home)
+    val SETTINGS_SCREEN = Route("settings", "设置", icon = Icons.Filled.Settings)
     val SERVICE_SWITCH_SCREEN =
-        Route("service_switch_screen", "服务", icon = Icons.Filled.AllInclusive)
+        Route("service_switch", "服务", icon = Icons.Filled.AllInclusive)
+    val BARCODE_SCREEN = Route("barcode", "扫码")
+    val SPLASH_SCREEN = Route("splash", "闪屏")
+    val SMOV_DETAIL_SCREEN = Route(
+        "smov_detail",
+        "详情",
+        arguments = listOf("smov_name" to { defaultValue = "SmovBook" }),
+        path = listOf("smov_id" to { type = NavType.LongType }),
+    )
 }
 
 class AppNavigationActions(navController: NavHostController) {
@@ -102,6 +103,9 @@ class AppNavigationActions(navController: NavHostController) {
             listOf("smov_name" to smovName),
             listOf("smov_id" to smovId.toString())
         )
+
+        println(path)
+
         navController.navigate(path) {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true

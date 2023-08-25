@@ -1,7 +1,7 @@
 package com.leri.smovbook.network
 
 import android.annotation.SuppressLint
-import com.leri.smovbook.datastore.SmovDataStore
+import com.leri.smovbook.datastore.ServicesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -13,7 +13,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : Interceptor {
+internal class RequestInterceptor(private val servicesDataStore: ServicesDataStore) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
@@ -21,12 +21,12 @@ internal class RequestInterceptor(private val smovDataStore: SmovDataStore) : In
 
         //获取根url
         val baseUrl = runBlocking {
-            smovDataStore.serverUrl.first()
+            servicesDataStore.serverUrl.first()
         }
 
         //获取根端口
         val port = runBlocking {
-            smovDataStore.serverPort.first()
+            servicesDataStore.serverPort.first()
         }
 
         val originalUrl = originalRequest.url

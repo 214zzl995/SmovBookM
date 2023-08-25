@@ -1,14 +1,16 @@
 package com.leri.smovbook.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,8 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,161 +35,75 @@ import com.leri.smovbook.ui.setting.SettingsRoute
 import com.leri.smovbook.ui.smovDetail.SmovDetailRouter
 import com.leri.smovbook.ui.splash.SplashScreen
 import com.leri.smovbook.viewModel.ServiceViewModel
+import com.leri.smovbook.viewModel.SettingsViewModel
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = AppDestinations.HOME_SCREEN.getRouteWithArguments(),
+    startDestination: String = AppDestinations.INDEX_SCREEN.getRouteWithArguments(),
 ) {
 
 
     val homeViewModel: HomeViewModel = hiltViewModel()
     val serviceViewModel: ServiceViewModel = hiltViewModel()
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
     val navigationActions = remember(navController) {
         AppNavigationActions(navController)
     }
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-
     NavHost(
         navController,
         startDestination = startDestination,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500)
+            )
+        }
     ) {
         composable(
             AppDestinations.SPLASH_SCREEN.getRouteWithArguments(),
-            enterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Start,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Start,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popEnterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popExitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
         ) {
             SplashScreen {
                 navigationActions.navigateToHome()
             }
         }
         composable(
-            AppDestinations.HOME_SCREEN.getRouteWithArguments(),
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(500)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(500)
-                )
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(500)
-                )
-            },
+            AppDestinations.INDEX_SCREEN.getRouteWithArguments(),
         ) {
-
-            NavigationHomePage(
+            NavHomePage(
                 homeViewModel = homeViewModel,
                 serviceViewModel = serviceViewModel,
                 navigationActions = navigationActions,
+                settingsViewModel = settingsViewModel,
                 navController = navController,
-                modifier = modifier,
-                navBackStackEntry = navBackStackEntry
+                modifier = modifier
             )
         }
-        composable(AppDestinations.BARCODE_SCREEN.getRouteWithArguments(),
-            enterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popEnterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popExitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            }) {
+        composable(
+            AppDestinations.BARCODE_SCREEN.getRouteWithArguments(),
+        ) {
             BarCodeScannRoute(
                 navigateUp = { navController.navigateUp() },
                 changeServer = {
@@ -197,114 +111,22 @@ fun AppNavGraph(
                 }
             )
         }
-        composable(AppDestinations.SETTINGS_SCREEN.getRouteWithArguments(),
-            enterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popEnterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popExitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            }) {
-            SettingsRoute(
-                navigateUp = { navController.navigateUp() },
-            )
-        }
         composable(
             route = AppDestinations.SMOV_DETAIL_SCREEN.getRouteWithArguments(),
             arguments =
-            AppDestinations.SMOV_DETAIL_SCREEN.arguments.map {
+            AppDestinations.SMOV_DETAIL_SCREEN.path.map {
                 navArgument(it.first, builder = it.second)
-            } + AppDestinations.SMOV_DETAIL_SCREEN.path.map {
+            } + AppDestinations.SMOV_DETAIL_SCREEN.arguments.map {
                 navArgument(it.first, builder = it.second)
-            },
-            enterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popEnterTransition = {
-                when (initialState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
-            },
-            popExitTransition = {
-                when (targetState.destination.route) {
-                    AppDestinations.HOME_SCREEN.getRouteWithArguments() ->
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            animationSpec = tween(500)
-                        )
-
-                    else -> null
-                }
             }) { backStackEntry ->
-
             val smovId =
                 backStackEntry.arguments?.getLong("smov_id")
                     ?: return@composable
             val smovName =
                 backStackEntry.arguments?.getString("smov_name")
                     ?: return@composable
+
+            println(backStackEntry.arguments)
 
             val serverUrl by serviceViewModel.serverUrl
 
@@ -324,15 +146,16 @@ fun AppNavGraph(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationHomePage(
+fun NavHomePage(
     homeViewModel: HomeViewModel,
     serviceViewModel: ServiceViewModel,
+    settingsViewModel: SettingsViewModel,
     navigationActions: AppNavigationActions,
-    navController: NavController,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
-    navBackStackEntry: NavBackStackEntry? = null,
 ) {
-
+    val navHomeController: NavHostController = rememberNavController()
+    val navBackStackEntry by navHomeController.currentBackStackEntryAsState()
     val coroutineScope = rememberCoroutineScope()
     val serviceSwitch = @Composable {
         ServiceSwitchRoute(
@@ -351,27 +174,24 @@ fun NavigationHomePage(
     val settings = @Composable {
         SettingsRoute(
             navigateUp = { navController.navigateUp() },
+            settingsViewModel = settingsViewModel
         )
     }
 
-    //是侦测不到 State 内部的变动的 所以不会重组 问题来了 是否应该把这个部分 单独做viewmodel
     val serverState by homeViewModel.serverUrl
 
     val screens = listOf(
         AppDestinations.HOME_SCREEN to home,
         AppDestinations.SERVICE_SWITCH_SCREEN to serviceSwitch,
         AppDestinations.SETTINGS_SCREEN to settings,
-        )
-    val pagerState = rememberPagerState(pageCount = {
-        screens.size
-    }, initialPage = 0)
+    )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             Box(
                 modifier = Modifier.height(0.dp),
-            ){
+            ) {
                 Text(text = serverState)
             }
         },
@@ -380,7 +200,6 @@ fun NavigationHomePage(
                 modifier = Modifier
                     .animateContentSize()
             ) {
-                val currentDestination = navBackStackEntry?.destination
                 screens.forEach { screen ->
                     NavigationBarItem(
                         icon = {
@@ -390,10 +209,14 @@ fun NavigationHomePage(
                             )
                         },
                         label = { Text(screen.first.destination) },
-                        selected = pagerState.currentPage == screens.indexOf(screen),
+                        selected = navBackStackEntry?.destination?.route == screen.first.route,
                         onClick = {
+                            println(navBackStackEntry)
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(screens.indexOf(screen))
+                                navHomeController.navigate(screen.first.route) {
+                                    popUpTo(navHomeController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     )
@@ -401,13 +224,38 @@ fun NavigationHomePage(
             }
         }
     ) { innerPadding ->
-        HorizontalPager(
-            state = pagerState,
+        NavHost(
+            navController = navHomeController,
+            startDestination = AppDestinations.HOME_SCREEN.getRouteWithArguments(),
             modifier = Modifier.padding(innerPadding),
-            userScrollEnabled = false
-        ) { page ->
-            val screen = screens[page]
-            screen.second()
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(500)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(500)
+                )
+            },
+            popEnterTransition = {
+                fadeIn(
+                    animationSpec = tween(500)
+                )
+            },
+            popExitTransition = {
+                fadeOut(
+                    animationSpec = tween(500)
+                )
+            }
+        ) {
+            for (screen in screens) {
+                composable(screen.first.getRouteWithArguments()) {
+                    screen.second()
+                }
+            }
         }
+
+
     }
 }

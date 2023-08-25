@@ -83,6 +83,7 @@
 -keep class com.leri.smovbook.models.** {*;}
 -keep class com.leri.smovbook.util.** {*;}
 -keep class com.leri.smovbook.models.entities.** {*;}
+-keep class com.leri.smovbook.viewModel.** {*;}
 
 # 保留Serializable 序列化的类不被混淆
 -keepclassmembers class * implements java.io.Serializable {
