@@ -67,6 +67,7 @@ fun SmovCard(
                     }
 
                 }) {
+
                 val url =
                     "http://127.0.0.1/smovbook/file/${smov.filename}/img/thumbs_${smov.name}.jpg"
 
@@ -148,6 +149,13 @@ fun SmovCard(
                     TextButton(
                         onClick = {
                             coroutineScope.launch {
+
+                                /*
+                                这段代码不会导致 打开小窗
+                                val intent = Intent(Intent.ACTION_MAIN)
+                                intent.addCategory(Intent.CATEGORY_LAUNCHER)
+                                launcher.launch(intent)*/
+
                                 val options: ActivityOptions = ActivityOptions.makeBasic()
 
                                 val intent = Intent(Intent.ACTION_VIEW)
