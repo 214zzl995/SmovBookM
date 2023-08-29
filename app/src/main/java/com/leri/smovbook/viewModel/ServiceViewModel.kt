@@ -25,14 +25,14 @@ class ServiceViewModel @Inject constructor(
     init {
         Timber.d("Injection ServiceVIewModel")
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             serviceRepository.getSmovServiceUrlAndPort()
                 .collectLatest {
                     _serverUrl.value = it
                 }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             serviceRepository.getSmovHistoryUrl()
                 .collectLatest {
                     _historyUrl.value = it

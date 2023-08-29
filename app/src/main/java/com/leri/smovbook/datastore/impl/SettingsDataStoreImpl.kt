@@ -22,4 +22,9 @@ class SettingsDataStoreImpl(context: Context) : SettingsDataStore {
                 emit(ThirdPartyPlayer.getDefaultInstance())
             }
 
+    override suspend fun setThirdPartyPlayer(thirdPartyPlayer: ThirdPartyPlayer) {
+        settingsDataStore.updateData { current ->
+            current.toBuilder().setThirdPartyPlayer(thirdPartyPlayer).build()
+        }
+    }
 }

@@ -34,6 +34,7 @@ import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
 import com.leri.smovbook.models.network.isError
@@ -42,6 +43,7 @@ import com.leri.smovbook.models.network.isSuccess
 import com.leri.smovbook.ui.components.*
 import com.leri.smovbook.ui.data.testDataHasData
 import com.leri.smovbook.viewModel.HomeUiState
+import com.leri.smovbook.viewModel.SettingsViewModel
 
 @Composable
 fun HomeScreen(
@@ -126,7 +128,7 @@ private fun HomeScreenWithList(
                     )
                 },
                 navigationIcon = {
-                    Row (modifier = Modifier.padding(start = 10.dp)) {
+                    Row(modifier = Modifier.padding(start = 10.dp)) {
                         Icon(
                             modifier = Modifier.height(24.dp),
                             imageVector = Icons.Outlined.Home,
@@ -179,6 +181,7 @@ private fun HomeScreenWithList(
                                 it
                             )
                         }
+
                         is HomeUiState.NoData -> {
                             Box(contentModifier.fillMaxSize()) {
                                 if (pageState.isError()) {
@@ -260,7 +263,6 @@ private fun RefreshContent(
 }
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SmovList(
     smov: List<Smov>,
@@ -268,10 +270,11 @@ fun SmovList(
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
     openSmovDetail: (Long, String) -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
 
     val scope = rememberCoroutineScope()
-    //statusBar 会出现高度突然刷新的情况
+    val thirdPartyPlayer by settingsViewModel.thirdPartyPlayer
 
     BoxWithConstraints(modifier = modifier) {
 
@@ -283,7 +286,7 @@ fun SmovList(
                 .fillMaxSize()
         ) {
             items(smov) { smovItem ->
-                SmovCard(smovItem, serviceUrl, openSmovDetail)
+                SmovCard(smovItem, serviceUrl, openSmovDetail, thirdPartyPlayer)
             }
         }
 

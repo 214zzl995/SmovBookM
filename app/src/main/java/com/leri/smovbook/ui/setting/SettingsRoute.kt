@@ -16,8 +16,10 @@ fun SettingsRoute(
     val thirdPartyPlayer  by settingsViewModel.thirdPartyPlayer
 
     SettingsScreen(
-        thirdPartyPlayer = thirdPartyPlayer
-
+        thirdPartyPlayer = thirdPartyPlayer,
+        setThirdPartyPlayer = {
+            settingsViewModel.setThirdPartyPlayer(it)
+        }
     )
 
 }

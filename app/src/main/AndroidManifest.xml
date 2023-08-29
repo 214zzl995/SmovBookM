@@ -6,6 +6,13 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:mimeType="video/*"/>
+        </intent>
+    </queries>
+
     <application
             android:name=".SmovBookApp"
             android:allowBackup="true"

@@ -22,9 +22,15 @@ import kotlinx.coroutines.launch
 import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PlayCircleFilled
 import androidx.compose.material3.*
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.max
 import androidx.core.content.ContextCompat.startActivity
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -33,6 +39,7 @@ import coil.request.ImageRequest
 import coil.size.Precision
 import coil.size.Scale
 import com.google.accompanist.flowlayout.FlowRow
+import com.leri.smovbook.config.ThirdPartyPlayer
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.ui.LocalOkHttpClient
 
@@ -40,10 +47,13 @@ import com.leri.smovbook.ui.LocalOkHttpClient
 fun SmovCard(
     smov: Smov,
     mainUrl: String,
-    openSmovDetail: (Long, String) -> Unit
+    openSmovDetail: (Long, String) -> Unit,
+    thirdPartyPlayer: ThirdPartyPlayer,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    var imageSuccess by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -78,7 +88,7 @@ fun SmovCard(
                     modifier = Modifier
                         .fillMaxWidth(0.7F)
                         .aspectRatio(smov.thumbs_img.size.width.toFloat() / smov.thumbs_img.size.height)
-                        .defaultMinSize(minHeight = 100.dp)
+                        .defaultMinSize(minHeight = 200.dp)
                         .animateContentSize()
                         .clip(RoundedCornerShape(3.dp, 3.dp, 3.dp, 3.dp)),
                     model = ImageRequest
@@ -102,87 +112,109 @@ fun SmovCard(
                             )
                         }
                     },
+                    onSuccess = {
+                        //触发下面column的重组
+                        imageSuccess = true
+                    },
                     contentDescription = stringResource(R.string.content_description)
                 )
 
 
+                // 这里真正的问题是没有触发重组
                 Column(
                     Modifier
-                        .padding(horizontal = 10.dp)
-                        .fillMaxWidth(),
-                    //.fillMaxSize()//.align(CenterHorizontally)  //这里的 align 代表当前元素在父元素的位置
-                    horizontalAlignment = Alignment.Start,  //这里代表当前元素下的子元素所在的位置
-                    verticalArrangement = Arrangement.Top  //同理
+                        .aspectRatio(((smov.thumbs_img.size.width.toFloat() * (0.3 / 0.7)) / smov.thumbs_img.size.height).toFloat())
+                        .padding(horizontal = 10.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = smov.name,
-                        modifier = Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Left
-                    )
+                    Column {
+                        Text(
+                            text = smov.name,
+                            modifier = Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Left
+                        )
 
-                    FlowRow {
-                        for (actor in smov.actors) {
-                            Text(
-                                text = actor.name + " ",
-                                modifier = Modifier,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontSize = 11.sp,
-                                textAlign = TextAlign.Center
+                        Column {
+                            for (actor in smov.actors.subList(0, minOf(smov.actors.size, 3))) {
+                                Text(
+                                    text = actor.name,
+                                    modifier = Modifier,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 11.sp,
+                                    textAlign = TextAlign.Center
+                                )
+
+                            }
+
+                            if (smov.actors.size > 3) {
+                                Text(
+                                    text = "...",
+                                    modifier = Modifier,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 11.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                    Column {
+                        IconButton(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                coroutineScope.launch {
+                                    val options: ActivityOptions = ActivityOptions.makeBasic()
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    val type = "video/${smov.extension}"
+                                    val uri: Uri =
+                                        Uri.parse("http://$mainUrl/smovbook/file/${smov.filename}/${smov.filename}.${smov.extension}")
+                                    intent.setDataAndType(uri, type)
+                                    intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                                    if (thirdPartyPlayer.thirdPartyPlayerName == "") {
+                                        val title = "打开视频"
+                                        val chooser = Intent.createChooser(intent, title)
+
+                                        try {
+                                            startActivity(context, chooser, options.toBundle())
+                                        } catch (e: ActivityNotFoundException) {
+                                            // Define what your app should do if no activity can handle the intent.
+                                        }
+                                    } else {
+                                        intent.setPackage(thirdPartyPlayer.thirdPartyPlayerPackage)
+                                        intent.putExtra("title", smov.name)
+                                        startActivity(context, intent, options.toBundle())
+                                    }
+
+
+                                }
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.PlayCircleFilled,
+                                contentDescription = "Quick PLayer",
+                                tint = MaterialTheme.colorScheme.primary
                             )
 
                         }
+
+                        Box(modifier = Modifier) {
+                            Text(
+                                text = smov.release_time,
+                                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 5.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 11.sp,
+                                textAlign = TextAlign.Left
+                            )
+                        }
                     }
 
-                    Text(
-                        text = smov.release_time,
-                        modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 5.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 11.sp,
-                        textAlign = TextAlign.Left
-                    )
-
-                    TextButton(
-                        onClick = {
-                            coroutineScope.launch {
-
-                                /*
-                                这段代码不会导致 打开小窗
-                                val intent = Intent(Intent.ACTION_MAIN)
-                                intent.addCategory(Intent.CATEGORY_LAUNCHER)
-                                launcher.launch(intent)*/
-
-                                val options: ActivityOptions = ActivityOptions.makeBasic()
-
-                                val intent = Intent(Intent.ACTION_VIEW)
-                                val type = "video/${smov.extension}"
-
-                                intent.setPackage("com.mxtech.videoplayer.pro")
-                                intent.putExtra("decode_mode", "4")
-                                intent.putExtra("title", smov.name)
-                                println(type)
-                                val uri: Uri =
-                                    Uri.parse("http://$mainUrl/smovbook/file/${smov.filename}/${smov.filename}.${smov.extension}")
-                                intent.setDataAndType(uri, type)
-
-                                val title = "打开视频"
-                                val chooser = Intent.createChooser(intent, title)
-
-                                try {
-                                    startActivity(context, intent, options.toBundle())
-                                } catch (e: ActivityNotFoundException) {
-                                    // Define what your app should do if no activity can handle the intent.
-                                }
-
-                            }
-                        }, contentPadding = PaddingValues(3.dp), modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = "MxPlayer")
-                    }
                 }
 
             }
@@ -198,7 +230,12 @@ fun SmovItemPreview() {
     SmovBookMTheme() {
         Surface {
             Column {
-                SmovCard(smov = testDataSin, mainUrl = "127.0.0.1", openSmovDetail = { _, _ -> })
+                SmovCard(
+                    smov = testDataSin,
+                    mainUrl = "127.0.0.1",
+                    openSmovDetail = { _, _ -> },
+                    thirdPartyPlayer = ThirdPartyPlayer.getDefaultInstance()
+                )
             }
         }
     }

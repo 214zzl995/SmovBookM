@@ -10,4 +10,6 @@ interface SettingsDataStore {
 
     val  thirdPartyPlayer: Flow<ThirdPartyPlayer>
 
+    suspend fun setThirdPartyPlayer(thirdPartyPlayer: ThirdPartyPlayer)
+
 }
