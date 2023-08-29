@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Settings
@@ -163,7 +162,7 @@ fun SettingsItem(
             modifier = Modifier.fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = icon, contentDescription = text, Modifier.size(30.dp))
+            Icon(imageVector = icon, contentDescription = text, Modifier.size(25.dp))
             Column(modifier = Modifier.padding(start = 20.dp)) {
                 Text(
                     text = text,
@@ -185,10 +184,7 @@ fun SettingsItem(
         Box(modifier = Modifier) {
             action()
         }
-
     }
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

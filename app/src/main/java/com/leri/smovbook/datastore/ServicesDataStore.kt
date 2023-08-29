@@ -14,7 +14,9 @@ interface ServicesDataStore {
 
     val historyUrl: Flow<MutableList<String>>
 
-    suspend fun changeServerUrl(url: String)
+    suspend fun addServerUrl(url: String)
+
+    suspend fun removeServerUrl(url: String)
 
 
 }

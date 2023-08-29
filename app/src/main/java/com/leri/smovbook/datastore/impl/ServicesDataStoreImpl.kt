@@ -48,7 +48,7 @@ class ServicesDataStoreImpl(context: Context) : ServicesDataStore {
             }.flowOn(Dispatchers.IO)
 
 
-    override suspend fun changeServerUrl(url: String) {
+    override suspend fun addServerUrl(url: String) {
         val httpUrl = "http://$url".toHttpUrl()
         servicesDataStore.updateData { currentServices ->
 
@@ -62,5 +62,13 @@ class ServicesDataStoreImpl(context: Context) : ServicesDataStore {
                 .clearHistoryUrl().addAllHistoryUrl(historyUrl).build()
         }
     }
+
+    override suspend fun removeServerUrl(url: String) {
+        servicesDataStore.updateData { currentServices ->
+          currentServices.historyUrlList.toMutableList().remove(url)
+            currentServices.toBuilder().clearHistoryUrl().addAllHistoryUrl(currentServices.historyUrlList).build()
+        }
+    }
+
 
 }
