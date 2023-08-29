@@ -171,7 +171,7 @@ fun SmovCard(
                                 coroutineScope.launch {
                                     val options: ActivityOptions = ActivityOptions.makeBasic()
                                     val intent = Intent(Intent.ACTION_VIEW)
-                                    val type = "video/${smov.extension}"
+                                    val type = "video/*"
                                     val uri: Uri =
                                         Uri.parse("http://$mainUrl/smovbook/file/${smov.filename}/${smov.filename}.${smov.extension}")
                                     intent.setDataAndType(uri, type)
