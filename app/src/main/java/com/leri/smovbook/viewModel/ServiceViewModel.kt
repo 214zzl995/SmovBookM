@@ -40,15 +40,21 @@ class ServiceViewModel @Inject constructor(
         }
     }
 
-    fun changeServiceUrl(url: String) {
+    fun addServiceUrl(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            serviceRepository.addSmovServiceUrl(url)
+            serviceRepository.addServiceUrl(url)
         }
     }
 
-    fun removeServiceUrl(url: String){
+    fun removeServiceUrl(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            serviceRepository.removeSmovServiceUrl(url)
+            serviceRepository.removeServiceUrl(url)
+        }
+    }
+
+    fun changeServiceUrl(index: Int, url: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            serviceRepository.changeServerUrl(index, url)
         }
     }
 

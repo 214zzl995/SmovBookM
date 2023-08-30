@@ -25,14 +25,22 @@ class ServicesRepository(
     fun getSmovHistoryUrl() = servicesDataStore.historyUrl
 
     @WorkerThread
-    fun addSmovServiceUrl(url: String) = runBlocking {
+    fun addServiceUrl(url: String) = runBlocking {
         dispatcher.cancelAll()
         servicesDataStore.addServerUrl(url)
     }
 
     @WorkerThread
-    fun removeSmovServiceUrl(url: String) = runBlocking {
+    fun removeServiceUrl(url: String) = runBlocking {
         dispatcher.cancelAll()
         servicesDataStore.removeServerUrl(url)
     }
+
+    @WorkerThread
+    fun changeServerUrl(index: Int, url: String) = runBlocking {
+        dispatcher.cancelAll()
+        servicesDataStore.changeServerUrl(index, url)
+    }
+
+
 }

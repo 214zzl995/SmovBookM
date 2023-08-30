@@ -1,13 +1,11 @@
 package com.leri.smovbook.ui.serviceSwitch
 
-import android.view.MotionEvent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +17,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.AllInclusive
@@ -70,8 +67,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.blankj.utilcode.util.VibrateUtils.vibrate
 import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -80,7 +79,9 @@ fun ServiceSwitchScreen(
     serviceUrl: String,
     historyUrl: List<String>,
     openBarScann: () -> Unit,
-    changeServiceUrl: (String) -> Unit,
+    addServiceUrl: (String) -> Unit,
+    removeServiceUrl: (String) -> Unit,
+    changeServiceUrl: (Int, String) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -96,14 +97,35 @@ fun ServiceSwitchScreen(
         editDialogVisible.value = !editDialogVisible.value
     }
 
-    if (editDialogVisible.value) {
-        var addUrl by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue(""))
-        }
+    var openUrlEditSheetState by rememberSaveable { mutableStateOf(false) }
 
-        var addPort by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue(""))
-        }
+    var changeUrl by rememberSaveable { mutableStateOf(-1 to "") }
+
+    var addUrl by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
+
+    var addPort by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
+
+    UrlEditSheet(
+        openSheet = openUrlEditSheetState,
+        closeSheet = { openUrlEditSheetState = false },
+        openEditInput = {
+            addUrl = TextFieldValue(changeUrl.second.split(":")[0])
+            addPort = TextFieldValue(changeUrl.second.split(":")[1])
+            editDialogVisible.value = true
+        },
+        removeUrl = {
+            removeServiceUrl(changeUrl.second)
+        },
+        url = changeUrl.second,
+        removeEnable = changeUrl.second != serviceUrl && serviceUrl.length != 1
+    )
+
+    if (editDialogVisible.value) {
+
 
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -118,12 +140,25 @@ fun ServiceSwitchScreen(
                 TextButton(
                     onClick = {
                         changeEditDialogVisible()
-                        val url = addUrl.text + ":" + if (addPort.text == "") "80" else addPort.text
-                        changeServiceUrl(url)
+                        if (changeUrl.first != -1) {
+                            changeServiceUrl(
+                                changeUrl.first,
+                                addUrl.text + ":" + if (addPort.text == "") "80" else addPort.text
+                            )
+                            if (changeUrl.second == serviceUrl) {
+                                val url =
+                                    addUrl.text + ":" + if (addPort.text == "") "80" else addPort.text
+                                addServiceUrl(url)
+                            }
+                            changeUrl = -1 to ""
+                        } else {
+                            val url =
+                                addUrl.text + ":" + if (addPort.text == "") "80" else addPort.text
+                            addServiceUrl(url)
+                        }
                     },
                     enabled = (addUrl.text.isValidURL() || addUrl.text.isValidIPAddress()) && addPort.text.isValidPort()
-                )
-                {
+                ) {
                     Text(text = "确认")
                 }
             },
@@ -146,7 +181,6 @@ fun ServiceSwitchScreen(
                             .fillMaxWidth(0.65f),
                         value = addUrl,
                         onValueChange = { addUrl = it },
-                        //判断url是否合法
                         isError = addUrl.text.isEmpty() || !(addUrl.text.isValidURL() || addUrl.text.isValidIPAddress()),
                         label = {
                             Row {
@@ -234,14 +268,18 @@ fun ServiceSwitchScreen(
                 Url(
                     url = historyUrl[it],
                     check = serviceUrl == checkPortJoin(historyUrl[it]),
-                    modifier = Modifier.clip(
-                        MaterialTheme.shapes.medium
-                    ).combinedClickable(
-                        onClick = { changeServiceUrl(historyUrl[it]) },
-                        onLongClick = {
-                            changeServiceUrl(historyUrl[it])
-                        },
-                    ),
+                    modifier = Modifier
+                        .clip(
+                            MaterialTheme.shapes.medium
+                        )
+                        .combinedClickable(
+                            onClick = { addServiceUrl(historyUrl[it]) },
+                            onLongClick = {
+                                vibrate(100)
+                                changeUrl = it to historyUrl[it]
+                                openUrlEditSheetState = true
+                            },
+                        ),
                 )
             }
 
@@ -263,7 +301,9 @@ fun UrlEditSheet(
     openSheet: Boolean,
     closeSheet: () -> Unit,
     openEditInput: () -> Unit,
-    url:String
+    removeUrl: () -> Unit,
+    url: String,
+    removeEnable: Boolean,
 ) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberSheetState(
@@ -276,6 +316,62 @@ fun UrlEditSheet(
             sheetState = bottomSheetState,
         ) {
             //操作栏 包括修改和删除
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = url,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            openEditInput()
+                            bottomSheetState.hide()
+                            closeSheet()
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+                    Text(
+                        text = "修改",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+                TextButton(
+                    onClick = {
+                        removeUrl()
+                        scope.launch {
+                            bottomSheetState.hide()
+                            closeSheet()
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    enabled = removeEnable,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+                    Text(
+                        text = "删除",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+            }
+
         }
 
     }
@@ -319,8 +415,8 @@ private fun Url(
         MaterialTheme.colorScheme.onSurface
     }
     RichTooltipBox(
-        text = { Text(text = "点击切换服务")},
-    ){
+        text = { Text(text = "点击切换服务") },
+    ) {
         Box(
             contentAlignment = Alignment.Center,
 

@@ -31,7 +31,7 @@ fun ServiceSwitchRoute(
     ServiceSwitchScreen(
         serviceUrl = serviceUrl,
         historyUrl = historyUrl,
-        changeServiceUrl = { serviceViewModel.changeServiceUrl(it) },
+        addServiceUrl = { serviceViewModel.addServiceUrl(it) },
         openBarScann = {
             when (cameraPermissionState.status) {
                 PermissionStatus.Granted -> {
@@ -43,6 +43,9 @@ fun ServiceSwitchRoute(
                 }
             }
         },
+        removeServiceUrl = { serviceViewModel.removeServiceUrl(it) },
+        changeServiceUrl = { index, url -> serviceViewModel.changeServiceUrl(index, url) },
+
     )
 
 }

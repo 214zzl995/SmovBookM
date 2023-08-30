@@ -107,7 +107,7 @@ fun AppNavGraph(
             BarCodeScannRoute(
                 navigateUp = { navController.navigateUp() },
                 changeServer = {
-                    serviceViewModel.changeServiceUrl(it)
+                    serviceViewModel.addServiceUrl(it)
                 }
             )
         }

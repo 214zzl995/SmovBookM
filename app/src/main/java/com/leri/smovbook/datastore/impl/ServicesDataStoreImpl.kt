@@ -9,6 +9,7 @@ import com.leri.smovbook.datastore.serializer.servicesDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import timber.log.Timber
 
 
 /**
@@ -65,8 +66,17 @@ class ServicesDataStoreImpl(context: Context) : ServicesDataStore {
 
     override suspend fun removeServerUrl(url: String) {
         servicesDataStore.updateData { currentServices ->
-          currentServices.historyUrlList.toMutableList().remove(url)
-            currentServices.toBuilder().clearHistoryUrl().addAllHistoryUrl(currentServices.historyUrlList).build()
+            val historyUrl = currentServices.historyUrlList.toMutableList()
+            historyUrl.remove(url)
+            currentServices.toBuilder().clearHistoryUrl().addAllHistoryUrl(historyUrl).build()
+        }
+    }
+
+    override suspend fun changeServerUrl(index: Int, url: String) {
+        servicesDataStore.updateData { currentServices ->
+            val historyUrl = currentServices.historyUrlList.toMutableList()
+            historyUrl[index] = url
+            currentServices.toBuilder().clearHistoryUrl().addAllHistoryUrl(historyUrl).build()
         }
     }
 

@@ -18,5 +18,7 @@ interface ServicesDataStore {
 
     suspend fun removeServerUrl(url: String)
 
+    suspend fun changeServerUrl(index: Int, url: String)
+
 
 }
