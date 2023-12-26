@@ -202,7 +202,7 @@ dependencies {
     //http
     implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.6"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.github.skydoves:sandwich:2.0.5"
+    implementation "com.github.skydoves:sandwich:1.2.7"
 
     //log
     implementation "com.jakewharton.timber:timber:5.0.1"
