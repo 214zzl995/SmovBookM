@@ -12,7 +12,7 @@ class SandwichInitializer : Initializer<Unit> {
   override fun create(context: Context) {
 
     // initialize global sandwich operator
-    SandwichInitializer.sandwichOperator = GlobalResponseOperator<Unit>(context)
+    SandwichInitializer.sandwichOperators = mutableListOf(GlobalResponseOperator<Unit>(context))
   }
 
   override fun dependencies(): List<Class<out Initializer<*>>> = emptyList()

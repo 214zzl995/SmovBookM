@@ -1,7 +1,6 @@
 package com.leri.smovbook.models.entities
 
 import androidx.compose.runtime.Immutable
-import androidx.room.Entity
 
 /**
  * @Description: Actor实体类
@@ -9,7 +8,6 @@ import androidx.room.Entity
  * @version 12/8/2022 上午11:30
  */
 @Immutable
-@Entity(primaryKeys = [("id")])
 data class SmovAttr(
     var id: Int,
     var name: String

@@ -4,7 +4,7 @@ package com.leri.smovbook.initializer
 
 import android.content.Context
 import androidx.startup.Initializer
-import com.leri.smovbook.BuildConfig
+import com.blankj.utilcode.BuildConfig
 import timber.log.Timber
 
 class TimberInitializer : Initializer<Unit> {

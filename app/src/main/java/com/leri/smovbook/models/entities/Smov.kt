@@ -1,7 +1,6 @@
 package com.leri.smovbook.models.entities
 
 import androidx.compose.runtime.Immutable
-import androidx.room.Entity
 
 /**
  * @Description: Smov实体类
@@ -36,7 +35,6 @@ import androidx.room.Entity
  *
  */
 @Immutable
-@Entity(primaryKeys = [("id")])
 data class Smov(
     var id: Int = 0,
     var name: String,

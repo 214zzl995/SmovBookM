@@ -191,6 +191,8 @@
 -keep class tv.danmaku.ijk.** { *; }
 -dontwarn tv.danmaku.ijk.**
 
+-keep,allowobfuscation,allowshrinking interface com.skydoves.sandwich.ApiResponse
+
 -keep public class * extends android.view.View{
     *** get*();
     void set*(***);
