@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.SmovBookM.AppSplash" parent="Theme.SplashScreen.IconBackground">
+    <style name="Theme.SmovBookM.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.SmovBookM.AppSplash" parent="Theme.SplashScreen.IconBackground" >
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_content</item>
         <item name="android:windowSplashScreenBrandingImage">@drawable/ic_smov_branding</item>
         <item name="postSplashScreenTheme">@style/Theme.SmovBookM.NoActionBar</item>
