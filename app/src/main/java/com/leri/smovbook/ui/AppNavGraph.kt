@@ -38,7 +38,6 @@ import com.leri.smovbook.viewModel.ServiceViewModel
 import com.leri.smovbook.viewModel.SettingsViewModel
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppNavGraph(
     modifier: Modifier = Modifier,

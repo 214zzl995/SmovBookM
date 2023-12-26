@@ -28,6 +28,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.animation.addListener
 import androidx.media3.common.Player
 import androidx.media3.common.text.CueGroup
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.ui.CaptionStyleCompat
 import androidx.media3.ui.SubtitleView
@@ -97,8 +98,6 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
 
     private val mStopOnChangeProcess: Boolean = true
 
-
-    @RequiresApi(Build.VERSION_CODES.R)
     fun smovInit(title: String, url: String, subTitle: String?, cover: String) {
         this.sTitle = title
         this.sUrl = url
@@ -158,10 +157,12 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         this.orientationUtils = context!!.getActivity()?.let { OrientationUtils(it, this) }!!
     }
 
+    @UnstableApi
     fun setSubtitleViewTextSize(size: Float) {
         mSubtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, size)
     }
 
+    @UnstableApi
     override fun init(context: Context) {
         super.init(context)
         fullscreenButton.setOnClickListener(this)
@@ -881,10 +882,10 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                         "${this.hashCode()}----------------------------- progress ACTION_UP"
                     )
                     startProgressTimer()
-                    var vpup = parent
-                    while (vpup != null) {
-                        vpup.requestDisallowInterceptTouchEvent(false)
-                        vpup = vpup.parent
+                    var vPup = parent
+                    while (vPup != null) {
+                        vPup.requestDisallowInterceptTouchEvent(false)
+                        vPup = vPup.parent
                     }
                     mBrightnessData = -1f
 
@@ -1019,7 +1020,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         setStateAndUi(CURRENT_STATE_PREPAREING)
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    @UnstableApi
     override fun onClick(v: View) {
         when (v.id) {
             R.id.fullscreen -> {
@@ -1217,12 +1218,13 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         }
     }
 
-
-    override fun onCues(cueGroup: CueGroup) {
+    @UnstableApi
+    override fun  onCues(cueGroup: CueGroup) {
         mSubtitleView.setCues(cueGroup.cues)
     }
 
     /**********以下重载 GSYVideoPlayer 的 全屏 SubtitleView 相关实现 */
+    @UnstableApi
     override fun startWindowFullscreen(
         context: Context,
         actionBar: Boolean,
@@ -1245,7 +1247,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         return gsyBaseVideoPlayer
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    @UnstableApi
     override fun resolveNormalVideoShow(
         oldF: View,
         vp: ViewGroup,
@@ -1292,7 +1294,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    @UnstableApi
     override fun onPrepared(url: String, vararg objects: Any) {
         Debuger.printfError("***** onPrepared **** " + objects[0])
         Debuger.printfError("***** onPrepared **** " + objects[1])

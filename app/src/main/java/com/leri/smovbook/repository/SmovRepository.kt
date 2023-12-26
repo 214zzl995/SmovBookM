@@ -38,7 +38,6 @@ class SmovRepository(
         flow {
             val response = smovService.getPaginationSmov(pageNum, pageSize)
             response.suspendOnSuccess {
-                //Timber.d(data.toString())
                 emit(data.data.list)
                 success()
             }.onError {

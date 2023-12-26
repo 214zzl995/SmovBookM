@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import com.leri.smovbook.models.entities.*
 import com.leri.smovbook.viewModel.SmovDetailViewModel
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun SmovDetailRouter(
     smovId: Long,

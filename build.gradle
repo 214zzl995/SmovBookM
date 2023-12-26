@@ -10,7 +10,7 @@ buildscript {
     }
     apply from: './dependencies.gradle'
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
         classpath "com.google.dagger:hilt-android-gradle-plugin:2.43.2"
     }
@@ -47,17 +47,13 @@ subprojects {
     tasks.withType(KotlinCompile).configureEach {
         kotlinOptions {
             allWarningsAsErrors = project.hasProperty("warningsAsErrors") ? project.warningsAsErrors : false
-            freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
-            freeCompilerArgs += '-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi'
-            freeCompilerArgs += '-Xopt-in=kotlinx.coroutines.FlowPreview'
-            freeCompilerArgs += '-Xopt-in=kotlin.Experimental'
-            freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime"
-            freeCompilerArgs += "-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi"
-            freeCompilerArgs += "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi"
-            freeCompilerArgs += [
-                    "-P",
-                    "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
-            ]
+            freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
+            freeCompilerArgs += '-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi'
+            freeCompilerArgs += '-opt-in=kotlinx.coroutines.FlowPreview'
+            freeCompilerArgs += '-opt-in=kotlin.Experimental'
+            freeCompilerArgs += "-opt-in=kotlin.time.ExperimentalTime"
+            freeCompilerArgs += "-opt-in=androidx.compose.animation.ExperimentalAnimationApi"
+            freeCompilerArgs += "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
             jvmTarget = "1.8"
         }
     }

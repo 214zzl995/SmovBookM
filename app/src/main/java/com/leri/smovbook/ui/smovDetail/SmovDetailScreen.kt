@@ -42,7 +42,6 @@ import com.leri.smovbook.ui.player.SmovVideoView
 
 
 //实现图片轮播 暂时还没有理想的方案
-@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmovDetailScreen(
@@ -268,7 +267,6 @@ private val valueStyle = TextStyle(
 )
 
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun rememberVideoPlayerState(
     title: String, url: String, subTitle: String?,

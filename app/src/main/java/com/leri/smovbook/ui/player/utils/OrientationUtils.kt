@@ -19,11 +19,10 @@ import java.lang.ref.WeakReference
  * 处理屏幕旋转的的逻辑
  * Created by leri on 2022/09/23.
  */
-@RequiresApi(Build.VERSION_CODES.R)
 class OrientationUtils @JvmOverloads constructor(
     activity: Activity,
     gsyVideoPlayer: GSYBaseVideoPlayer?,
-    orientationOption: OrientationOption? = null
+    orientationOption: OrientationOption? = null,
 ) {
     private val mActivity: WeakReference<Activity?>
     private val mVideoPlayer: GSYBaseVideoPlayer?
@@ -153,20 +152,28 @@ class OrientationUtils @JvmOverloads constructor(
         mOrientationEventListener.enable()
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
     private fun initGravity(activity: Activity) {
         if (isLand == LAND_TYPE_NULL) {
-            when (activity.display!!.rotation) {
+            val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                activity.display!!.rotation
+            } else {
+                @Suppress("DEPRECATION")
+                activity.windowManager.defaultDisplay.rotation
+            }
+
+            when (rotation) {
                 Surface.ROTATION_0 -> {
                     // 竖向为正方向。 如：手机、小米平板
                     isLand = LAND_TYPE_NULL
                     screenType = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 }
+
                 Surface.ROTATION_270 -> {
                     // 横向为正方向。 如：三星、sony平板
                     isLand = LAND_TYPE_REVERSE
                     screenType = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                 }
+
                 else -> {
                     // 未知方向
                     isLand = LAND_TYPE_NORMAL
