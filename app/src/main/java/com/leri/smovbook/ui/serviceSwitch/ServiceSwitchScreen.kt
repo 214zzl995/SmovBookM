@@ -1,6 +1,7 @@
 package com.leri.smovbook.ui.serviceSwitch
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,7 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -72,7 +73,7 @@ import com.leri.smovbook.R
 import com.leri.smovbook.ui.theme.SmovBookMTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,ExperimentalFoundationApi::class)
 @Composable
 fun ServiceSwitchScreen(
     modifier: Modifier = Modifier,
@@ -306,8 +307,8 @@ fun UrlEditSheet(
     removeEnable: Boolean,
 ) {
     val scope = rememberCoroutineScope()
-    val bottomSheetState = rememberSheetState(
-        skipHalfExpanded = true
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
     )
 
     if (openSheet) {

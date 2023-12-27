@@ -31,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.models.entities.DetailModel
 import com.leri.smovbook.models.entities.Smov
 import com.leri.smovbook.models.network.NetworkState
@@ -83,7 +82,8 @@ fun SmovDetailScreen(
         .fillMaxSize()
         .windowInsetsPadding(
             WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-        ).nestedScroll(scrollBehavior.nestedScrollConnection),
+        )
+        .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SmovDetailAppBar(
                 scrollBehavior = scrollBehavior,
@@ -225,7 +225,7 @@ fun NameValueAlone(name: String, value: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NameValueMultiple(name: String, values: List<DetailModel>) {
     if (values.isNotEmpty()) {
@@ -235,12 +235,17 @@ fun NameValueMultiple(name: String, values: List<DetailModel>) {
                 modifier = Modifier.fillMaxWidth(),
                 style = nameStyle
             )
-            FlowRow(mainAxisSpacing = 6.dp, crossAxisSpacing = (-10).dp) {
+            FlowRow {
                 for (value in values) {
-                    ElevatedSuggestionChip(
-                        onClick = { /* Do something! */ },
-                        label = { Text(text = value.name, style = valueStyle) }
-                    )
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                    ) {
+                        ElevatedSuggestionChip(
+                            onClick = { /* Do something! */ },
+                            label = { Text(text = value.name, style = valueStyle) }
+                        )
+                    }
                 }
             }
 

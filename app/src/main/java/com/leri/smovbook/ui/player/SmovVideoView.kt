@@ -149,7 +149,6 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
-    @RequiresApi(Build.VERSION_CODES.R)
     constructor(context: Context?, title: String, url: String, subTitle: String?) : super(context) {
         this.sTitle = title
         this.sUrl = url
@@ -614,10 +613,16 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
                     mSaveChangeViewTIme = 0
                     if (mAudioManager != null) {
                         //mAudioManager.abandonAudioFocus(onAudioFocusChangeListener)
-                        val audioFocusRequest =
-                            AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-                                .setOnAudioFocusChangeListener(onAudioFocusChangeListener).build()
-                        mAudioManager.abandonAudioFocusRequest(audioFocusRequest)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            val audioFocusRequest =
+                                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                                    .setOnAudioFocusChangeListener(onAudioFocusChangeListener)
+                                    .build()
+                            mAudioManager.abandonAudioFocusRequest(audioFocusRequest)
+                        } else {
+                            @Suppress("DEPRECATION")
+                            mAudioManager.abandonAudioFocus(onAudioFocusChangeListener)
+                        }
                     }
                 }
                 releaseNetWorkState()
@@ -993,9 +998,19 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         gsyVideoManager.setListener(this)
         gsyVideoManager.playTag = mPlayTag
         gsyVideoManager.playPosition = mPlayPosition
-        val audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-            .setOnAudioFocusChangeListener(onAudioFocusChangeListener).build()
-        mAudioManager.requestAudioFocus(audioFocusRequest)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val audioFocusRequest =
+                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+                    .setOnAudioFocusChangeListener(onAudioFocusChangeListener).build()
+            mAudioManager.requestAudioFocus(audioFocusRequest)
+        } else {
+            @Suppress("DEPRECATION")
+            mAudioManager.requestAudioFocus(
+                onAudioFocusChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+            )
+        }
 
         try {
             if (mContext is Activity) {
@@ -1219,7 +1234,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
     }
 
     @UnstableApi
-    override fun  onCues(cueGroup: CueGroup) {
+    override fun onCues(cueGroup: CueGroup) {
         mSubtitleView.setCues(cueGroup.cues)
     }
 

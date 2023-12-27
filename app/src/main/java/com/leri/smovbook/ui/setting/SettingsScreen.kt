@@ -8,6 +8,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +55,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
-import com.google.accompanist.flowlayout.FlowRow
 import com.leri.smovbook.R
 import com.leri.smovbook.config.ThirdPartyPlayer
 import com.leri.smovbook.ui.theme.SmovBookMTheme
@@ -187,7 +188,7 @@ fun SettingsItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AppSelectBottomSheet(
     openBottomSheet: Boolean,
@@ -199,8 +200,8 @@ fun AppSelectBottomSheet(
     val packageManager = remember { content.packageManager }
 
     val scope = rememberCoroutineScope()
-    val bottomSheetState = rememberSheetState(
-        skipHalfExpanded = true
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
     )
 
     if (openBottomSheet) {

@@ -143,7 +143,6 @@ fun AppNavGraph(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavHomePage(
     homeViewModel: HomeViewModel,
