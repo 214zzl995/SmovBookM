@@ -58,9 +58,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         splashScreen.setKeepOnScreenCondition {
-            runBlocking {
-                delay(splashFadeDurationMillis.toLong())
-            }
             setContent {
                 val decorView: View = window.decorView
                 CompositionLocalProvider(
