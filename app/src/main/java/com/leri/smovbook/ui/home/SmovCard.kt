@@ -108,7 +108,7 @@ fun SmovCard(
                     error = {
                         Box(modifier = Modifier.matchParentSize()) {
                             AsyncImage(
-                                model = R.drawable.ic_error, contentDescription = null
+                                model = R.drawable.ic_error_picture, contentDescription = null
                             )
                         }
                     },

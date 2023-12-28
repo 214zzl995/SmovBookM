@@ -1,7 +1,5 @@
 package com.leri.smovbook.ui
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -33,7 +30,6 @@ import com.leri.smovbook.viewModel.HomeViewModel
 import com.leri.smovbook.ui.serviceSwitch.ServiceSwitchRoute
 import com.leri.smovbook.ui.setting.SettingsRoute
 import com.leri.smovbook.ui.smovDetail.SmovDetailRouter
-import com.leri.smovbook.ui.splash.SplashScreen
 import com.leri.smovbook.viewModel.ServiceViewModel
 import com.leri.smovbook.viewModel.SettingsViewModel
 import kotlinx.coroutines.launch
@@ -81,13 +77,6 @@ fun AppNavGraph(
             )
         }
     ) {
-        composable(
-            AppDestinations.SPLASH_SCREEN.getRouteWithArguments(),
-        ) {
-            SplashScreen {
-                navigationActions.navigateToHome()
-            }
-        }
         composable(
             AppDestinations.INDEX_SCREEN.getRouteWithArguments(),
         ) {

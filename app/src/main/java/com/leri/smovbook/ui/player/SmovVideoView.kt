@@ -110,7 +110,7 @@ open class SmovVideoView : StandardGSYVideoPlayer, Player.Listener,
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         imageView.load(cover) {
             crossfade(true)
-            error(R.drawable.ic_error)
+            error(R.drawable.ic_error_picture)
         }
 
         mTitleTextView.visibility = GONE

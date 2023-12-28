@@ -203,7 +203,7 @@
             android:layout_height="1.5dp"
             android:layout_alignParentBottom="true"
             android:max="100"
-            android:progressDrawable="@drawable/video_progress_smovbook" />
+            android:progressDrawable="@drawable/video_progress" />
 
     <ImageView
             android:id="@+id/back_tiny"
@@ -220,7 +220,7 @@
             android:layout_height="48dp"
             android:paddingStart="30dp"
             android:paddingEnd="20dp"
-            android:background="@drawable/video_title_bg_smovbook"
+            android:background="@drawable/video_title_bg"
             android:gravity="center_vertical">
 
         <ImageView

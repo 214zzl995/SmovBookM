@@ -246,7 +246,7 @@ fun AppSelectBottomSheet(
                     ) {
 
                         Image(
-                            painter = painterResource(id = R.drawable.ic_smov_ico),
+                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(50.dp)

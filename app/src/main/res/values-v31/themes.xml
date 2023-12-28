@@ -10,7 +10,7 @@
 
     <style name="Theme.SmovBookM.AppSplash" parent="Theme.SplashScreen.IconBackground" >
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_smov_branding</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_splash_branding</item>
         <item name="postSplashScreenTheme">@style/Theme.SmovBookM.NoActionBar</item>
     </style>
 </resources>
